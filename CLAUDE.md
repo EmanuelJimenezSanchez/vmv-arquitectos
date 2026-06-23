@@ -1,22 +1,15 @@
-## Development
+# Agent Guidelines
 
-When starting the dev server, use background mode:
+- Do not run ESLint automatically after every small code change.
+- Do not check TypeScript errors (e.g. `pnpm exec tsc`, `astro check`) automatically; only run TypeScript validation when the user explicitly asks for it.
+- Prefer the editor diagnostics (`ReadLints`) for quick feedback on files you touched.
+- Run `pnpm exec eslint ...`, `pnpm lint`, or broader validation only when the user asks for it, when preparing a final verification for a risky change, or when diagnostics are insufficient to catch a likely issue.
+- When validation is skipped because the change is small, mention that briefly in the final response.
+- Never use `document.querySelector` or `document.querySelectorAll` directly. Always use the `$` and `$$` utilities from `src/lib/dom-selector.ts` instead, importing them from `@/lib/dom-selector`.
 
-```
-astro dev --background
-```
+## Pull Requests
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
-
-## Documentation
-
-Full documentation: https://docs.astro.build
-
-Consult these guides before working on related tasks:
-
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+- One change per PR. Scope to a single component or section.
+- Follow the template in `.github/pull_request_template.md`.
+- Screenshots required for visual changes (mobile + desktop).
+- Breaking changes must be listed explicitly or state "None".

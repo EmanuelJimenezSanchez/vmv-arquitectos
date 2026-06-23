@@ -1,17 +1,28 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Alcance from '../sections/Alcance.astro';
+import Contacto from '../sections/Contacto.astro';
+import Footer from '../sections/Footer.astro';
+import Galeria from '../sections/Galeria.astro';
+import Hero from '../sections/Hero.astro';
+import Nosotros from '../sections/Nosotros.astro';
+import Proceso from '../sections/Proceso.astro';
+import Servicios from '../sections/Servicios.astro';
 
+const SITE_URL = 'https://www.vmv-arquitectos.com'
+const title = 'VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos'
+const description =
+  'VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos'
+const canonical = `${SITE_URL}/`
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title={title} description={description} canonical={canonical}>
+	<Hero />
+  <Nosotros />
+  <Galeria />
+  <Servicios />
+  <Alcance />
+  <Proceso />
+  <Contacto />
+  <Footer />
+</Layout>

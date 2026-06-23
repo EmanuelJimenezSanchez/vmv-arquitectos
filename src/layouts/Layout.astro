@@ -1,0 +1,73 @@
+---
+import { ClientRouter } from "astro:transitions";
+import Analytics from "@vercel/analytics/astro";
+
+import '@/styles/global.css'
+
+import Header from "../sections/Header.astro";
+
+const SITE_URL = 'https://www.vmv-arquitectos.com'
+const DEFAULT_OG_IMAGE = `https://cdn.vmv-arquitectos.com/og.jpg`
+const DEFAULT_OG_ALT = 'VMV Arquitectos — Diseño y Construcción de Espacios Funcionales y Estéticos'
+
+interface Props {
+  title: string
+  description?: string
+  canonical?: string
+  robots?: string
+  ogImage?: string
+  ogImageAlt?: string
+  ogUrl?: string
+  ogType?: 'website' | 'article' | 'profile'
+  /** Site chrome; disable on full-bleed routes (e.g. combate detail). */
+  showHeader?: boolean
+}
+
+const {
+  title,
+  description = 'VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos',
+  canonical,
+  robots,
+  ogImage = DEFAULT_OG_IMAGE,
+  ogImageAlt = DEFAULT_OG_ALT,
+  ogUrl,
+  ogType = 'website',
+  showHeader = true,
+} = Astro.props
+
+const cleanPathname = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '')
+const canonicalURL = canonical ?? `${SITE_URL}${cleanPathname}`
+const finalOgUrl = ogUrl ?? canonicalURL
+const finalRobots = robots ?? 'index, follow'
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos
+    </title>
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta name="description" content="VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos" />
+    <meta name="author" content="VMV Arquitectos" />
+    <link rel="canonical" href="https://www.vmv-arquitectos.com/" />
+    <meta name="robots" content="index, follow" />
+
+    <slot name="head" />
+    <ClientRouter />
+    <Analytics />
+  </head>
+  <body>
+    {showHeader && <Header />}
+    <main id="main-content">
+      <slot />
+    </main>
+  </body>
+</html>
