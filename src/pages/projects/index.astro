@@ -1,0 +1,42 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { projects } from '@/data/projects'
+
+const title = 'Proyectos | VMV Arquitectos'
+const description = 'Explora los proyectos de VMV Arquitectos.'
+const canonical = 'https://www.vmv-arquitectos.com/projects'
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <section class="mx-auto w-full max-w-6xl px-6 py-24 md:px-10">
+    <header class="max-w-2xl">
+      <p class="text-xs uppercase tracking-[0.18em] text-neutral-500">Portafolio</p>
+      <h1 class="mt-2 text-4xl font-semibold leading-tight text-neutral-900 md:text-5xl">Proyectos</h1>
+      <p class="mt-4 text-base leading-relaxed text-neutral-700">
+        Cada proyecto tiene su ruta dinamica por id para facilitar gestion y escalabilidad dentro del mismo repositorio.
+      </p>
+    </header>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project) => (
+        <article class="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+          <img
+            src={project.coverImage}
+            alt={`Imagen del proyecto ${project.title}`}
+            class="h-48 w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="space-y-3 p-5">
+            <h2 class="text-xl font-semibold text-neutral-900">{project.title}</h2>
+            <p class="text-sm text-neutral-600">{project.location} - {project.year}</p>
+            <p class="text-sm leading-relaxed text-neutral-700">{project.summary}</p>
+            <a href={`/projects/${project.id}`} class="inline-flex text-sm font-medium text-neutral-900 underline underline-offset-4">
+              Ver detalle
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</Layout>
