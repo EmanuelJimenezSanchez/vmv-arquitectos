@@ -1,0 +1,200 @@
+---
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+
+const slides = [
+  {
+    src: '/images/hero/hero-1.webp',
+    alt: 'Vista de cocina en diseno contemporaneo',
+  },
+  {
+    src: '/images/hero/hero-2.webp',
+    alt: 'Interior residencial con iluminacion natural',
+  },
+  {
+    src: '/images/hero/hero-3.webp',
+    alt: 'Espacio arquitectonico con acabados sobrios',
+  },
+  {
+    src: '/images/hero/hero-4.webp',
+    alt: 'Detalle de proyecto con materiales calidos',
+  },
+];
+---
+
+<div class="hero-slider" id="hero-slider">
+  <div class="swiper hero-swiper" id="hero-swiper" aria-label="Galeria principal del hero">
+    <div class="swiper-wrapper">
+      {
+        slides.map((slide, index) => (
+          <div class="swiper-slide">
+            <img
+              src={slide.src}
+              alt={slide.alt}
+              class="hero-image"
+              loading={index === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="hero-pagination" id="hero-pagination" aria-hidden="true"></div>
+
+  <div class="hero-navigation" aria-label="Controles del slider">
+    <button class="hero-nav-btn" id="hero-prev" aria-label="Slide anterior" type="button">
+      <span aria-hidden="true">&#8592;</span>
+    </button>
+    <button class="hero-nav-btn" id="hero-next" aria-label="Slide siguiente" type="button">
+      <span aria-hidden="true">&#8594;</span>
+    </button>
+  </div>
+</div>
+
+<style>
+  .hero-slider {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .hero-swiper,
+  .hero-swiper :global(.swiper-wrapper),
+  .hero-swiper :global(.swiper-slide) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-swiper :global(.swiper-slide) {
+    position: relative;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-pagination {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    z-index: 10;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .hero-pagination :global(.hero-bullet) {
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    background: transparent;
+    transition: background-color 240ms ease, transform 240ms ease;
+    cursor: pointer;
+  }
+
+  .hero-pagination :global(.hero-bullet.is-active) {
+    background: #ffffff;
+    transform: scale(1.05);
+  }
+
+  .hero-navigation {
+    position: absolute;
+    right: 1.75rem;
+    bottom: 1.75rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero-nav-btn {
+    width: 2.7rem;
+    height: 2.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #ffffff;
+    background: rgba(15, 18, 22, 0.18);
+    backdrop-filter: blur(3px);
+    display: grid;
+    place-items: center;
+    font-size: 1rem;
+    transition: background-color 220ms ease, border-color 220ms ease;
+  }
+
+  .hero-nav-btn:hover {
+    border-color: #ffffff;
+    background: rgba(15, 18, 22, 0.4);
+  }
+
+  .hero-nav-btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 768px) {
+    .hero-pagination {
+      left: 0.9rem;
+      gap: 0.5rem;
+    }
+
+    .hero-pagination :global(.hero-bullet) {
+      width: 0.6rem;
+      height: 0.6rem;
+    }
+
+    .hero-navigation {
+      right: 1rem;
+      bottom: 1rem;
+    }
+
+    .hero-nav-btn {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+  }
+</style>
+
+<script>
+  import { $ } from '@/lib/dom-selector';
+  import Swiper from 'swiper';
+  import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+
+  const swiperRoot = $<HTMLElement>('#hero-swiper');
+  const paginationEl = $<HTMLElement>('#hero-pagination');
+  const prevEl = $<HTMLElement>('#hero-prev');
+  const nextEl = $<HTMLElement>('#hero-next');
+
+  if (swiperRoot && paginationEl && prevEl && nextEl) {
+    new Swiper(swiperRoot, {
+      modules: [Navigation, Pagination, Autoplay, EffectFade],
+      slidesPerView: 1,
+      loop: true,
+      speed: 900,
+      effect: 'fade',
+      fadeEffect: {
+        crossFade: true,
+      },
+      autoplay: {
+        delay: 5200,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: paginationEl,
+        clickable: true,
+        bulletClass: 'hero-bullet',
+        bulletActiveClass: 'is-active',
+        renderBullet: (_, className) => `<span class="${className}"></span>`,
+      },
+      navigation: {
+        prevEl,
+        nextEl,
+      },
+    });
+  }
+</script>
