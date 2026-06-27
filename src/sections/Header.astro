@@ -133,6 +133,7 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
 
   const setupHeader = () => {
     const header = $('#site-header')
+    const headerShell = $('.header-shell', header ?? undefined)
     const menuToggle = $('#menu-toggle')
     const menuClose = $('#menu-close')
     const mobileMenu = $('#mobile-menu')
@@ -152,6 +153,19 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
     let ticking = false
     let lastScrollY = window.scrollY
     let previousBodyPaddingRight = ''
+
+    const setBackdropBlur = (element: HTMLElement | null, blurValue: string) => {
+      if (!element) {
+        return
+      }
+
+      element.style.backdropFilter = blurValue
+      ;(
+        element.style as CSSStyleDeclaration & {
+          webkitBackdropFilter?: string
+        }
+      ).webkitBackdropFilter = blurValue
+    }
 
     const lockBodyScroll = () => {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
@@ -174,6 +188,7 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
       mobileMenu?.setAttribute('aria-hidden', 'true')
       mobileMenu?.classList.remove('is-open')
       header.classList.remove('is-menu-open')
+      setBackdropBlur(mobileMenu as HTMLElement | null, 'blur(0px)')
     }
 
     const openMenu = () => {
@@ -187,6 +202,8 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
       mobileMenu.classList.add('is-open')
       header.classList.add('is-menu-open')
       header.classList.remove('is-hidden')
+      setBackdropBlur(mobileMenu as HTMLElement, 'blur(8px)')
+      setBackdropBlur(headerShell as HTMLElement | null, 'blur(14px)')
     }
 
     const syncScrollState = () => {
@@ -199,6 +216,9 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
       header.classList.toggle('is-scrolled', isScrolled)
     //   header.classList.toggle('is-hidden', shouldHideHeader)
       header.classList.toggle('is-top', currentScrollY <= 20)
+
+      const shouldBlurHeader = isScrolled || header.classList.contains('is-menu-open')
+      setBackdropBlur(headerShell as HTMLElement | null, shouldBlurHeader ? 'blur(14px)' : 'blur(0px)')
 
       lastScrollY = currentScrollY
       ticking = false
