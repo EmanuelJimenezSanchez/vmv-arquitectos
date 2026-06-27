@@ -1,5 +1,6 @@
 ---
 import logoVmv from '@/assets/svg/logo-vmv.svg'
+import ThemeToggle from '@/components/ThemeToggle.astro'
 ---
 
 <header
@@ -39,11 +40,14 @@ import logoVmv from '@/assets/svg/logo-vmv.svg'
         <img src={logoVmv.src} alt="VMV Arquitectos" class="h-9 w-auto md:h-11" loading="eager" />
       </a>
 
-      <a
-        href="/#contacto"
-        class="header-cta top-right inline-flex items-center rounded-full border border-vmv-sand-1/38 bg-vmv-sand-1/8 px-[1.3rem] py-[0.6rem] text-[0.68rem] tracking-[0.22em] text-vmv-sand-1/92 uppercase transition-[transform,background-color,color,border-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px max-md:px-[0.92rem] max-md:text-[0.62rem] max-md:tracking-[0.18em]"
-        >Contacto</a
-      >
+      <div class="top-right flex items-center gap-2.5">
+        <!-- <ThemeToggle /> -->
+        <a
+          href="/#contacto"
+          class="header-cta inline-flex items-center rounded-full border border-vmv-sand-1/38 bg-vmv-sand-1/8 px-[1.3rem] py-[0.6rem] text-[0.68rem] tracking-[0.22em] text-vmv-sand-1/92 uppercase transition-[transform,background-color,color,border-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px max-md:px-[0.92rem] max-md:text-[0.62rem] max-md:tracking-[0.18em]"
+          >Contacto</a
+        >
+      </div>
     </div>
 
     <nav class="header-nav mt-4 hidden justify-center md:flex" aria-label="Navegación principal">
