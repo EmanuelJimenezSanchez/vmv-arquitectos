@@ -61,6 +61,30 @@ const finalRobots = robots ?? 'index, follow'
     <link rel="canonical" href="https://www.vmv-arquitectos.com/" />
     <meta name="robots" content="index, follow" />
 
+    <!-- <script is:inline>
+      (() => {
+        const storageKey = 'vmv-theme'
+
+        const getStoredTheme = () => {
+          try {
+            const stored = localStorage.getItem(storageKey)
+            return stored === 'light' || stored === 'dark' ? stored : null
+          } catch {
+            return null
+          }
+        }
+
+        const storedTheme = getStoredTheme()
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+        const resolvedTheme = storedTheme ?? systemTheme
+
+        document.documentElement.classList.toggle('dark', resolvedTheme === 'dark')
+        document.documentElement.setAttribute('data-theme', resolvedTheme)
+      })()
+    </script> -->
+
     <slot name="head" />
     <ClientRouter />
     <Analytics />
