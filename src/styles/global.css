@@ -1,5 +1,169 @@
 @import 'tailwindcss';
 
-@theme {
-    
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+	--color-vmv-sand-1: var(--vmv-sand-1);
+	--color-vmv-sand-2: var(--vmv-sand-2);
+	--color-vmv-sand-3: var(--vmv-sand-3);
+	--color-vmv-sand-4: var(--vmv-sand-4);
+	--color-vmv-sand-5: var(--vmv-sand-5);
+	--color-vmv-sand-6: var(--vmv-sand-6);
+	--color-vmv-sand-7: var(--vmv-sand-7);
+	--color-vmv-sand-8: var(--vmv-sand-8);
+	--color-vmv-sand-9: var(--vmv-sand-9);
+	--color-vmv-sand-10: var(--vmv-sand-10);
+	--color-vmv-sand-11: var(--vmv-sand-11);
+	--color-vmv-sand-12: var(--vmv-sand-12);
+
+	--color-vmv-gray-1: var(--vmv-gray-1);
+	--color-vmv-gray-2: var(--vmv-gray-2);
+	--color-vmv-gray-3: var(--vmv-gray-3);
+	--color-vmv-gray-4: var(--vmv-gray-4);
+	--color-vmv-gray-5: var(--vmv-gray-5);
+	--color-vmv-gray-6: var(--vmv-gray-6);
+	--color-vmv-gray-7: var(--vmv-gray-7);
+	--color-vmv-gray-8: var(--vmv-gray-8);
+	--color-vmv-gray-9: var(--vmv-gray-9);
+	--color-vmv-gray-10: var(--vmv-gray-10);
+	--color-vmv-gray-11: var(--vmv-gray-11);
+	--color-vmv-gray-12: var(--vmv-gray-12);
+
+	--color-vmv-background: var(--vmv-background);
+	--color-vmv-foreground: var(--vmv-foreground);
+	--color-vmv-card: var(--vmv-card);
+	--color-vmv-card-foreground: var(--vmv-card-foreground);
+	--color-vmv-popover: var(--vmv-popover);
+	--color-vmv-popover-foreground: var(--vmv-popover-foreground);
+	--color-vmv-muted: var(--vmv-muted);
+	--color-vmv-muted-foreground: var(--vmv-muted-foreground);
+	--color-vmv-accent: var(--vmv-accent);
+	--color-vmv-accent-foreground: var(--vmv-accent-foreground);
+	--color-vmv-primary: var(--vmv-primary);
+	--color-vmv-primary-foreground: var(--vmv-primary-foreground);
+	--color-vmv-secondary: var(--vmv-secondary);
+	--color-vmv-secondary-foreground: var(--vmv-secondary-foreground);
+	--color-vmv-border: var(--vmv-border);
+	--color-vmv-input: var(--vmv-input);
+	--color-vmv-ring: var(--vmv-ring);
+	--color-vmv-destructive: var(--vmv-destructive);
+	--color-vmv-destructive-foreground: var(--vmv-destructive-foreground);
+}
+
+:root {
+	color-scheme: light;
+
+	--vmv-sand-1: #fcfaf6;
+	--vmv-sand-2: #f8f4ec;
+	--vmv-sand-3: #f1eadf;
+	--vmv-sand-4: #e8dfcf;
+	--vmv-sand-5: #ddd0bc;
+	--vmv-sand-6: #cbbca4;
+	--vmv-sand-7: #b7a58b;
+	--vmv-sand-8: #9e8a71;
+	--vmv-sand-9: #8a745b;
+	--vmv-sand-10: #735f49;
+	--vmv-sand-11: #5c4938;
+	--vmv-sand-12: #2b221a;
+
+	--vmv-gray-1: #fcfcfb;
+	--vmv-gray-2: #f7f7f5;
+	--vmv-gray-3: #eeede9;
+	--vmv-gray-4: #e1dfda;
+	--vmv-gray-5: #d1cec7;
+	--vmv-gray-6: #beb8b0;
+	--vmv-gray-7: #a7a097;
+	--vmv-gray-8: #8c857c;
+	--vmv-gray-9: #767066;
+	--vmv-gray-10: #605a52;
+	--vmv-gray-11: #48433d;
+	--vmv-gray-12: #1d1b18;
+
+	--vmv-background: var(--vmv-sand-1);
+	--vmv-foreground: var(--vmv-gray-12);
+	--vmv-card: #fffdfa;
+	--vmv-card-foreground: var(--vmv-gray-12);
+	--vmv-popover: #fffdfa;
+	--vmv-popover-foreground: var(--vmv-gray-12);
+	--vmv-muted: var(--vmv-sand-2);
+	--vmv-muted-foreground: var(--vmv-gray-10);
+	--vmv-accent: var(--vmv-sand-3);
+	--vmv-accent-foreground: var(--vmv-gray-12);
+	--vmv-primary: var(--vmv-gray-12);
+	--vmv-primary-foreground: var(--vmv-sand-1);
+	--vmv-secondary: var(--vmv-sand-4);
+	--vmv-secondary-foreground: var(--vmv-gray-12);
+	--vmv-border: var(--vmv-gray-4);
+	--vmv-input: var(--vmv-gray-4);
+	--vmv-ring: var(--vmv-sand-9);
+	--vmv-destructive: #7a2f2a;
+	--vmv-destructive-foreground: #fff5f4;
+}
+
+.dark {
+	color-scheme: dark;
+
+	--vmv-sand-1: #12100e;
+	--vmv-sand-2: #171412;
+	--vmv-sand-3: #201c18;
+	--vmv-sand-4: #2a241f;
+	--vmv-sand-5: #342d27;
+	--vmv-sand-6: #403731;
+	--vmv-sand-7: #54483f;
+	--vmv-sand-8: #69594c;
+	--vmv-sand-9: #7f6d5d;
+	--vmv-sand-10: #968170;
+	--vmv-sand-11: #b29c89;
+	--vmv-sand-12: #e9dfd2;
+
+	--vmv-gray-1: #111110;
+	--vmv-gray-2: #171716;
+	--vmv-gray-3: #1f1f1d;
+	--vmv-gray-4: #282826;
+	--vmv-gray-5: #333331;
+	--vmv-gray-6: #41413e;
+	--vmv-gray-7: #51514d;
+	--vmv-gray-8: #666660;
+	--vmv-gray-9: #7e7d76;
+	--vmv-gray-10: #9a9990;
+	--vmv-gray-11: #bbb9ae;
+	--vmv-gray-12: #f2f0ea;
+
+	--vmv-background: var(--vmv-sand-1);
+	--vmv-foreground: var(--vmv-sand-12);
+	--vmv-card: var(--vmv-sand-2);
+	--vmv-card-foreground: var(--vmv-sand-12);
+	--vmv-popover: var(--vmv-sand-2);
+	--vmv-popover-foreground: var(--vmv-sand-12);
+	--vmv-muted: var(--vmv-sand-3);
+	--vmv-muted-foreground: var(--vmv-gray-9);
+	--vmv-accent: var(--vmv-sand-4);
+	--vmv-accent-foreground: var(--vmv-sand-12);
+	--vmv-primary: var(--vmv-sand-12);
+	--vmv-primary-foreground: var(--vmv-gray-12);
+	--vmv-secondary: var(--vmv-gray-4);
+	--vmv-secondary-foreground: var(--vmv-sand-12);
+	--vmv-border: #2c2a27;
+	--vmv-input: #2c2a27;
+	--vmv-ring: var(--vmv-sand-10);
+	--vmv-destructive: #d27166;
+	--vmv-destructive-foreground: #241311;
+}
+
+@layer base {
+	html {
+		background: var(--vmv-background);
+		color: var(--vmv-foreground);
+		scroll-behavior: smooth;
+	}
+
+	body {
+		background: var(--vmv-background);
+		color: var(--vmv-foreground);
+	}
+
+	::selection {
+		background: var(--vmv-accent);
+		color: var(--vmv-accent-foreground);
+	}
 }
