@@ -41,15 +41,10 @@
     </div>
   </div>
 
-  <!-- ─── ABOUT: PINNEADO, 2 FASES ────────────────────── -->
-  <!--
-    Fase 1 — Panel "info": texto de la empresa + imagen 1
-    Fase 2 — Panel "services": tres servicios + imagen 2
-    La transición la controla GSAP ScrollTrigger (pin + scrub).
-  -->
+  <!-- ─── ABOUT: PINNEADO ──────── -->
   <div class="nosotros__about">
 
-    <!-- Columna izquierda: dos paneles apilados (absolutos) -->
+    <!-- Columna izquierda -->
     <div class="nosotros__about-left">
 
       <!-- Panel 1: información de la empresa -->
@@ -106,8 +101,7 @@
 
     </div>
 
-    <!-- Columna derecha: dos imágenes apiladas -->
-    <!-- Sustituir src por tus imágenes propias -->
+    <!-- Columna derecha -->
     <div class="nosotros__about-right">
       <div class="nosotros__img-layer nosotros__img-layer--1">
         <img
@@ -130,22 +124,14 @@
     </div>
 
   </div>
-
-  <!-- ─── FOOTER OSCURO ──────────────────────────────────
-  <div class="nosotros__bottom">
-    <p class="nosotros__tagline" aria-hidden="true">VMV&nbsp;ARQUITECTOS</p>
-  </div> -->
-
 </section>
 
 <style>
-  /* ── ROOT ─────────────────────────────────────────── */
   .nosotros {
     position: relative;
     padding: 12px 0;
   }
 
-  /* ── HERO ─────────────────────────────────────────── */
   .nosotros__hero {
     position: relative;
     height: 100svh;
@@ -404,15 +390,6 @@
     display: block;
   }
 
-  /* ── FOOTER OSCURO ────────────────────────────────── */
-  .nosotros__bottom {
-    background: var(--vmv-gray-12);
-    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.5rem, 8vw, 9rem);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .nosotros__tagline {
     margin: 0;
     font-size: clamp(0.6rem, 1.8vw, 0.9rem);
@@ -441,11 +418,6 @@
       position: relative;
       inset: auto;
       padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 6vw, 3rem);
-    }
-
-    /* Ocultar panel de servicios en mobile (se muestra en nosotros__bottom) */
-    .nosotros__panel--services {
-      display: none;
     }
 
     .nosotros__about-right {
@@ -602,20 +574,6 @@
 
       const aboutSt = aboutTl.scrollTrigger;
       if (aboutSt) activeTriggers.push(aboutSt);
-    }
-
-    // ── TAGLINE ───────────────────────────────────────
-    const tagline = $<HTMLElement>('.nosotros__tagline');
-    if (tagline) {
-      gsap.set(tagline, { opacity: 0 });
-      activeTriggers.push(
-        ScrollTrigger.create({
-          trigger: tagline,
-          start: 'top 90%',
-          once: true,
-          onEnter: () => gsap.to(tagline, { opacity: 1, duration: 1.6, ease: 'power2.out' }),
-        }),
-      );
     }
   }
 
