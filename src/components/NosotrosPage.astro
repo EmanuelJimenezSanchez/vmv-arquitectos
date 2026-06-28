@@ -2,6 +2,8 @@
 ---
 
 <section id="nosotros" class="nosotros">
+
+  <!-- ─── HERO: CORTINA + FRASE ICÓNICA ──────────────── -->
   <div class="nosotros__hero">
     <div class="nosotros__panel nosotros__panel--l">
       <img
@@ -31,62 +33,116 @@
     <div class="nosotros__scroll-hint" aria-hidden="true">
       <span class="nosotros__scroll-line"></span>
     </div>
-  </div>
 
-  <!-- ─── CONTENIDO ──────────────────────────────────── -->
-  <div class="nosotros__content">
-    <!-- Declaración editorial -->
-    <div class="nosotros__statement">
-      <p class="nosotros__statement-copy">
-        Somos un despacho de arquitectura con más de
-        <strong class="nosotros__statement-accent">10&nbsp;años</strong>
-        de experiencia en el ramo del diseño, construcción y remodelación
-        comercial y habitacional. Nos especializamos en la construcción de
-        casas de lujo en las mejores zonas de la ciudad.
+    <div class="nosotros__reveal">
+      <p class="nosotros__reveal-text">
+        Más de diez años convirtiendo visiones en espacios de lujo.
       </p>
     </div>
-
-    <!-- Pilares de servicio -->
-    <ul class="nosotros__pillars" aria-label="Nuestros servicios">
-      <li class="nosotros__pillar">
-        <span class="nosotros__pillar-num" aria-hidden="true">01</span>
-        <div class="nosotros__pillar-body">
-          <h3 class="nosotros__pillar-title">Diseño Arquitectónico</h3>
-          <p class="nosotros__pillar-desc">
-            Personalización, ambientes únicos y auténticos acorde al gusto y
-            necesidades del cliente.
-          </p>
-        </div>
-      </li>
-      <li class="nosotros__pillar">
-        <span class="nosotros__pillar-num" aria-hidden="true">02</span>
-        <div class="nosotros__pillar-body">
-          <h3 class="nosotros__pillar-title">Asesoramiento de Construcción</h3>
-          <p class="nosotros__pillar-desc">
-            Tu proyecto arquitectónico de la mano de profesionales.
-          </p>
-        </div>
-      </li>
-      <li class="nosotros__pillar">
-        <span class="nosotros__pillar-num" aria-hidden="true">03</span>
-        <div class="nosotros__pillar-body">
-          <h3 class="nosotros__pillar-title">Servicio Personalizado</h3>
-          <p class="nosotros__pillar-desc">
-            En cada una de las etapas del diseño, acompañándote de principio
-            a fin.
-          </p>
-        </div>
-      </li>
-    </ul>
-
-    <p class="nosotros__tagline" aria-hidden="true">VMV&nbsp;ARQUITECTOS</p>
   </div>
+
+  <!-- ─── ABOUT: PINNEADO, 2 FASES ────────────────────── -->
+  <!--
+    Fase 1 — Panel "info": texto de la empresa + imagen 1
+    Fase 2 — Panel "services": tres servicios + imagen 2
+    La transición la controla GSAP ScrollTrigger (pin + scrub).
+  -->
+  <div class="nosotros__about">
+
+    <!-- Columna izquierda: dos paneles apilados (absolutos) -->
+    <div class="nosotros__about-left">
+
+      <!-- Panel 1: información de la empresa -->
+      <div class="nosotros__about-panel nosotros__panel--info">
+        <span class="nosotros__about-label">Sobre nosotros</span>
+        <h2 class="nosotros__about-heading">
+          Diseño, construcción y remodelación con más de 10&nbsp;años de
+          experiencia.
+        </h2>
+        <p class="nosotros__about-body">
+          Somos un despacho de arquitectura especializado en el ramo del diseño,
+          construcción y remodelación comercial y habitacional. Nos
+          especializamos en la construcción de casas de lujo en las mejores
+          zonas de la ciudad, creando ambientes únicos y auténticos acorde al
+          gusto y necesidades de cada cliente.
+        </p>
+      </div>
+
+      <!-- Panel 2: servicios -->
+      <div class="nosotros__about-panel nosotros__panel--services">
+        <span class="nosotros__about-label">Nuestros servicios</span>
+        <ul class="nosotros__services-list">
+          <li class="nosotros__service-item">
+            <span class="nosotros__service-num" aria-hidden="true">01</span>
+            <div class="nosotros__service-body">
+              <h3 class="nosotros__service-title">Diseño Arquitectónico</h3>
+              <p class="nosotros__service-desc">
+                Personalización, ambientes únicos y auténticos acorde al gusto y
+                necesidades del cliente.
+              </p>
+            </div>
+          </li>
+          <li class="nosotros__service-item">
+            <span class="nosotros__service-num" aria-hidden="true">02</span>
+            <div class="nosotros__service-body">
+              <h3 class="nosotros__service-title">Asesoramiento de Construcción</h3>
+              <p class="nosotros__service-desc">
+                Tu proyecto arquitectónico de la mano de profesionales.
+              </p>
+            </div>
+          </li>
+          <li class="nosotros__service-item">
+            <span class="nosotros__service-num" aria-hidden="true">03</span>
+            <div class="nosotros__service-body">
+              <h3 class="nosotros__service-title">Servicio Personalizado</h3>
+              <p class="nosotros__service-desc">
+                En cada una de las etapas del diseño, acompañándote de principio
+                a fin.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Columna derecha: dos imágenes apiladas -->
+    <!-- Sustituir src por tus imágenes propias -->
+    <div class="nosotros__about-right">
+      <div class="nosotros__img-layer nosotros__img-layer--1">
+        <img
+          src="/images/hero/hero-1.webp"
+          alt="Proyecto VMV Arquitectos"
+          class="nosotros__about-img"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="nosotros__img-layer nosotros__img-layer--2">
+        <img
+          src="/images/hero/hero-2.webp"
+          alt="Servicios VMV Arquitectos"
+          class="nosotros__about-img"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── FOOTER OSCURO ──────────────────────────────────
+  <div class="nosotros__bottom">
+    <p class="nosotros__tagline" aria-hidden="true">VMV&nbsp;ARQUITECTOS</p>
+  </div> -->
+
 </section>
 
 <style>
   /* ── ROOT ─────────────────────────────────────────── */
   .nosotros {
     position: relative;
+    padding: 12px 0;
   }
 
   /* ── HERO ─────────────────────────────────────────── */
@@ -105,13 +161,8 @@
     overflow: hidden;
   }
 
-  .nosotros__panel--l {
-    left: 0;
-  }
-
-  .nosotros__panel--r {
-    right: 0;
-  }
+  .nosotros__panel--l { left: 0; }
+  .nosotros__panel--r { right: 0; }
 
   .nosotros__img {
     width: 100%;
@@ -120,24 +171,14 @@
     display: block;
   }
 
-  .nosotros__img--l {
-    object-position: 40% center;
-  }
+  .nosotros__img--l { object-position: 40% center; }
+  .nosotros__img--r { object-position: 60% center; }
 
-  .nosotros__img--r {
-    object-position: 60% center;
-  }
-
-  /* Gradiente hacia el centro para legibilidad del label */
   .nosotros__panel--l::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(15, 14, 12, 0.1) 0%,
-      rgba(15, 14, 12, 0.55) 100%
-    );
+    background: linear-gradient(to right, rgba(15,14,12,0.1) 0%, rgba(15,14,12,0.55) 100%);
     pointer-events: none;
   }
 
@@ -145,15 +186,11 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to left,
-      rgba(15, 14, 12, 0.1) 0%,
-      rgba(15, 14, 12, 0.55) 100%
-    );
+    background: linear-gradient(to left, rgba(15,14,12,0.1) 0%, rgba(15,14,12,0.55) 100%);
     pointer-events: none;
   }
 
-  /* ── LABEL CENTRAL ─────────────────────────────────── */
+  /* ── LABEL ────────────────────────────────────────── */
   .nosotros__label {
     position: absolute;
     top: 50%;
@@ -183,7 +220,7 @@
     text-transform: uppercase;
   }
 
-  /* ── SCROLL HINT ───────────────────────────────────── */
+  /* ── SCROLL HINT ──────────────────────────────────── */
   .nosotros__scroll-hint {
     position: absolute;
     bottom: 2.25rem;
@@ -206,102 +243,178 @@
   }
 
   @keyframes nosotrosScrollDrop {
-    0% {
-      transform: translateY(-40%) scaleY(0.5);
-      opacity: 0;
-    }
-    40% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(40%) scaleY(0.5);
-      opacity: 0;
-    }
+    0%   { transform: translateY(-40%) scaleY(0.5); opacity: 0; }
+    40%  { opacity: 1; }
+    100% { transform: translateY(40%) scaleY(0.5); opacity: 0; }
   }
 
-  /* ── CONTENIDO ─────────────────────────────────────── */
-  .nosotros__content {
-    background: var(--vmv-gray-12);
-    color: var(--vmv-sand-1);
-    padding: clamp(5rem, 12vw, 10rem) clamp(1.5rem, 8vw, 9rem)
-      clamp(5rem, 10vw, 9rem);
+  /* ── REVEAL: FRASE ICÓNICA ────────────────────────── */
+  .nosotros__reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(2rem, 9vw, 7rem);
+    pointer-events: none;
   }
 
-  /* ── DECLARACIÓN ───────────────────────────────────── */
-  .nosotros__statement {
-    max-width: 52rem;
-    margin: 0 auto clamp(5rem, 12vw, 9rem);
-    text-align: center;
-  }
-
-  .nosotros__statement-copy {
-    font-size: clamp(1.1rem, 2.2vw, 1.75rem);
-    font-weight: 300;
-    line-height: 1.8;
+  .nosotros__reveal-text {
+    font-size: clamp(1.5rem, 3.2vw, 3rem);
+    font-weight: 200;
+    line-height: 1.5;
     letter-spacing: 0.04em;
-    color: color-mix(in srgb, var(--vmv-sand-2) 78%, transparent);
+    text-align: center;
     margin: 0;
+    max-width: 48rem;
   }
 
-  .nosotros__statement-accent {
-    font-weight: 500;
-    font-style: normal;
-    color: var(--vmv-sand-7);
+  /* ── ABOUT: SECCIÓN PINNEADA ──────────────────────── */
+  .nosotros__about {
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    height: 100svh;
+    background: var(--vmv-sand-1);
+    overflow: hidden;
+    position: relative;
   }
 
-  /* ── PILARES ───────────────────────────────────────── */
-  .nosotros__pillars {
+  /* Columna izquierda: contenedor de paneles absolutos */
+  .nosotros__about-left {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Ambos paneles ocupan todo el espacio de la columna */
+  .nosotros__about-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(3.5rem, 8vw, 7rem) clamp(2rem, 6vw, 5rem) clamp(3.5rem, 8vw, 7rem)
+      clamp(2rem, 9vw, 8rem);
+  }
+
+  /* Panel info: visible al inicio */
+  .nosotros__panel--info {
+    /* posición inicial gestionada por GSAP */
+  }
+
+  /* Panel servicios: empieza debajo (GSAP lo mueve) */
+  .nosotros__panel--services {
+    /* transform inicial vía GSAP set */
+  }
+
+  /* ── ABOUT TYPOGRAPHY ─────────────────────────────── */
+  .nosotros__about-label {
+    display: block;
+    font-size: clamp(0.58rem, 1vw, 0.7rem);
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+    color: var(--vmv-sand-9);
+    margin-bottom: clamp(1.2rem, 2.5vw, 2rem);
+  }
+
+  .nosotros__about-heading {
+    font-size: clamp(1.45rem, 2.8vw, 2.5rem);
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--vmv-gray-12);
+    margin: 0 0 clamp(1.2rem, 2.5vw, 2rem);
+    max-width: 26rem;
+  }
+
+  .nosotros__about-body {
+    font-size: clamp(0.875rem, 1.25vw, 0.975rem);
+    font-weight: 300;
+    line-height: 1.9;
+    letter-spacing: 0.02em;
+    color: var(--vmv-gray-10);
+    margin: 0;
+    max-width: 32rem;
+  }
+
+  /* ── SERVICES LIST (dentro del panel claro) ───────── */
+  .nosotros__services-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    border-top: 1px solid color-mix(in srgb, var(--vmv-gray-7) 22%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
   }
 
-  .nosotros__pillar {
+  .nosotros__service-item {
     display: grid;
-    grid-template-columns: clamp(3rem, 10vw, 7rem) 1fr;
-    gap: clamp(1.5rem, 4vw, 3.5rem);
+    grid-template-columns: clamp(2.5rem, 6vw, 4.5rem) 1fr;
+    gap: clamp(1rem, 3vw, 2.5rem);
     align-items: start;
-    padding: clamp(2rem, 5vw, 3.5rem) 0;
-    border-bottom: 1px solid
-      color-mix(in srgb, var(--vmv-gray-7) 22%, transparent);
+    padding: clamp(1.2rem, 2.5vw, 1.8rem) 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
   }
 
-  .nosotros__pillar-num {
-    font-size: clamp(2.5rem, 8vw, 6.5rem);
+  .nosotros__service-num {
+    font-size: clamp(1.8rem, 4vw, 3.5rem);
     font-weight: 100;
     line-height: 0.9;
     letter-spacing: -0.02em;
-    color: color-mix(in srgb, var(--vmv-sand-9) 32%, transparent);
+    color: color-mix(in srgb, var(--vmv-sand-9) 30%, transparent);
     text-align: right;
   }
 
-  .nosotros__pillar-body {
-    padding-top: 0.3rem;
-  }
+  .nosotros__service-body { padding-top: 0.25rem; }
 
-  .nosotros__pillar-title {
-    font-size: clamp(1.05rem, 2.5vw, 1.75rem);
+  .nosotros__service-title {
+    font-size: clamp(0.85rem, 1.6vw, 1.15rem);
     font-weight: 300;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--vmv-sand-1);
-    margin: 0 0 0.65rem;
+    color: var(--vmv-gray-12);
+    margin: 0 0 0.45rem;
   }
 
-  .nosotros__pillar-desc {
-    font-size: clamp(0.875rem, 1.4vw, 1.05rem);
+  .nosotros__service-desc {
+    font-size: clamp(0.8rem, 1.15vw, 0.88rem);
     font-weight: 300;
     line-height: 1.8;
-    letter-spacing: 0.03em;
-    color: color-mix(in srgb, var(--vmv-sand-6) 82%, transparent);
+    letter-spacing: 0.02em;
+    color: var(--vmv-gray-10);
     margin: 0;
-    max-width: 40rem;
   }
 
-  /* ── TAGLINE ───────────────────────────────────────── */
+  /* ── ABOUT DERECHA: IMÁGENES ──────────────────────── */
+  .nosotros__about-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nosotros__img-layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .nosotros__about-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* ── FOOTER OSCURO ────────────────────────────────── */
+  .nosotros__bottom {
+    background: var(--vmv-gray-12);
+    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.5rem, 8vw, 9rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .nosotros__tagline {
-    margin: clamp(4rem, 10vw, 7rem) 0 0;
+    margin: 0;
     font-size: clamp(0.6rem, 1.8vw, 0.9rem);
     font-weight: 200;
     letter-spacing: 0.65em;
@@ -311,32 +424,56 @@
     color: color-mix(in srgb, var(--vmv-sand-8) 28%, transparent);
   }
 
-  /* ── RESPONSIVE ────────────────────────────────────── */
-  @media (max-width: 480px) {
-    .nosotros__pillar {
+  /* ── RESPONSIVE ───────────────────────────────────── */
+  @media (max-width: 768px) {
+    .nosotros__about {
       grid-template-columns: 1fr;
-      gap: 0.4rem;
+      height: auto;
+      min-height: 100svh;
     }
 
-    .nosotros__pillar-num {
-      font-size: 2rem;
-      text-align: left;
+    .nosotros__about-left {
+      /* En mobile no pineamos: flujo normal */
+      min-height: 100svh;
     }
 
-    .nosotros__pillar-body {
-      padding-top: 0;
+    .nosotros__about-panel {
+      position: relative;
+      inset: auto;
+      padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 6vw, 3rem);
     }
-  }
 
-  /* ── MOTION REDUCIDO ───────────────────────────────── */
-  @media (prefers-reduced-motion: reduce) {
-    .nosotros__hero {
+    /* Ocultar panel de servicios en mobile (se muestra en nosotros__bottom) */
+    .nosotros__panel--services {
       display: none;
     }
 
-    .nosotros__scroll-line {
-      animation: none;
+    .nosotros__about-right {
+      height: 60vw;
     }
+
+    /* En mobile img-layer-2 debe ser visible */
+    .nosotros__img-layer { position: absolute; }
+  }
+
+  @media (max-width: 480px) {
+    .nosotros__service-item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .nosotros__service-num {
+      font-size: 1.6rem;
+      text-align: left;
+    }
+  }
+
+  /* ── MOTION REDUCIDO ──────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .nosotros__hero { display: none; }
+    .nosotros__scroll-line { animation: none; }
+    .nosotros__about-panel { position: relative; inset: auto; }
+    .nosotros__panel--services { display: none; }
   }
 </style>
 
@@ -357,102 +494,126 @@
   function initNosotros() {
     killAll();
 
-    const hero = $<HTMLElement>('.nosotros__hero');
-    const panelL = $<HTMLElement>('.nosotros__panel--l');
-    const panelR = $<HTMLElement>('.nosotros__panel--r');
-    const label = $<HTMLElement>('.nosotros__label');
-    const scrollHint = $<HTMLElement>('.nosotros__scroll-hint');
+    // ── HERO ─────────────────────────────────────────
+    const hero        = $<HTMLElement>('.nosotros__hero');
+    const panelL      = $<HTMLElement>('.nosotros__panel--l');
+    const panelR      = $<HTMLElement>('.nosotros__panel--r');
+    const label       = $<HTMLElement>('.nosotros__label');
+    const scrollHint  = $<HTMLElement>('.nosotros__scroll-hint');
+    const revealEl    = $<HTMLElement>('.nosotros__reveal');
+    const revealText  = $<HTMLParagraphElement>('.nosotros__reveal-text');
 
-    if (!hero || !panelL || !panelR || !label) return;
+    if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return;
 
-    // ── 1. CORTINA (pinned scrub) ──────────────────────
-    const splitTl = gsap.timeline({
+    // Word-spans
+    const rawText = (revealText.textContent ?? '').replace(/\s+/g, ' ').trim();
+    revealText.innerHTML = rawText
+      .split(' ')
+      .map((w) => `<span class="nosotros__word">${w}</span>`)
+      .join(' ');
+    const wordEls = $$<HTMLElement>('.nosotros__word', revealText);
+
+    gsap.set(revealEl, { opacity: 0 });
+    gsap.set(wordEls, { color: 'rgba(255,255,255,0.15)' });
+
+    // Timeline pinneado — hero
+    const heroTl = gsap.timeline({
       scrollTrigger: {
         trigger: hero,
         start: 'top top',
-        end: '+=110%',
-        scrub: 1.5,
+        end: '+=260%',
+        scrub: 1,
         pin: true,
         anticipatePin: 1,
       },
     });
 
-    splitTl
-      .to(
-        [label, scrollHint],
-        { opacity: 0, y: -10, duration: 0.3, ease: 'power2.in' },
-        0,
-      )
+    heroTl
+      .to([label, scrollHint], { opacity: 0, y: -10, duration: 0.3, ease: 'power2.in' }, 0)
       .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 1 }, 0.18)
-      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1 }, 0.18);
-
-    const splitSt = splitTl.scrollTrigger;
-    if (splitSt) activeTriggers.push(splitSt);
-
-    // ── 2. DECLARACIÓN ────────────────────────────────
-    const statement = $<HTMLElement>('.nosotros__statement');
-    if (statement) {
-      gsap.set(statement, { opacity: 0, y: 40 });
-      activeTriggers.push(
-        ScrollTrigger.create({
-          trigger: statement,
-          start: 'top 80%',
-          once: true,
-          onEnter: () =>
-            gsap.to(statement, {
-              opacity: 1,
-              y: 0,
-              duration: 1.1,
-              ease: 'power3.out',
-            }),
-        }),
+      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1 }, 0.18)
+      .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1.2)
+      .to(
+        wordEls,
+        { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.12 }, duration: 0.12, ease: 'none' },
+        1.55,
       );
-    }
 
-    // ── 3. PILARES STAGGER ────────────────────────────
-    const pillars = $$<HTMLElement>('.nosotros__pillar');
-    if (pillars.length) {
-      const nums = $$<HTMLElement>('.nosotros__pillar-num');
-      gsap.set(pillars, { opacity: 0, y: 52 });
-      gsap.set(nums, { x: -24, opacity: 0 });
+    const heroSt = heroTl.scrollTrigger;
+    if (heroSt) activeTriggers.push(heroSt);
 
+    // ── ABOUT (solo en pantallas grandes) ────────────
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const isPrefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!isMobile && !isPrefersReducedMotion) {
+      const aboutSection  = $<HTMLElement>('.nosotros__about');
+      const aboutLeft     = $<HTMLElement>('.nosotros__about-left');
+      const aboutRight    = $<HTMLElement>('.nosotros__about-right');
+      const infoPanel     = $<HTMLElement>('.nosotros__panel--info');
+      const servicesPanel = $<HTMLElement>('.nosotros__panel--services');
+      const imgLayer1     = $<HTMLElement>('.nosotros__img-layer--1');
+      const imgLayer2     = $<HTMLElement>('.nosotros__img-layer--2');
+
+      if (
+        !aboutSection || !aboutLeft || !aboutRight ||
+        !infoPanel || !servicesPanel || !imgLayer1 || !imgLayer2
+      ) return;
+
+      // Estado inicial
+      gsap.set(aboutLeft,     { x: -60, opacity: 0 });
+      gsap.set(aboutRight,    { x: 60, opacity: 0, scale: 1.05 });
+      gsap.set(servicesPanel, { yPercent: 100 });
+      gsap.set(imgLayer2,     { opacity: 0 });
+
+      // Fase 0: Entrada cuando el about entra al viewport (antes del pin)
       activeTriggers.push(
         ScrollTrigger.create({
-          trigger: pillars[0]!,
-          start: 'top 84%',
+          trigger: aboutSection,
+          start: 'top 78%',
           once: true,
           onEnter: () => {
-            gsap.to(pillars, {
-              opacity: 1,
-              y: 0,
-              duration: 0.9,
-              stagger: 0.15,
-              ease: 'power3.out',
-            });
-            gsap.to(nums, {
-              x: 0,
-              opacity: 1,
-              duration: 1.1,
-              stagger: 0.15,
-              delay: 0.08,
-              ease: 'power3.out',
-            });
+            gsap.to(aboutLeft,  { x: 0, opacity: 1, duration: 1.1, ease: 'power3.out' });
+            gsap.to(aboutRight, { x: 0, opacity: 1, scale: 1, duration: 1.3, ease: 'power3.out', delay: 0.08 });
           },
         }),
       );
+
+      // Fase 1→2: Pin + swap de contenido al hacer scroll
+      const aboutTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: aboutSection,
+          start: 'top top',
+          end: '+=190%',
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+        },
+      });
+
+      // Deja un tramo inicial para leer el panel de info,
+      // luego el panel sube y los servicios entran desde abajo.
+      // Simultáneamente la imagen hace crossfade.
+      aboutTl
+        .to(infoPanel,     { yPercent: -100, opacity: 0, duration: 0.38, ease: 'power2.in' }, 0.38)
+        .to(imgLayer1,     { opacity: 0, duration: 0.32, ease: 'power2.inOut' },              0.42)
+        .to(servicesPanel, { yPercent: 0, duration: 0.44, ease: 'power3.out' },               0.56)
+        .to(imgLayer2,     { opacity: 1, duration: 0.38, ease: 'power2.inOut' },              0.54);
+
+      const aboutSt = aboutTl.scrollTrigger;
+      if (aboutSt) activeTriggers.push(aboutSt);
     }
 
-    // ── 4. TAGLINE ────────────────────────────────────
+    // ── TAGLINE ───────────────────────────────────────
     const tagline = $<HTMLElement>('.nosotros__tagline');
     if (tagline) {
       gsap.set(tagline, { opacity: 0 });
       activeTriggers.push(
         ScrollTrigger.create({
           trigger: tagline,
-          start: 'top 92%',
+          start: 'top 90%',
           once: true,
-          onEnter: () =>
-            gsap.to(tagline, { opacity: 1, duration: 1.6, ease: 'power2.out' }),
+          onEnter: () => gsap.to(tagline, { opacity: 1, duration: 1.6, ease: 'power2.out' }),
         }),
       );
     }
