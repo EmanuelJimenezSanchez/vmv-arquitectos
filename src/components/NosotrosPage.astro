@@ -123,6 +123,15 @@
       </div>
     </div>
 
+    <!-- Indicador de progreso lateral izquierdo -->
+    <div class="nosotros__about-nav" aria-hidden="true">
+      <span class="nosotros__nav-dot nosotros__nav-dot--1"></span>
+      <div class="nosotros__nav-track">
+        <div class="nosotros__nav-fill"></div>
+      </div>
+      <span class="nosotros__nav-dot nosotros__nav-dot--2"></span>
+    </div>
+
   </div>
 </section>
 
@@ -390,15 +399,51 @@
     display: block;
   }
 
-  .nosotros__tagline {
-    margin: 0;
-    font-size: clamp(0.6rem, 1.8vw, 0.9rem);
-    font-weight: 200;
-    letter-spacing: 0.65em;
-    text-indent: 0.65em;
-    text-transform: uppercase;
-    text-align: center;
-    color: color-mix(in srgb, var(--vmv-sand-8) 28%, transparent);
+  /* ── PROGRESS NAV ────────────────────────────────── */
+  .nosotros__about-nav {
+    position: absolute;
+    left: clamp(0.9rem, 2.2vw, 1.6rem);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .nosotros__nav-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--vmv-sand-9) 22%, transparent);
+    border: 1px solid color-mix(in srgb, var(--vmv-sand-9) 40%, transparent);
+    transition: background 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
+    flex-shrink: 0;
+  }
+
+  .nosotros__nav-dot.is-active {
+    background: var(--vmv-sand-12);
+    border-color: var(--vmv-sand-12);
+    transform: scale(1.6);
+  }
+
+  .nosotros__nav-track {
+    width: 1px;
+    height: clamp(2.5rem, 4.5vw, 3.75rem);
+    margin: 9px 0;
+    background: color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nosotros__nav-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: var(--vmv-sand-12);
   }
 
   /* ── RESPONSIVE ───────────────────────────────────── */
@@ -526,6 +571,9 @@
       const servicesPanel = $<HTMLElement>('.nosotros__panel--services');
       const imgLayer1     = $<HTMLElement>('.nosotros__img-layer--1');
       const imgLayer2     = $<HTMLElement>('.nosotros__img-layer--2');
+      const navDot1       = $<HTMLElement>('.nosotros__nav-dot--1');
+      const navDot2       = $<HTMLElement>('.nosotros__nav-dot--2');
+      const navFill       = $<HTMLElement>('.nosotros__nav-fill');
 
       if (
         !aboutSection || !aboutLeft || !aboutRight ||
@@ -537,6 +585,9 @@
       gsap.set(aboutRight,    { x: 60, opacity: 0, scale: 1.05 });
       gsap.set(servicesPanel, { yPercent: 100 });
       gsap.set(imgLayer2,     { opacity: 0 });
+
+      // Nav: dot 1 activo al inicio
+      navDot1?.classList.add('is-active');
 
       // Fase 0: Entrada cuando el about entra al viewport (antes del pin)
       activeTriggers.push(
@@ -556,10 +607,19 @@
         scrollTrigger: {
           trigger: aboutSection,
           start: 'top top',
-          end: '+=190%',
+          end: '+=300%',
           scrub: 1,
           pin: true,
           anticipatePin: 1,
+          onUpdate: (self) => {
+            const p = self.progress;
+            // Relleno del track proporcional al progreso del scroll
+            if (navFill) navFill.style.height = `${p * 100}%`;
+            // Cambio de dot activo cuando el swap de paneles ocurre (~52%)
+            const inPhase2 = p > 0.52;
+            navDot1?.classList.toggle('is-active', !inPhase2);
+            navDot2?.classList.toggle('is-active', inPhase2);
+          },
         },
       });
 
