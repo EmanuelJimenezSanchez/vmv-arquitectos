@@ -1,0 +1,163 @@
+<button
+  id="theme-toggle"
+  type="button"
+  class="theme-toggle inline-flex h-11 items-center gap-2 rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 px-3 text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)]"
+  aria-label="Activar modo oscuro"
+  aria-pressed="false"
+  title="Cambiar tema"
+>
+  <span class="theme-icon" aria-hidden="true">
+    <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="12" cy="12" r="4.1"></circle>
+      <path d="M12 2.8v2.3M12 18.9v2.3M5.5 5.5l1.6 1.6M16.9 16.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M5.5 18.5l1.6-1.6M16.9 7.1l1.6-1.6"></path>
+    </svg>
+    <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path d="M20.2 13.2a8 8 0 1 1-9.4-9.4 7 7 0 1 0 9.4 9.4z"></path>
+    </svg>
+  </span>
+  <span class="theme-label text-[0.62rem] tracking-[0.18em] uppercase">Tema</span>
+</button>
+
+<script>
+  import { $ } from '@/lib/dom-selector'
+
+  const THEME_STORAGE_KEY = 'vmv-theme'
+
+  const setupThemeToggle = () => {
+    const toggle = $('#theme-toggle')
+    if (!toggle) {
+      return
+    }
+
+    ;(toggle as HTMLElement & { __abortController?: AbortController }).__abortController?.abort()
+
+    const controller = new AbortController()
+    ;(toggle as HTMLElement & { __abortController?: AbortController }).__abortController = controller
+    const { signal } = controller
+
+    const root = document.documentElement
+    const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+    const getStoredTheme = (): 'light' | 'dark' | null => {
+      try {
+        const stored = localStorage.getItem(THEME_STORAGE_KEY)
+        return stored === 'light' || stored === 'dark' ? stored : null
+      } catch {
+        return null
+      }
+    }
+
+    const applyTheme = (theme: 'light' | 'dark', persist: boolean) => {
+      const isDark = theme === 'dark'
+      root.classList.toggle('dark', isDark)
+      root.setAttribute('data-theme', theme)
+
+      toggle.setAttribute('aria-pressed', String(isDark))
+      toggle.setAttribute('aria-label', isDark ? 'Activar modo claro' : 'Activar modo oscuro')
+
+      if (persist) {
+        try {
+          localStorage.setItem(THEME_STORAGE_KEY, theme)
+        } catch {
+        //   Ignore storage write errors (private mode, disabled storage).
+        }
+      }
+    }
+
+    const initializeTheme = () => {
+      const storedTheme = getStoredTheme()
+      if (storedTheme) {
+        applyTheme(storedTheme, false)
+        return
+      }
+
+      applyTheme(colorSchemeQuery.matches ? 'dark' : 'light', false)
+    }
+
+    toggle.addEventListener(
+      'click',
+      () => {
+        const nextTheme = root.classList.contains('dark') ? 'light' : 'dark'
+        applyTheme(nextTheme, true)
+      },
+      { signal },
+    )
+
+    colorSchemeQuery.addEventListener(
+      'change',
+      (event) => {
+        if (getStoredTheme()) {
+          return
+        }
+        applyTheme(event.matches ? 'dark' : 'light', false)
+      },
+      { signal },
+    )
+
+    initializeTheme()
+  }
+
+  document.addEventListener('astro:page-load', setupThemeToggle)
+  setupThemeToggle()
+</script>
+
+<style>
+  .theme-toggle {
+    color: color-mix(in srgb, var(--vmv-gray-12) 86%, transparent);
+    border-color: color-mix(in srgb, var(--vmv-gray-9) 30%, transparent);
+    background: color-mix(in srgb, var(--vmv-gray-2) 55%, transparent);
+  }
+
+  .theme-icon {
+    position: relative;
+    display: inline-flex;
+    height: 1.1rem;
+    width: 1.1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon {
+    position: absolute;
+    inset: 0;
+    transition:
+      transform 0.35s ease,
+      opacity 0.35s ease;
+  }
+
+  .icon-moon {
+    opacity: 0;
+    transform: translateY(4px) scale(0.8);
+  }
+
+  .dark .icon-sun {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.78);
+  }
+
+  .dark .icon-moon {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .theme-toggle:hover {
+    background: color-mix(in srgb, var(--vmv-gray-1) 95%, transparent);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--vmv-ring);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 768px) {
+    .theme-label {
+      display: none;
+    }
+
+    .theme-toggle {
+      width: 2.8rem;
+      justify-content: center;
+      padding-inline: 0;
+    }
+  }
+</style>

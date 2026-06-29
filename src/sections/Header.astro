@@ -1,5 +1,6 @@
 ---
 import logoVmv from '@/assets/svg/logo-vmv.svg'
+import ThemeToggle from '@/components/ThemeToggle.astro'
 ---
 
 <header
@@ -39,11 +40,14 @@ import logoVmv from '@/assets/svg/logo-vmv.svg'
         <img src={logoVmv.src} alt="VMV Arquitectos" class="h-9 w-auto md:h-11" loading="eager" />
       </a>
 
-      <a
-        href="/#contacto"
-        class="header-cta top-right inline-flex items-center rounded-full border border-vmv-sand-1/38 bg-vmv-sand-1/8 px-[1.3rem] py-[0.6rem] text-[0.68rem] tracking-[0.22em] text-vmv-sand-1/92 uppercase transition-[transform,background-color,color,border-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px max-md:px-[0.92rem] max-md:text-[0.62rem] max-md:tracking-[0.18em]"
-        >Contacto</a
-      >
+      <div class="top-right flex items-center gap-2.5">
+        <!-- <ThemeToggle /> -->
+        <a
+          href="/#contacto"
+          class="header-cta inline-flex items-center rounded-full border border-vmv-sand-1/38 bg-vmv-sand-1/8 px-[1.3rem] py-[0.6rem] text-[0.68rem] tracking-[0.22em] text-vmv-sand-1/92 uppercase transition-[transform,background-color,color,border-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px max-md:px-[0.92rem] max-md:text-[0.62rem] max-md:tracking-[0.18em]"
+          >Contacto</a
+        >
+      </div>
     </div>
 
     <nav class="header-nav mt-4 hidden justify-center md:flex" aria-label="Navegación principal">
@@ -129,6 +133,7 @@ import logoVmv from '@/assets/svg/logo-vmv.svg'
 
   const setupHeader = () => {
     const header = $('#site-header')
+    const headerShell = $('.header-shell', header ?? undefined)
     const menuToggle = $('#menu-toggle')
     const menuClose = $('#menu-close')
     const mobileMenu = $('#mobile-menu')
@@ -148,6 +153,19 @@ import logoVmv from '@/assets/svg/logo-vmv.svg'
     let ticking = false
     let lastScrollY = window.scrollY
     let previousBodyPaddingRight = ''
+
+    const setBackdropBlur = (element: HTMLElement | null, blurValue: string) => {
+      if (!element) {
+        return
+      }
+
+      element.style.backdropFilter = blurValue
+      ;(
+        element.style as CSSStyleDeclaration & {
+          webkitBackdropFilter?: string
+        }
+      ).webkitBackdropFilter = blurValue
+    }
 
     const lockBodyScroll = () => {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
@@ -170,6 +188,7 @@ import logoVmv from '@/assets/svg/logo-vmv.svg'
       mobileMenu?.setAttribute('aria-hidden', 'true')
       mobileMenu?.classList.remove('is-open')
       header.classList.remove('is-menu-open')
+      setBackdropBlur(mobileMenu as HTMLElement | null, 'blur(0px)')
     }
 
     const openMenu = () => {
@@ -183,6 +202,8 @@ import logoVmv from '@/assets/svg/logo-vmv.svg'
       mobileMenu.classList.add('is-open')
       header.classList.add('is-menu-open')
       header.classList.remove('is-hidden')
+      setBackdropBlur(mobileMenu as HTMLElement, 'blur(8px)')
+      setBackdropBlur(headerShell as HTMLElement | null, 'blur(14px)')
     }
 
     const syncScrollState = () => {
@@ -195,6 +216,9 @@ import logoVmv from '@/assets/svg/logo-vmv.svg'
       header.classList.toggle('is-scrolled', isScrolled)
     //   header.classList.toggle('is-hidden', shouldHideHeader)
       header.classList.toggle('is-top', currentScrollY <= 20)
+
+      const shouldBlurHeader = isScrolled || header.classList.contains('is-menu-open')
+      setBackdropBlur(headerShell as HTMLElement | null, shouldBlurHeader ? 'blur(14px)' : 'blur(0px)')
 
       lastScrollY = currentScrollY
       ticking = false

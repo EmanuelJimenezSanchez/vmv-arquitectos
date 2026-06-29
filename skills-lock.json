@@ -8,8 +8,9 @@
     },
     "astro": {
       "source": "astrolicious/agent-skills",
-      "sourceType": "autoskills-registry",
-      "computedHash": "2afd3a02edf4374598ce471dabb1ab5638851dbf7b82d0bb36f1019331eafb54"
+      "sourceType": "github",
+      "skillPath": "skills/astro/SKILL.md",
+      "computedHash": "3a70f9666e7b6a03efb939b7e62938f4d3a6a5d956b2cc3c10011fda6ba27e9b"
     },
     "astro-framework": {
       "source": "delineas/astro-framework-agents",
