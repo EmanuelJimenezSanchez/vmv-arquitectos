@@ -1,12 +1,46 @@
 ---
+import { galeria } from '@/data/galeria'
 
 ---
 
 <section id="galeria" class="galeria-scroll" data-galeria aria-label="Galeria visual de proyectos">
     <div class="galeria-stage" data-galeria-stage>
-        <!-- <div class="galeria-media" data-galeria-media>
+        <div class="galeria-media" data-galeria-media>
             <div class="galeria-frame">
-                <img
+                {
+                    galeria.map((item, index) => (
+                        <img
+                            src={item.image}
+                            alt={item.description}
+                            class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
+                            data-galeria-image
+                            loading="lazy"
+                        />
+                    ))
+                }
+                {
+                    galeria.map((item, index) => (
+                        <img
+                            src={item.image}
+                            alt={item.description}
+                            class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
+                            data-galeria-image
+                            loading="lazy"
+                        />
+                    ))
+                }
+                {
+                    galeria.map((item, index) => (
+                        <img
+                            src={item.image}
+                            alt={item.description}
+                            class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
+                            data-galeria-image
+                            loading="lazy"
+                        />
+                    ))
+                }
+                <!-- <img
                     src="/images/hero/hero-1.webp"
                     alt="Interior arquitectonico con iluminacion natural"
                     class="galeria-image is-active"
@@ -33,11 +67,11 @@
                     class="galeria-image"
                     data-galeria-image
                     loading="lazy"
-                />
+                /> -->
             </div>
-        </div> -->
+        </div>
 
-        <div class="galeria-copy h-[200dvh] pt-96" data-galeria-copy>
+        <div class="galeria-copy" data-galeria-copy>
             <p class="galeria-main mx-auto" data-galeria-main>
                 Disenamos interiores que emocionan y construimos 
             </p>
@@ -109,29 +143,22 @@
         })
 
         const ctx = gsap.context(() => {
-            ScrollTrigger.create({
-                trigger: section,
-                start: 'center center',
-                end: '+=140%',
-                pin: sub,
-                pinSpacing: false,
-                anticipatePin: 1,
-            })
-
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: section,
                     start: 'top top',
-                    end: '+=260%',
+                    end: '+=340%',
                     scrub: 1,
+                    pin: stage,
+                    pinSpacing: true,
                     anticipatePin: 1,
                     invalidateOnRefresh: true,
                 },
             })
 
             gsap.set(copy, { opacity: 1, y: 0 })
-            // gsap.set(main, { opacity: 0.5, y: 0 })
-            // gsap.set(sub, { opacity: 1, y: 0 })
+            gsap.set(main, { y: 0 })
+            gsap.set(sub, { y: 0 })
             gsap.set(mainSplit.chars, {
                 color: baseWordColor,
                 opacity: 0.50,
@@ -160,71 +187,70 @@
                 {
                     color: activeWordColor,
                     opacity: 1,
-                    duration: 4,
+                    duration: 1,
                     stagger: {
-                        each: 0.2,
+                        each: 0.1,
                         from: 'start',
                     },
                     ease: 'none',
                 },
                 0,
             )
-                .to(
-                    subSplit.chars,
-                    {
-                        color: activeWordColor,
-                        opacity: 1,
-                        duration: 4,
-                        stagger: {
-                            each: 0.2,
-                            from: 'start',
-                        },
-                        ease: 'none',
+            .to(
+                main,
+                {
+                    y: -500,
+                    duration: 8,
+                    ease: 'none',
+                },
+            )
+            .to(
+                subSplit.chars,
+                {
+                    color: activeWordColor,
+                    opacity: 1,
+                    duration: 1,
+                    stagger: {
+                        each: 0.1,
+                        from: 'start',
                     },
-                    'main-done',
-                )
-                // .to(
-                //     main,
-                //     {
-                //         y: -500,
-                //         opacity: 1,
-                //         duration: 8,
-                //     },
-                //     'main-done',
-                // )
-                // .to(
-                //     media,
-                //     {
-                //         opacity: 1,
-                //         duration: 2,
-                //         marks: true,
-                //     },
-                // )
-                // .to(
-                //     media,
-                //     {
-                //         width: '100vw',
-                //         height: '100vh',
-                //         borderRadius: '0px',
-                //         duration: 40,
-                //     },
-                //     // 3,
-                // )
-                // .to(
-                //     main,
-                //     {
-                //         opacity: 0.22,
-                //         duration: 1.2,
-                //         ease: 'power1.out',
-                //     },
-                // )
+                    ease: 'none',
+                },
+                "<",
+            )
+            .to(
+                media,
+                {
+                    opacity: 1,
+                    duration: 0,
+                    ease: 'none',
+                },
+            )
+            .to(
+                subSplit.chars,
+                {
+                    opacity: 0,
+                    duration: 4,
+                    ease: 'none',
+                },
+            )
+            .to(
+                media,
+                {
+                    width: '100vw',
+                    height: '100vh',
+                    borderRadius: '0px',
+                    duration: 24,
+                    ease: 'none',
+                },
+                "<",
+            )
 
             if (images.length > 1) {
-                const imageChangePoints = [1.6, 2.35, 3.15]
-
                 images.slice(1).forEach((image, index) => {
                     const previousImage = images[index]
-                    const at = imageChangePoints[index]
+                    const timeGap = 2
+                    // const at = imageChangePoints[index]
 
                     tl.to(
                         previousImage,
@@ -233,7 +259,7 @@
                             duration: 0.45,
                             ease: 'none',
                         },
-                        at,
+                        `<+=${timeGap}`,
                     ).to(
                         image,
                         {
@@ -241,7 +267,7 @@
                             duration: 0.45,
                             ease: 'none',
                         },
-                        at,
+                        `<`,
                     )
                 })
             }
@@ -280,16 +306,17 @@
     }
 
     .galeria-copy {
-        /* position: absolute; */
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.08em;
         z-index: 3;
-        /* inset: 0; */
-        /* display: flex; */
-        /* flex-direction: column; */
-        /* justify-content: center; */
-        /* align-items: center; */
         text-align: center;
         pointer-events: none;
-        /* padding: clamp(1.4rem, 3vw, 3.2rem); */
+        padding-inline: clamp(1rem, 4vw, 3rem);
     }
 
     .galeria-main {
@@ -302,6 +329,7 @@
         color: color-mix(in srgb, var(--vmv-gray-12) 92%, var(--vmv-sand-1));
         text-wrap: balance;
         text-shadow: 0 14px 30px color-mix(in srgb, var(--vmv-gray-12) 20%, transparent);
+        margin-bottom: -0.04em;
     }
 
     .galeria-sub {
