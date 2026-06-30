@@ -1,0 +1,50 @@
+---
+interface Props {
+	href?: string;
+	type?: 'button' | 'submit' | 'reset';
+	variant?: 'primary' | 'glass' | 'outline';
+	size?: 'sm' | 'md';
+	class?: string;
+	[attribute: string]: unknown;
+}
+
+const {
+	href,
+	type = 'button',
+	variant = 'primary',
+	size = 'md',
+	class: className = '',
+	...attributes
+} = Astro.props as Props;
+
+const baseClass =
+	'inline-flex items-center justify-center rounded-full border vmv-button-1 uppercase transition-[transform,background-color,color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vmv-ring focus-visible:ring-offset-2 focus-visible:ring-offset-vmv-background';
+
+const variantClasses = {
+	primary:
+		'border-vmv-primary bg-vmv-primary text-vmv-primary-foreground hover:bg-vmv-gray-11 hover:border-vmv-gray-11',
+	glass:
+		'border-vmv-sand-1/38 bg-vmv-sand-1/8 text-vmv-sand-1/92 tracking-[0.22em] hover:-translate-y-px',
+	outline:
+		'border-vmv-border bg-transparent text-vmv-foreground hover:bg-vmv-muted hover:border-vmv-gray-6',
+};
+
+const sizeClasses = {
+	sm: 'px-4 py-2.5',
+	md: 'px-[1.3rem] py-[0.6rem] max-md:px-[0.92rem] max-md:text-[0.62rem] max-md:tracking-[0.18em]',
+};
+
+const classes = [baseClass, variantClasses[variant], sizeClasses[size], className].filter(Boolean).join(' ');
+---
+
+{
+	href ? (
+		<a href={href} class={classes} {...attributes}>
+			<slot />
+		</a>
+	) : (
+		<button type={type} class={classes} {...attributes}>
+			<slot />
+		</button>
+	)
+}

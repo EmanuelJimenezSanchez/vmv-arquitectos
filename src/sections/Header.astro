@@ -1,6 +1,7 @@
 ---
 import logoVmv from '@/assets/svg/logo-vmv.svg'
 import ThemeToggle from '@/components/ThemeToggle.astro'
+import Button from '@/components/ui/Button.astro'
 ---
 
 <header
@@ -42,11 +43,7 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
 
       <div class="top-right flex items-center gap-2.5">
         <!-- <ThemeToggle /> -->
-        <a
-          href="/#contacto"
-          class="header-cta inline-flex items-center rounded-full border border-vmv-sand-1/38 bg-vmv-sand-1/8 px-[1.3rem] py-[0.6rem] text-[0.68rem] tracking-[0.22em] text-vmv-sand-1/92 uppercase transition-[transform,background-color,color,border-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px max-md:px-[0.92rem] max-md:text-[0.62rem] max-md:tracking-[0.18em]"
-          >Contacto</a
-        >
+        <Button href="/#contacto" variant="glass" class="header-cta">Contacto</Button>
       </div>
     </div>
 
