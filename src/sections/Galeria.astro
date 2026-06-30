@@ -199,7 +199,11 @@ import { galeria } from '@/data/galeria'
             .to(
                 main,
                 {
-                    y: -500,
+                    y: () => {
+                        const mainRect = main.getBoundingClientRect()
+                        const stageRect = stage.getBoundingClientRect()
+                        return stageRect.top - mainRect.bottom
+                    },
                     duration: 8,
                     ease: 'none',
                 },
@@ -295,7 +299,7 @@ import { galeria } from '@/data/galeria'
     .galeria-scroll {
         position: relative;
         min-height: 200vh;
-        background: var(--vmv-sand-2);
+        background: var(--vmv-sand-1);
     }
 
     .galeria-stage {
