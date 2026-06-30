@@ -1,5 +1,6 @@
 ---
 import { galeria } from '@/data/galeria'
+import Button from '@/components/ui/Button.astro'
 
 ---
 
@@ -72,12 +73,17 @@ import { galeria } from '@/data/galeria'
         </div>
 
         <div class="galeria-copy" data-galeria-copy>
-            <p class="galeria-main mx-auto" data-galeria-main>
+            <p class="galeria-main vmv-title-1 mx-auto" data-galeria-main>
                 Disenamos interiores que emocionan y construimos 
             </p>
-            <p class="galeria-sub mx-auto" data-galeria-sub>
+            <p class="galeria-sub vmv-title-1 mx-auto" data-galeria-sub>
                 espacios que perduran.
             </p>
+            <div class="galeria-cta" data-galeria-cta>
+                <Button href="/#contacto" variant="white" size="xxl" class="galeria-cta-button">
+                    Contacto
+                </Button>
+            </div>
         </div>
     </div>
 </section>
@@ -109,9 +115,10 @@ import { galeria } from '@/data/galeria'
         const main = $<HTMLElement>('[data-galeria-main]', section)
         const sub = $<HTMLElement>('[data-galeria-sub]', section)
         const media = $<HTMLElement>('[data-galeria-media]', section)
+        const cta = $<HTMLElement>('[data-galeria-cta]', section)
         const images = $$<HTMLImageElement>('[data-galeria-image]', section)
 
-        if (!stage || !copy || !main || !sub) {
+        if (!stage || !copy || !main || !sub || !cta) {
             return
         }
 
@@ -126,6 +133,7 @@ import { galeria } from '@/data/galeria'
                 height: '100vh',
                 borderRadius: '0px',
             })
+            gsap.set(cta, { opacity: 1, y: 0 })
             gsap.set(images, { opacity: 0 })
             gsap.set(images[0], { opacity: 1 })
             return
@@ -159,6 +167,7 @@ import { galeria } from '@/data/galeria'
             gsap.set(copy, { opacity: 1, y: 0 })
             gsap.set(main, { y: 0 })
             gsap.set(sub, { y: 0 })
+            gsap.set(cta, { opacity: 0, y: 20 })
             gsap.set(mainSplit.chars, {
                 color: baseWordColor,
                 opacity: 0.50,
@@ -275,6 +284,16 @@ import { galeria } from '@/data/galeria'
                     )
                 })
             }
+
+            tl.to(
+                cta,
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 8,
+                    ease: 'power2.out',
+                },
+            )
         }, section)
 
         cleanupGaleria = () => {
@@ -325,11 +344,7 @@ import { galeria } from '@/data/galeria'
 
     .galeria-main {
         max-width: 20ch;
-        font-size: clamp(2rem, 6vw, 5.5rem);
-        line-height: 0.95;
-        letter-spacing: -0.02em;
         text-transform: uppercase;
-        font-weight: 600;
         color: color-mix(in srgb, var(--vmv-gray-12) 92%, var(--vmv-sand-1));
         text-wrap: balance;
         text-shadow: 0 14px 30px color-mix(in srgb, var(--vmv-gray-12) 20%, transparent);
@@ -338,14 +353,19 @@ import { galeria } from '@/data/galeria'
 
     .galeria-sub {
         max-width: 20ch;
-        font-size: clamp(2rem, 6vw, 5.5rem);
-        line-height: 0.95;
-        letter-spacing: -0.02em;
         text-transform: uppercase;
-        font-weight: 600;
         color: color-mix(in srgb, var(--vmv-gray-12) 92%, var(--vmv-sand-1));
         text-wrap: balance;
         text-shadow: 0 14px 30px color-mix(in srgb, var(--vmv-gray-12) 20%, transparent);
+    }
+
+    .galeria-cta {
+        pointer-events: auto;
+        margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    .galeria-cta-button {
+        box-shadow: 0 18px 45px color-mix(in srgb, var(--vmv-gray-12) 22%, transparent);
     }
 
     .galeria-media {
@@ -380,14 +400,10 @@ import { galeria } from '@/data/galeria'
     @media (max-width: 900px) {
         .galeria-main {
             max-width: 15ch;
-            font-size: clamp(1.7rem, 9vw, 3rem);
-            line-height: 1;
         }
 
         .galeria-sub {
             max-width: 15ch;
-            font-size: clamp(1.7rem, 9vw, 3rem);
-            line-height: 1;
         }
     }
 </style>
