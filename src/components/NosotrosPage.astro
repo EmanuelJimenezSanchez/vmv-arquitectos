@@ -1,0 +1,643 @@
+---
+---
+
+<section id="nosotros" class="nosotros">
+
+  <!-- ─── HERO: CORTINA + FRASE ICÓNICA ──────────────── -->
+  <div class="nosotros__hero">
+    <div class="nosotros__panel nosotros__panel--l">
+      <img
+        src="/images/nosotros/nosotros-1.webp"
+        alt="Diseño arquitectónico VMV Arquitectos"
+        class="nosotros__img nosotros__img--l"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+    <div class="nosotros__panel nosotros__panel--r">
+      <img
+        src="/images/nosotros/nosotros-2.webp"
+        alt="Construcción de lujo VMV Arquitectos"
+        class="nosotros__img nosotros__img--r"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <div class="nosotros__label" aria-hidden="true">
+      <div class="nosotros__label-rule"></div>
+      <span class="nosotros__label-text">NOSOTROS</span>
+      <div class="nosotros__label-rule"></div>
+    </div>
+
+    <div class="nosotros__scroll-hint" aria-hidden="true">
+      <span class="nosotros__scroll-line"></span>
+    </div>
+
+    <div class="nosotros__reveal">
+      <p class="nosotros__reveal-text">
+        Más de diez años convirtiendo visiones en espacios de lujo.
+      </p>
+    </div>
+  </div>
+
+  <!-- ─── ABOUT: PINNEADO ──────── -->
+  <div class="nosotros__about">
+
+    <!-- Columna izquierda -->
+    <div class="nosotros__about-left">
+
+      <!-- Panel 1: información de la empresa -->
+      <div class="nosotros__about-panel nosotros__panel--info">
+        <span class="nosotros__about-label">Sobre nosotros</span>
+        <h2 class="nosotros__about-heading">
+          Diseño, construcción y remodelación con más de 10&nbsp;años de
+          experiencia.
+        </h2>
+        <p class="nosotros__about-body">
+          Somos un despacho de arquitectura especializado en el ramo del diseño,
+          construcción y remodelación comercial y habitacional. Nos
+          especializamos en la construcción de casas de lujo en las mejores
+          zonas de la ciudad, creando ambientes únicos y auténticos acorde al
+          gusto y necesidades de cada cliente.
+        </p>
+      </div>
+
+      <!-- Panel 2: servicios -->
+      <div class="nosotros__about-panel nosotros__panel--services">
+        <span class="nosotros__about-label">Nuestros servicios</span>
+        <ul class="nosotros__services-list">
+          <li class="nosotros__service-item">
+            <span class="nosotros__service-num" aria-hidden="true">01</span>
+            <div class="nosotros__service-body">
+              <h3 class="nosotros__service-title">Diseño Arquitectónico</h3>
+              <p class="nosotros__service-desc">
+                Personalización, ambientes únicos y auténticos acorde al gusto y
+                necesidades del cliente.
+              </p>
+            </div>
+          </li>
+          <li class="nosotros__service-item">
+            <span class="nosotros__service-num" aria-hidden="true">02</span>
+            <div class="nosotros__service-body">
+              <h3 class="nosotros__service-title">Asesoramiento de Construcción</h3>
+              <p class="nosotros__service-desc">
+                Tu proyecto arquitectónico de la mano de profesionales.
+              </p>
+            </div>
+          </li>
+          <li class="nosotros__service-item">
+            <span class="nosotros__service-num" aria-hidden="true">03</span>
+            <div class="nosotros__service-body">
+              <h3 class="nosotros__service-title">Servicio Personalizado</h3>
+              <p class="nosotros__service-desc">
+                En cada una de las etapas del diseño, acompañándote de principio
+                a fin.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Columna derecha -->
+    <div class="nosotros__about-right">
+      <div class="nosotros__img-layer nosotros__img-layer--1">
+        <img
+          src="/images/hero/hero-1.webp"
+          alt="Proyecto VMV Arquitectos"
+          class="nosotros__about-img"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="nosotros__img-layer nosotros__img-layer--2">
+        <img
+          src="/images/hero/hero-2.webp"
+          alt="Servicios VMV Arquitectos"
+          class="nosotros__about-img"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+    <!-- Indicador de progreso lateral izquierdo -->
+    <div class="nosotros__about-nav" aria-hidden="true">
+      <span class="nosotros__nav-dot nosotros__nav-dot--1"></span>
+      <div class="nosotros__nav-track">
+        <div class="nosotros__nav-fill"></div>
+      </div>
+      <span class="nosotros__nav-dot nosotros__nav-dot--2"></span>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .nosotros {
+    position: relative;
+    padding: 12px 0;
+  }
+
+  .nosotros__hero {
+    position: relative;
+    height: 100svh;
+    background: var(--vmv-gray-12);
+    overflow: hidden;
+  }
+
+  .nosotros__panel {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .nosotros__panel--l { left: 0; }
+  .nosotros__panel--r { right: 0; }
+
+  .nosotros__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .nosotros__img--l { object-position: 40% center; }
+  .nosotros__img--r { object-position: 60% center; }
+
+  .nosotros__panel--l::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(15,14,12,0.1) 0%, rgba(15,14,12,0.55) 100%);
+    pointer-events: none;
+  }
+
+  .nosotros__panel--r::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, rgba(15,14,12,0.1) 0%, rgba(15,14,12,0.55) 100%);
+    pointer-events: none;
+  }
+
+  /* ── LABEL ────────────────────────────────────────── */
+  .nosotros__label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .nosotros__label-rule {
+    width: 1px;
+    height: 2.75rem;
+    background: color-mix(in srgb, var(--vmv-sand-1) 50%, transparent);
+  }
+
+  .nosotros__label-text {
+    font-size: clamp(2.25rem, 7vw, 5.5rem);
+    font-weight: 200;
+    letter-spacing: 0.45em;
+    text-indent: 0.45em;
+    color: var(--vmv-sand-1);
+    text-transform: uppercase;
+  }
+
+  /* ── SCROLL HINT ──────────────────────────────────── */
+  .nosotros__scroll-hint {
+    position: absolute;
+    bottom: 2.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+
+  .nosotros__scroll-line {
+    display: block;
+    width: 1px;
+    height: 3.5rem;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--vmv-sand-1) 0%, transparent) 0%,
+      color-mix(in srgb, var(--vmv-sand-1) 65%, transparent) 50%,
+      color-mix(in srgb, var(--vmv-sand-1) 0%, transparent) 100%
+    );
+    animation: nosotrosScrollDrop 2.2s ease-in-out infinite;
+  }
+
+  @keyframes nosotrosScrollDrop {
+    0%   { transform: translateY(-40%) scaleY(0.5); opacity: 0; }
+    40%  { opacity: 1; }
+    100% { transform: translateY(40%) scaleY(0.5); opacity: 0; }
+  }
+
+  /* ── REVEAL: FRASE ICÓNICA ────────────────────────── */
+  .nosotros__reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(2rem, 9vw, 7rem);
+    pointer-events: none;
+  }
+
+  .nosotros__reveal-text {
+    font-size: clamp(1.5rem, 3.2vw, 3rem);
+    font-weight: 200;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-align: center;
+    margin: 0;
+    max-width: 48rem;
+  }
+
+  /* ── ABOUT: SECCIÓN PINNEADA ──────────────────────── */
+  .nosotros__about {
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    height: 100svh;
+    background: var(--vmv-sand-1);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Columna izquierda: contenedor de paneles absolutos */
+  .nosotros__about-left {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Ambos paneles ocupan todo el espacio de la columna */
+  .nosotros__about-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(3.5rem, 8vw, 7rem) clamp(2rem, 6vw, 5rem) clamp(3.5rem, 8vw, 7rem)
+      clamp(2rem, 9vw, 8rem);
+  }
+
+  /* Panel info: visible al inicio */
+  .nosotros__panel--info {
+    /* posición inicial gestionada por GSAP */
+  }
+
+  /* Panel servicios: empieza debajo (GSAP lo mueve) */
+  .nosotros__panel--services {
+    /* transform inicial vía GSAP set */
+  }
+
+  /* ── ABOUT TYPOGRAPHY ─────────────────────────────── */
+  .nosotros__about-label {
+    display: block;
+    font-size: clamp(0.58rem, 1vw, 0.7rem);
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+    color: var(--vmv-sand-9);
+    margin-bottom: clamp(1.2rem, 2.5vw, 2rem);
+  }
+
+  .nosotros__about-heading {
+    font-size: clamp(1.45rem, 2.8vw, 2.5rem);
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--vmv-gray-12);
+    margin: 0 0 clamp(1.2rem, 2.5vw, 2rem);
+    max-width: 26rem;
+  }
+
+  .nosotros__about-body {
+    font-size: clamp(0.875rem, 1.25vw, 0.975rem);
+    font-weight: 300;
+    line-height: 1.9;
+    letter-spacing: 0.02em;
+    color: var(--vmv-gray-10);
+    margin: 0;
+    max-width: 32rem;
+  }
+
+  /* ── SERVICES LIST (dentro del panel claro) ───────── */
+  .nosotros__services-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
+  }
+
+  .nosotros__service-item {
+    display: grid;
+    grid-template-columns: clamp(2.5rem, 6vw, 4.5rem) 1fr;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    align-items: start;
+    padding: clamp(1.2rem, 2.5vw, 1.8rem) 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
+  }
+
+  .nosotros__service-num {
+    font-size: clamp(1.8rem, 4vw, 3.5rem);
+    font-weight: 100;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: color-mix(in srgb, var(--vmv-sand-9) 30%, transparent);
+    text-align: right;
+  }
+
+  .nosotros__service-body { padding-top: 0.25rem; }
+
+  .nosotros__service-title {
+    font-size: clamp(0.85rem, 1.6vw, 1.15rem);
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--vmv-gray-12);
+    margin: 0 0 0.45rem;
+  }
+
+  .nosotros__service-desc {
+    font-size: clamp(0.8rem, 1.15vw, 0.88rem);
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+    color: var(--vmv-gray-10);
+    margin: 0;
+  }
+
+  /* ── ABOUT DERECHA: IMÁGENES ──────────────────────── */
+  .nosotros__about-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nosotros__img-layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .nosotros__about-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* ── PROGRESS NAV ────────────────────────────────── */
+  .nosotros__about-nav {
+    position: absolute;
+    left: clamp(0.9rem, 2.2vw, 1.6rem);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .nosotros__nav-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--vmv-sand-9) 22%, transparent);
+    border: 1px solid color-mix(in srgb, var(--vmv-sand-9) 40%, transparent);
+    transition: background 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
+    flex-shrink: 0;
+  }
+
+  .nosotros__nav-dot.is-active {
+    background: var(--vmv-sand-12);
+    border-color: var(--vmv-sand-12);
+    transform: scale(1.6);
+  }
+
+  .nosotros__nav-track {
+    width: 1px;
+    height: clamp(2.5rem, 4.5vw, 3.75rem);
+    margin: 9px 0;
+    background: color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nosotros__nav-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: var(--vmv-sand-12);
+  }
+
+  /* ── RESPONSIVE ───────────────────────────────────── */
+  @media (max-width: 768px) {
+    .nosotros__about {
+      grid-template-columns: 1fr;
+      height: auto;
+      min-height: 100svh;
+    }
+
+    .nosotros__about-left {
+      /* En mobile no pineamos: flujo normal */
+      min-height: 100svh;
+    }
+
+    .nosotros__about-panel {
+      position: relative;
+      inset: auto;
+      padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 6vw, 3rem);
+    }
+
+    .nosotros__about-right {
+      height: 60vw;
+    }
+
+    /* En mobile img-layer-2 debe ser visible */
+    .nosotros__img-layer { position: absolute; }
+  }
+
+  @media (max-width: 480px) {
+    .nosotros__service-item {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .nosotros__service-num {
+      font-size: 1.6rem;
+      text-align: left;
+    }
+  }
+
+  /* ── MOTION REDUCIDO ──────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .nosotros__hero { display: none; }
+    .nosotros__scroll-line { animation: none; }
+    .nosotros__about-panel { position: relative; inset: auto; }
+    .nosotros__panel--services { display: none; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { $, $$ } from '@/lib/dom-selector';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const activeTriggers: ScrollTrigger[] = [];
+
+  function killAll() {
+    activeTriggers.forEach((t) => t.kill());
+    activeTriggers.length = 0;
+  }
+
+  function initNosotros() {
+    killAll();
+
+    // ── HERO ─────────────────────────────────────────
+    const hero        = $<HTMLElement>('.nosotros__hero');
+    const panelL      = $<HTMLElement>('.nosotros__panel--l');
+    const panelR      = $<HTMLElement>('.nosotros__panel--r');
+    const label       = $<HTMLElement>('.nosotros__label');
+    const scrollHint  = $<HTMLElement>('.nosotros__scroll-hint');
+    const revealEl    = $<HTMLElement>('.nosotros__reveal');
+    const revealText  = $<HTMLParagraphElement>('.nosotros__reveal-text');
+
+    if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return;
+
+    // Word-spans
+    const rawText = (revealText.textContent ?? '').replace(/\s+/g, ' ').trim();
+    revealText.innerHTML = rawText
+      .split(' ')
+      .map((w) => `<span class="nosotros__word">${w}</span>`)
+      .join(' ');
+    const wordEls = $$<HTMLElement>('.nosotros__word', revealText);
+
+    gsap.set(revealEl, { opacity: 0 });
+    gsap.set(wordEls, { color: 'rgba(255,255,255,0.15)' });
+
+    // Timeline pinneado — hero
+    const heroTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: hero,
+        start: 'top top',
+        end: '+=260%',
+        scrub: 1,
+        pin: true,
+        anticipatePin: 1,
+      },
+    });
+
+    heroTl
+      .to([label, scrollHint], { opacity: 0, y: -10, duration: 0.3, ease: 'power2.in' }, 0)
+      .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 1 }, 0.18)
+      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1 }, 0.18)
+      .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1.2)
+      .to(
+        wordEls,
+        { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.12 }, duration: 0.12, ease: 'none' },
+        1.55,
+      );
+
+    const heroSt = heroTl.scrollTrigger;
+    if (heroSt) activeTriggers.push(heroSt);
+
+    // ── ABOUT (solo en pantallas grandes) ────────────
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const isPrefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!isMobile && !isPrefersReducedMotion) {
+      const aboutSection  = $<HTMLElement>('.nosotros__about');
+      const aboutLeft     = $<HTMLElement>('.nosotros__about-left');
+      const aboutRight    = $<HTMLElement>('.nosotros__about-right');
+      const infoPanel     = $<HTMLElement>('.nosotros__panel--info');
+      const servicesPanel = $<HTMLElement>('.nosotros__panel--services');
+      const imgLayer1     = $<HTMLElement>('.nosotros__img-layer--1');
+      const imgLayer2     = $<HTMLElement>('.nosotros__img-layer--2');
+      const navDot1       = $<HTMLElement>('.nosotros__nav-dot--1');
+      const navDot2       = $<HTMLElement>('.nosotros__nav-dot--2');
+      const navFill       = $<HTMLElement>('.nosotros__nav-fill');
+
+      if (
+        !aboutSection || !aboutLeft || !aboutRight ||
+        !infoPanel || !servicesPanel || !imgLayer1 || !imgLayer2
+      ) return;
+
+      // Estado inicial
+      gsap.set(aboutLeft,     { x: -60, opacity: 0 });
+      gsap.set(aboutRight,    { x: 60, opacity: 0, scale: 1.05 });
+      gsap.set(servicesPanel, { yPercent: 100 });
+      gsap.set(imgLayer2,     { opacity: 0 });
+
+      // Nav: dot 1 activo al inicio
+      navDot1?.classList.add('is-active');
+
+      // Fase 0: Entrada cuando el about entra al viewport (antes del pin)
+      activeTriggers.push(
+        ScrollTrigger.create({
+          trigger: aboutSection,
+          start: 'top 78%',
+          once: true,
+          onEnter: () => {
+            gsap.to(aboutLeft,  { x: 0, opacity: 1, duration: 1.1, ease: 'power3.out' });
+            gsap.to(aboutRight, { x: 0, opacity: 1, scale: 1, duration: 1.3, ease: 'power3.out', delay: 0.08 });
+          },
+        }),
+      );
+
+      // Fase 1→2: Pin + swap de contenido al hacer scroll
+      const aboutTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: aboutSection,
+          start: 'top top',
+          end: '+=300%',
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            const p = self.progress;
+            // Relleno del track proporcional al progreso del scroll
+            if (navFill) navFill.style.height = `${p * 100}%`;
+            // Cambio de dot activo cuando el swap de paneles ocurre (~52%)
+            const inPhase2 = p > 0.52;
+            navDot1?.classList.toggle('is-active', !inPhase2);
+            navDot2?.classList.toggle('is-active', inPhase2);
+          },
+        },
+      });
+
+      // Deja un tramo inicial para leer el panel de info,
+      // luego el panel sube y los servicios entran desde abajo.
+      // Simultáneamente la imagen hace crossfade.
+      aboutTl
+        .to(infoPanel,     { yPercent: -100, opacity: 0, duration: 0.38, ease: 'power2.in' }, 0.38)
+        .to(imgLayer1,     { opacity: 0, duration: 0.32, ease: 'power2.inOut' },              0.42)
+        .to(servicesPanel, { yPercent: 0, duration: 0.44, ease: 'power3.out' },               0.56)
+        .to(imgLayer2,     { opacity: 1, duration: 0.38, ease: 'power2.inOut' },              0.54);
+
+      const aboutSt = aboutTl.scrollTrigger;
+      if (aboutSt) activeTriggers.push(aboutSt);
+    }
+  }
+
+  document.addEventListener('astro:before-swap', killAll);
+  document.addEventListener('astro:page-load', initNosotros);
+  initNosotros();
+</script>
