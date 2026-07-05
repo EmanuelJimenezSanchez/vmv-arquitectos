@@ -1,60 +1,121 @@
 ---
+const services = [
+  {
+    num: '01',
+    title: 'Diseño Arquitectónico',
+    desc: 'Personalización, ambientes únicos y auténticos acorde al gusto y necesidades del cliente.',
+  },
+  {
+    num: '02',
+    title: 'Asesoramiento de Construcción',
+    desc: 'Tu proyecto arquitectónico de la mano de profesionales.',
+  },
+  {
+    num: '03',
+    title: 'Servicio Personalizado',
+    desc: 'En cada una de las etapas del diseño, acompañándote de principio a fin.',
+  },
+];
+
+// Paneles de la columna izquierda: en desktop (con motion) son capas
+// absolutas que GSAP intercambia; en mobile o reduced-motion fluyen normal.
+const panelClasses =
+  'relative flex flex-col justify-center px-[clamp(1.5rem,6vw,3rem)] py-[clamp(3rem,7vw,5rem)] md:py-[clamp(3.5rem,8vw,7rem)] md:pr-[clamp(2rem,6vw,5rem)] md:pl-[clamp(2rem,9vw,8rem)] md:motion-safe:absolute md:motion-safe:inset-0';
+
+const panelLabelClasses =
+  'mb-[clamp(1.2rem,2.5vw,2rem)] block text-[clamp(0.58rem,1vw,0.7rem)] tracking-[0.3em] indent-[0.3em] uppercase text-vmv-sand-9';
+
+const navDotClasses =
+  'size-[5px] shrink-0 rounded-full border border-vmv-sand-9/40 bg-vmv-sand-9/22 transition-[background-color,border-color,scale] duration-[400ms] data-active:scale-[1.6] data-active:border-vmv-sand-12 data-active:bg-vmv-sand-12';
 ---
 
-<section id="nosotros" class="nosotros">
-
+<section id="nosotros" class="relative">
   <!-- ─── HERO: CORTINA + FRASE ICÓNICA ──────────────── -->
-  <div class="nosotros__hero">
-    <div class="nosotros__panel nosotros__panel--l">
+  <div
+    data-nosotros="hero"
+    class="relative h-dvh overflow-hidden bg-vmv-gray-12 motion-reduce:hidden"
+  >
+    <div
+      data-nosotros="panel-l"
+      class="absolute top-0 left-0 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-r after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
+    >
       <img
         src="/images/nosotros/nosotros-1.webp"
         alt="Diseño arquitectónico VMV Arquitectos"
-        class="nosotros__img nosotros__img--l"
+        class="block h-full w-full object-cover object-[40%_center]"
         loading="lazy"
         decoding="async"
       />
     </div>
-    <div class="nosotros__panel nosotros__panel--r">
+    <div
+      data-nosotros="panel-r"
+      class="absolute top-0 right-0 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-l after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
+    >
       <img
         src="/images/nosotros/nosotros-2.webp"
         alt="Construcción de lujo VMV Arquitectos"
-        class="nosotros__img nosotros__img--r"
+        class="block h-full w-full object-cover object-[60%_center]"
         loading="lazy"
         decoding="async"
       />
     </div>
 
-    <div class="nosotros__label" aria-hidden="true">
-      <div class="nosotros__label-rule"></div>
-      <span class="nosotros__label-text">NOSOTROS</span>
-      <div class="nosotros__label-rule"></div>
+    <div
+      data-nosotros="label"
+      class="pointer-events-none absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
+      aria-hidden="true"
+    >
+      <div class="h-11 w-px bg-vmv-sand-1/50"></div>
+      <span
+        class="text-[clamp(2.25rem,7vw,5.5rem)] font-extralight tracking-[0.45em] indent-[0.45em] uppercase text-vmv-sand-1"
+      >
+        NOSOTROS
+      </span>
+      <div class="h-11 w-px bg-vmv-sand-1/50"></div>
     </div>
 
-    <div class="nosotros__scroll-hint" aria-hidden="true">
-      <span class="nosotros__scroll-line"></span>
+    <div
+      data-nosotros="scroll-hint"
+      class="absolute bottom-9 left-1/2 z-10 -translate-x-1/2"
+      aria-hidden="true"
+    >
+      <span
+        class="scroll-drop block h-14 w-px bg-linear-to-b from-vmv-sand-1/0 via-vmv-sand-1/65 to-vmv-sand-1/0"
+      ></span>
     </div>
 
-    <div class="nosotros__reveal">
-      <p class="nosotros__reveal-text">
+    <div
+      data-nosotros="reveal"
+      class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-[clamp(2rem,9vw,7rem)]"
+    >
+      <p
+        data-nosotros="reveal-text"
+        class="max-w-3xl text-center text-[clamp(1.5rem,3.2vw,3rem)] font-extralight leading-normal tracking-[0.04em]"
+      >
         Más de diez años convirtiendo visiones en espacios de lujo.
       </p>
     </div>
   </div>
 
   <!-- ─── ABOUT: PINNEADO ──────── -->
-  <div class="nosotros__about">
-
+  <div
+    data-nosotros="about"
+    class="relative grid min-h-svh grid-cols-1 overflow-hidden bg-vmv-sand-1 md:h-svh md:grid-cols-[55fr_45fr]"
+  >
     <!-- Columna izquierda -->
-    <div class="nosotros__about-left">
-
+    <div data-nosotros="about-left" class="relative min-h-svh overflow-hidden">
       <!-- Panel 1: información de la empresa -->
-      <div class="nosotros__about-panel nosotros__panel--info">
-        <span class="nosotros__about-label">Sobre nosotros</span>
-        <h2 class="nosotros__about-heading">
+      <div data-nosotros="panel-info" class={panelClasses}>
+        <span class={panelLabelClasses}>Sobre nosotros</span>
+        <h2
+          class="mb-[clamp(1.2rem,2.5vw,2rem)] max-w-104 text-[clamp(1.45rem,2.8vw,2.5rem)] font-light tracking-[-0.01em] text-vmv-gray-12 leading-[1.25]"
+        >
           Diseño, construcción y remodelación con más de 10&nbsp;años de
           experiencia.
         </h2>
-        <p class="nosotros__about-body">
+        <p
+          class="max-w-lg text-[clamp(0.875rem,1.25vw,0.975rem)] font-light tracking-[0.02em] text-vmv-gray-10 leading-[1.9]"
+        >
           Somos un despacho de arquitectura especializado en el ramo del diseño,
           construcción y remodelación comercial y habitacional. Nos
           especializamos en la construcción de casas de lujo en las mejores
@@ -63,60 +124,56 @@
         </p>
       </div>
 
-      <!-- Panel 2: servicios -->
-      <div class="nosotros__about-panel nosotros__panel--services">
-        <span class="nosotros__about-label">Nuestros servicios</span>
-        <ul class="nosotros__services-list">
-          <li class="nosotros__service-item">
-            <span class="nosotros__service-num" aria-hidden="true">01</span>
-            <div class="nosotros__service-body">
-              <h3 class="nosotros__service-title">Diseño Arquitectónico</h3>
-              <p class="nosotros__service-desc">
-                Personalización, ambientes únicos y auténticos acorde al gusto y
-                necesidades del cliente.
-              </p>
-            </div>
-          </li>
-          <li class="nosotros__service-item">
-            <span class="nosotros__service-num" aria-hidden="true">02</span>
-            <div class="nosotros__service-body">
-              <h3 class="nosotros__service-title">Asesoramiento de Construcción</h3>
-              <p class="nosotros__service-desc">
-                Tu proyecto arquitectónico de la mano de profesionales.
-              </p>
-            </div>
-          </li>
-          <li class="nosotros__service-item">
-            <span class="nosotros__service-num" aria-hidden="true">03</span>
-            <div class="nosotros__service-body">
-              <h3 class="nosotros__service-title">Servicio Personalizado</h3>
-              <p class="nosotros__service-desc">
-                En cada una de las etapas del diseño, acompañándote de principio
-                a fin.
-              </p>
-            </div>
-          </li>
+      <!-- Panel 2: servicios (GSAP lo trae desde abajo) -->
+      <div
+        data-nosotros="panel-services"
+        class={`${panelClasses} motion-reduce:hidden`}
+      >
+        <span class={panelLabelClasses}>Nuestros servicios</span>
+        <ul class="border-t border-vmv-sand-6/28">
+          {
+            services.map((service) => (
+              <li class="grid grid-cols-[clamp(2.5rem,6vw,4.5rem)_1fr] items-start gap-[clamp(1rem,3vw,2.5rem)] border-b border-vmv-sand-6/28 py-[clamp(1.2rem,2.5vw,1.8rem)] max-[480px]:grid-cols-1 max-[480px]:gap-[0.3rem]">
+                <span
+                  class="text-right text-[clamp(1.8rem,4vw,3.5rem)] font-thin tracking-[-0.02em] text-vmv-sand-9/30 leading-[0.9] max-[480px]:text-left max-[480px]:text-[1.6rem]"
+                  aria-hidden="true"
+                >
+                  {service.num}
+                </span>
+                <div class="pt-1">
+                  <h3 class="mb-[0.45rem] text-[clamp(0.85rem,1.6vw,1.15rem)] font-light tracking-[0.16em] uppercase text-vmv-gray-12">
+                    {service.title}
+                  </h3>
+                  <p class="text-[clamp(0.8rem,1.15vw,0.88rem)] font-light tracking-[0.02em] text-vmv-gray-10 leading-[1.8]">
+                    {service.desc}
+                  </p>
+                </div>
+              </li>
+            ))
+          }
         </ul>
       </div>
-
     </div>
 
     <!-- Columna derecha -->
-    <div class="nosotros__about-right">
-      <div class="nosotros__img-layer nosotros__img-layer--1">
+    <div
+      data-nosotros="about-right"
+      class="relative h-[60vw] overflow-hidden md:h-auto"
+    >
+      <div data-nosotros="img-layer-1" class="absolute inset-0">
         <img
           src="/images/hero/hero-1.webp"
           alt="Proyecto VMV Arquitectos"
-          class="nosotros__about-img"
+          class="block h-full w-full object-cover object-center"
           loading="lazy"
           decoding="async"
         />
       </div>
-      <div class="nosotros__img-layer nosotros__img-layer--2">
+      <div data-nosotros="img-layer-2" class="absolute inset-0">
         <img
           src="/images/hero/hero-2.webp"
           alt="Servicios VMV Arquitectos"
-          class="nosotros__about-img"
+          class="block h-full w-full object-cover object-center"
           loading="lazy"
           decoding="async"
         />
@@ -124,415 +181,63 @@
     </div>
 
     <!-- Indicador de progreso lateral izquierdo -->
-    <div class="nosotros__about-nav" aria-hidden="true">
-      <span class="nosotros__nav-dot nosotros__nav-dot--1"></span>
-      <div class="nosotros__nav-track">
-        <div class="nosotros__nav-fill"></div>
+    <div
+      class="pointer-events-none absolute top-1/2 left-[clamp(0.9rem,2.2vw,1.6rem)] z-20 flex -translate-y-1/2 flex-col items-center"
+      aria-hidden="true"
+    >
+      <span data-nosotros="nav-dot-1" class={navDotClasses}></span>
+      <div
+        class="relative my-[9px] h-[clamp(2.5rem,4.5vw,3.75rem)] w-px overflow-hidden bg-vmv-sand-6/28"
+      >
+        <div
+          data-nosotros="nav-fill"
+          class="absolute top-0 left-0 h-0 w-full bg-vmv-sand-12"
+        >
+        </div>
       </div>
-      <span class="nosotros__nav-dot nosotros__nav-dot--2"></span>
+      <span data-nosotros="nav-dot-2" class={navDotClasses}></span>
     </div>
-
   </div>
 </section>
-
-<style>
-  .nosotros {
-    position: relative;
-  }
-
-  .nosotros__hero {
-    position: relative;
-    height: 100svh;
-    background: var(--vmv-gray-12);
-    overflow: hidden;
-  }
-
-  .nosotros__panel {
-    position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .nosotros__panel--l { left: 0; }
-  .nosotros__panel--r { right: 0; }
-
-  .nosotros__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .nosotros__img--l { object-position: 40% center; }
-  .nosotros__img--r { object-position: 60% center; }
-
-  .nosotros__panel--l::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to right, rgba(15,14,12,0.1) 0%, rgba(15,14,12,0.55) 100%);
-    pointer-events: none;
-  }
-
-  .nosotros__panel--r::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to left, rgba(15,14,12,0.1) 0%, rgba(15,14,12,0.55) 100%);
-    pointer-events: none;
-  }
-
-  /* ── LABEL ────────────────────────────────────────── */
-  .nosotros__label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.1rem;
-    white-space: nowrap;
-    pointer-events: none;
-  }
-
-  .nosotros__label-rule {
-    width: 1px;
-    height: 2.75rem;
-    background: color-mix(in srgb, var(--vmv-sand-1) 50%, transparent);
-  }
-
-  .nosotros__label-text {
-    font-size: clamp(2.25rem, 7vw, 5.5rem);
-    font-weight: 200;
-    letter-spacing: 0.45em;
-    text-indent: 0.45em;
-    color: var(--vmv-sand-1);
-    text-transform: uppercase;
-  }
-
-  /* ── SCROLL HINT ──────────────────────────────────── */
-  .nosotros__scroll-hint {
-    position: absolute;
-    bottom: 2.25rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-  }
-
-  .nosotros__scroll-line {
-    display: block;
-    width: 1px;
-    height: 3.5rem;
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--vmv-sand-1) 0%, transparent) 0%,
-      color-mix(in srgb, var(--vmv-sand-1) 65%, transparent) 50%,
-      color-mix(in srgb, var(--vmv-sand-1) 0%, transparent) 100%
-    );
-    animation: nosotrosScrollDrop 2.2s ease-in-out infinite;
-  }
-
-  @keyframes nosotrosScrollDrop {
-    0%   { transform: translateY(-40%) scaleY(0.5); opacity: 0; }
-    40%  { opacity: 1; }
-    100% { transform: translateY(40%) scaleY(0.5); opacity: 0; }
-  }
-
-  /* ── REVEAL: FRASE ICÓNICA ────────────────────────── */
-  .nosotros__reveal {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 clamp(2rem, 9vw, 7rem);
-    pointer-events: none;
-  }
-
-  .nosotros__reveal-text {
-    font-size: clamp(1.5rem, 3.2vw, 3rem);
-    font-weight: 200;
-    line-height: 1.5;
-    letter-spacing: 0.04em;
-    text-align: center;
-    margin: 0;
-    max-width: 48rem;
-  }
-
-  /* ── ABOUT: SECCIÓN PINNEADA ──────────────────────── */
-  .nosotros__about {
-    display: grid;
-    grid-template-columns: 55fr 45fr;
-    height: 100svh;
-    background: var(--vmv-sand-1);
-    overflow: hidden;
-    position: relative;
-  }
-
-  /* Columna izquierda: contenedor de paneles absolutos */
-  .nosotros__about-left {
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Ambos paneles ocupan todo el espacio de la columna */
-  .nosotros__about-panel {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: clamp(3.5rem, 8vw, 7rem) clamp(2rem, 6vw, 5rem) clamp(3.5rem, 8vw, 7rem)
-      clamp(2rem, 9vw, 8rem);
-  }
-
-  /* Panel info: visible al inicio */
-  .nosotros__panel--info {
-    /* posición inicial gestionada por GSAP */
-  }
-
-  /* Panel servicios: empieza debajo (GSAP lo mueve) */
-  .nosotros__panel--services {
-    /* transform inicial vía GSAP set */
-  }
-
-  /* ── ABOUT TYPOGRAPHY ─────────────────────────────── */
-  .nosotros__about-label {
-    display: block;
-    font-size: clamp(0.58rem, 1vw, 0.7rem);
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-indent: 0.3em;
-    text-transform: uppercase;
-    color: var(--vmv-sand-9);
-    margin-bottom: clamp(1.2rem, 2.5vw, 2rem);
-  }
-
-  .nosotros__about-heading {
-    font-size: clamp(1.45rem, 2.8vw, 2.5rem);
-    font-weight: 300;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    color: var(--vmv-gray-12);
-    margin: 0 0 clamp(1.2rem, 2.5vw, 2rem);
-    max-width: 26rem;
-  }
-
-  .nosotros__about-body {
-    font-size: clamp(0.875rem, 1.25vw, 0.975rem);
-    font-weight: 300;
-    line-height: 1.9;
-    letter-spacing: 0.02em;
-    color: var(--vmv-gray-10);
-    margin: 0;
-    max-width: 32rem;
-  }
-
-  /* ── SERVICES LIST (dentro del panel claro) ───────── */
-  .nosotros__services-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    border-top: 1px solid color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
-  }
-
-  .nosotros__service-item {
-    display: grid;
-    grid-template-columns: clamp(2.5rem, 6vw, 4.5rem) 1fr;
-    gap: clamp(1rem, 3vw, 2.5rem);
-    align-items: start;
-    padding: clamp(1.2rem, 2.5vw, 1.8rem) 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
-  }
-
-  .nosotros__service-num {
-    font-size: clamp(1.8rem, 4vw, 3.5rem);
-    font-weight: 100;
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-    color: color-mix(in srgb, var(--vmv-sand-9) 30%, transparent);
-    text-align: right;
-  }
-
-  .nosotros__service-body { padding-top: 0.25rem; }
-
-  .nosotros__service-title {
-    font-size: clamp(0.85rem, 1.6vw, 1.15rem);
-    font-weight: 300;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--vmv-gray-12);
-    margin: 0 0 0.45rem;
-  }
-
-  .nosotros__service-desc {
-    font-size: clamp(0.8rem, 1.15vw, 0.88rem);
-    font-weight: 300;
-    line-height: 1.8;
-    letter-spacing: 0.02em;
-    color: var(--vmv-gray-10);
-    margin: 0;
-  }
-
-  /* ── ABOUT DERECHA: IMÁGENES ──────────────────────── */
-  .nosotros__about-right {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .nosotros__img-layer {
-    position: absolute;
-    inset: 0;
-  }
-
-  .nosotros__about-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-  }
-
-  /* ── PROGRESS NAV ────────────────────────────────── */
-  .nosotros__about-nav {
-    position: absolute;
-    left: clamp(0.9rem, 2.2vw, 1.6rem);
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    pointer-events: none;
-  }
-
-  .nosotros__nav-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--vmv-sand-9) 22%, transparent);
-    border: 1px solid color-mix(in srgb, var(--vmv-sand-9) 40%, transparent);
-    transition: background 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
-    flex-shrink: 0;
-  }
-
-  .nosotros__nav-dot.is-active {
-    background: var(--vmv-sand-12);
-    border-color: var(--vmv-sand-12);
-    transform: scale(1.6);
-  }
-
-  .nosotros__nav-track {
-    width: 1px;
-    height: clamp(2.5rem, 4.5vw, 3.75rem);
-    margin: 9px 0;
-    background: color-mix(in srgb, var(--vmv-sand-6) 28%, transparent);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .nosotros__nav-fill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 0%;
-    background: var(--vmv-sand-12);
-  }
-
-  /* ── RESPONSIVE ───────────────────────────────────── */
-  @media (max-width: 768px) {
-    .nosotros__about {
-      grid-template-columns: 1fr;
-      height: auto;
-      min-height: 100svh;
-    }
-
-    .nosotros__about-left {
-      /* En mobile no pineamos: flujo normal */
-      min-height: 100svh;
-    }
-
-    .nosotros__about-panel {
-      position: relative;
-      inset: auto;
-      padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 6vw, 3rem);
-    }
-
-    .nosotros__about-right {
-      height: 60vw;
-    }
-
-    /* En mobile img-layer-2 debe ser visible */
-    .nosotros__img-layer { position: absolute; }
-  }
-
-  @media (max-width: 480px) {
-    .nosotros__service-item {
-      grid-template-columns: 1fr;
-      gap: 0.3rem;
-    }
-
-    .nosotros__service-num {
-      font-size: 1.6rem;
-      text-align: left;
-    }
-  }
-
-  /* ── MOTION REDUCIDO ──────────────────────────────── */
-  @media (prefers-reduced-motion: reduce) {
-    .nosotros__hero { display: none; }
-    .nosotros__scroll-line { animation: none; }
-    .nosotros__about-panel { position: relative; inset: auto; }
-    .nosotros__panel--services { display: none; }
-  }
-</style>
 
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { $, $$ } from '@/lib/dom-selector';
+  import { SplitText } from 'gsap/SplitText';
+  import { $ } from '@/lib/dom-selector';
 
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, SplitText);
 
   const activeTriggers: ScrollTrigger[] = [];
+  let revealSplit: SplitText | null = null;
 
   function killAll() {
     activeTriggers.forEach((t) => t.kill());
     activeTriggers.length = 0;
+    revealSplit?.revert();
+    revealSplit = null;
   }
 
   function initNosotros() {
     killAll();
 
     // ── HERO ─────────────────────────────────────────
-    const hero        = $<HTMLElement>('.nosotros__hero');
-    const panelL      = $<HTMLElement>('.nosotros__panel--l');
-    const panelR      = $<HTMLElement>('.nosotros__panel--r');
-    const label       = $<HTMLElement>('.nosotros__label');
-    const scrollHint  = $<HTMLElement>('.nosotros__scroll-hint');
-    const revealEl    = $<HTMLElement>('.nosotros__reveal');
-    const revealText  = $<HTMLParagraphElement>('.nosotros__reveal-text');
+    const hero        = $<HTMLElement>('[data-nosotros="hero"]');
+    const panelL      = $<HTMLElement>('[data-nosotros="panel-l"]');
+    const panelR      = $<HTMLElement>('[data-nosotros="panel-r"]');
+    const label       = $<HTMLElement>('[data-nosotros="label"]');
+    const scrollHint  = $<HTMLElement>('[data-nosotros="scroll-hint"]');
+    const revealEl    = $<HTMLElement>('[data-nosotros="reveal"]');
+    const revealText  = $<HTMLParagraphElement>('[data-nosotros="reveal-text"]');
 
     if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return;
 
     // Word-spans
-    const rawText = (revealText.textContent ?? '').replace(/\s+/g, ' ').trim();
-    revealText.innerHTML = rawText
-      .split(' ')
-      .map((w) => `<span class="nosotros__word">${w}</span>`)
-      .join(' ');
-    const wordEls = $$<HTMLElement>('.nosotros__word', revealText);
+    revealSplit = SplitText.create(revealText, { type: 'words', aria: 'auto' });
 
     gsap.set(revealEl, { opacity: 0 });
-    gsap.set(wordEls, { color: 'rgba(255,255,255,0.15)' });
+    gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' });
 
-    // Timeline pinneado — hero
     const heroTl = gsap.timeline({
       scrollTrigger: {
         trigger: hero,
@@ -550,29 +255,29 @@
       .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1 }, 0.18)
       .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1.2)
       .to(
-        wordEls,
+        revealSplit.words,
         { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.12 }, duration: 0.12, ease: 'none' },
         1.55,
-      );
+      )
 
     const heroSt = heroTl.scrollTrigger;
     if (heroSt) activeTriggers.push(heroSt);
 
     // ── ABOUT (solo en pantallas grandes) ────────────
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
     const isPrefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (!isMobile && !isPrefersReducedMotion) {
-      const aboutSection  = $<HTMLElement>('.nosotros__about');
-      const aboutLeft     = $<HTMLElement>('.nosotros__about-left');
-      const aboutRight    = $<HTMLElement>('.nosotros__about-right');
-      const infoPanel     = $<HTMLElement>('.nosotros__panel--info');
-      const servicesPanel = $<HTMLElement>('.nosotros__panel--services');
-      const imgLayer1     = $<HTMLElement>('.nosotros__img-layer--1');
-      const imgLayer2     = $<HTMLElement>('.nosotros__img-layer--2');
-      const navDot1       = $<HTMLElement>('.nosotros__nav-dot--1');
-      const navDot2       = $<HTMLElement>('.nosotros__nav-dot--2');
-      const navFill       = $<HTMLElement>('.nosotros__nav-fill');
+    if (isDesktop && !isPrefersReducedMotion) {
+      const aboutSection  = $<HTMLElement>('[data-nosotros="about"]');
+      const aboutLeft     = $<HTMLElement>('[data-nosotros="about-left"]');
+      const aboutRight    = $<HTMLElement>('[data-nosotros="about-right"]');
+      const infoPanel     = $<HTMLElement>('[data-nosotros="panel-info"]');
+      const servicesPanel = $<HTMLElement>('[data-nosotros="panel-services"]');
+      const imgLayer1     = $<HTMLElement>('[data-nosotros="img-layer-1"]');
+      const imgLayer2     = $<HTMLElement>('[data-nosotros="img-layer-2"]');
+      const navDot1       = $<HTMLElement>('[data-nosotros="nav-dot-1"]');
+      const navDot2       = $<HTMLElement>('[data-nosotros="nav-dot-2"]');
+      const navFill       = $<HTMLElement>('[data-nosotros="nav-fill"]');
 
       if (
         !aboutSection || !aboutLeft || !aboutRight ||
@@ -586,7 +291,7 @@
       gsap.set(imgLayer2,     { opacity: 0 });
 
       // Nav: dot 1 activo al inicio
-      navDot1?.classList.add('is-active');
+      navDot1?.setAttribute('data-active', '');
 
       // Fase 0: Entrada cuando el about entra al viewport (antes del pin)
       activeTriggers.push(
@@ -614,22 +319,20 @@
             const p = self.progress;
             // Relleno del track proporcional al progreso del scroll
             if (navFill) navFill.style.height = `${p * 100}%`;
-            // Cambio de dot activo cuando el swap de paneles ocurre (~52%)
-            const inPhase2 = p > 0.52;
-            navDot1?.classList.toggle('is-active', !inPhase2);
-            navDot2?.classList.toggle('is-active', inPhase2);
+            // Cambio de dot activo cuando el swap de paneles ocurre
+            // (~0.52 del timeline / 1.35 de total ≈ 40% del scroll)
+            const inPhase2 = p > 0.4;
+            navDot1?.toggleAttribute('data-active', !inPhase2);
+            navDot2?.toggleAttribute('data-active', inPhase2);
           },
         },
       });
 
-      // Deja un tramo inicial para leer el panel de info,
-      // luego el panel sube y los servicios entran desde abajo.
-      // Simultáneamente la imagen hace crossfade.
       aboutTl
         .to(infoPanel,     { yPercent: -100, opacity: 0, duration: 0.38, ease: 'power2.in' }, 0.38)
         .to(imgLayer1,     { opacity: 0, duration: 0.32, ease: 'power2.inOut' },              0.42)
         .to(servicesPanel, { yPercent: 0, duration: 0.44, ease: 'power3.out' },               0.56)
-        .to(imgLayer2,     { opacity: 1, duration: 0.38, ease: 'power2.inOut' },              0.54);
+        .to(imgLayer2,     { opacity: 1, duration: 0.38, ease: 'power2.inOut' },              0.54)
 
       const aboutSt = aboutTl.scrollTrigger;
       if (aboutSt) activeTriggers.push(aboutSt);
@@ -640,3 +343,23 @@
   document.addEventListener('astro:page-load', initNosotros);
   initNosotros();
 </script>
+
+<style>
+  .scroll-drop {
+    animation: scroll-drop 2.2s ease-in-out infinite;
+  }
+
+  @keyframes scroll-drop {
+    0% {
+      transform: translateY(-40%) scaleY(0.5);
+      opacity: 0;
+    }
+    40% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(40%) scaleY(0.5);
+      opacity: 0;
+    }
+  }
+</style>
