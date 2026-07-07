@@ -1,7 +1,227 @@
 ---
+import { servicios } from '@/data/servicios'
 
+const totalLabel = String(servicios.length).padStart(2, '0')
 ---
 
-<section id="servicios" class="h-screen flex items-center justify-center">
-    Servicios
+<section id="servicios" class="relative bg-vmv-sand-1" data-servicios aria-label="Servicios de la constructora">
+    <div class="relative min-[900px]:motion-safe:h-screen min-[900px]:motion-safe:overflow-hidden" data-servicios-stage>
+        <header
+            class="flex flex-col gap-3 px-[clamp(1rem,4vw,3rem)] pt-[clamp(2.5rem,6vw,4rem)] pb-[clamp(1.5rem,3vw,2rem)] min-[900px]:motion-safe:pointer-events-none min-[900px]:motion-safe:absolute min-[900px]:motion-safe:inset-x-0 min-[900px]:motion-safe:top-0 min-[900px]:motion-safe:z-3"
+            data-servicios-header
+        >
+            <p
+                class="vmv-overline-1 text-vmv-muted-foreground min-[900px]:motion-safe:text-vmv-sand-1 min-[900px]:motion-safe:[text-shadow:0_10px_26px_color-mix(in_srgb,var(--vmv-gray-12)_45%,transparent)]"
+            >
+                Nuestros servicios
+            </p>
+            <h2
+                class="vmv-title-2 max-w-[38ch] text-balance text-vmv-foreground min-[900px]:motion-safe:text-vmv-sand-1 min-[900px]:motion-safe:[text-shadow:0_10px_26px_color-mix(in_srgb,var(--vmv-gray-12)_45%,transparent)]"
+            >
+                Acompañamos tu proyecto en cada etapa, del concepto a la obra terminada.
+            </h2>
+        </header>
+
+        <div
+            class="min-[900px]:motion-safe:flex min-[900px]:motion-safe:h-full min-[900px]:motion-safe:w-max min-[900px]:motion-safe:will-change-transform"
+            data-servicios-track
+        >
+            {
+                servicios.map((servicio, index) => (
+                    <article
+                        class="relative isolate flex min-h-svh items-end overflow-hidden p-[clamp(1rem,4vw,3rem)] before:absolute before:inset-0 before:z-1 before:bg-[linear-gradient(180deg,color-mix(in_srgb,var(--vmv-gray-12)_55%,transparent)_0%,color-mix(in_srgb,var(--vmv-gray-12)_14%,transparent)_32%,color-mix(in_srgb,var(--vmv-gray-12)_14%,transparent)_72%,color-mix(in_srgb,var(--vmv-gray-12)_45%,transparent)_100%)] before:content-[''] min-[900px]:motion-safe:h-screen min-[900px]:motion-safe:min-h-0 min-[900px]:motion-safe:w-screen min-[900px]:motion-safe:shrink-0 min-[900px]:motion-safe:items-center min-[900px]:motion-safe:px-[clamp(2rem,7vw,7rem)]"
+                        data-servicios-panel
+                    >
+                        <img
+                            src={servicio.image}
+                            alt={servicio.imageAlt}
+                            class="absolute top-0 left-[-7%] z-0 h-full w-[114%] object-cover"
+                            data-servicios-image
+                            loading="lazy"
+                        />
+                        <div
+                            class="relative z-2 flex min-h-[clamp(22rem,60vh,33rem)] w-full max-w-104 flex-col justify-between gap-10 rounded-xl border border-vmv-border bg-vmv-sand-1/86 p-[clamp(1.5rem,2.6vw,2.5rem)] shadow-[0_25px_65px_color-mix(in_srgb,var(--vmv-gray-12)_35%,transparent)] backdrop-blur-[20px]"
+                            data-servicios-card
+                        >
+                            <div class="flex items-baseline justify-between">
+                                <span class="text-[clamp(2.5rem,4vw,3.5rem)] leading-none font-extralight text-vmv-sand-9">
+                                    {String(index + 1).padStart(2, '0')}
+                                </span>
+                                <span class="vmv-overline-1 text-vmv-muted-foreground">Servicio</span>
+                            </div>
+                            <div>
+                                <h3 class="vmv-title-3 mb-3 tracking-[0.06em] text-vmv-foreground uppercase">
+                                    {servicio.title}
+                                </h3>
+                                <p class="vmv-body-3 text-vmv-muted-foreground">{servicio.description}</p>
+                                <ul class="mt-6">
+                                    {servicio.features.map((feature) => (
+                                        <li class="vmv-body-3 border-t border-vmv-border py-[0.65rem] text-vmv-foreground">
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+                ))
+            }
+        </div>
+
+        <footer
+            class="pointer-events-none absolute inset-x-[clamp(2rem,7vw,7rem)] bottom-[clamp(1.25rem,3vw,2rem)] z-3 hidden flex-col gap-3 min-[900px]:motion-safe:flex"
+            aria-hidden="true"
+        >
+            <span class="vmv-caption-1 self-end text-vmv-sand-1/90">
+                <span data-servicios-counter>01</span> / {totalLabel}
+            </span>
+            <div class="h-px w-full bg-vmv-sand-1/25">
+                <div class="h-full origin-left bg-vmv-sand-1 [transform:scaleX(0)]" data-servicios-progress></div>
+            </div>
+        </footer>
+    </div>
 </section>
+
+<script type="module">
+    import gsap from 'gsap'
+    import { ScrollTrigger } from 'gsap/ScrollTrigger'
+    import { $, $$ } from '@/lib/dom-selector'
+
+    gsap.registerPlugin(ScrollTrigger)
+
+    let cleanupServicios = null
+
+    const setupServicios = () => {
+        if (cleanupServicios) {
+            cleanupServicios()
+            cleanupServicios = null
+        }
+
+        const section = $<HTMLElement>('[data-servicios]')
+        if (!section) {
+            return
+        }
+
+        const stage = $<HTMLElement>('[data-servicios-stage]', section)
+        const track = $<HTMLElement>('[data-servicios-track]', section)
+        const header = $<HTMLElement>('[data-servicios-header]', section)
+        const panels = $$<HTMLElement>('[data-servicios-panel]', section)
+        const cards = $$<HTMLElement>('[data-servicios-card]', section)
+        const images = $$<HTMLImageElement>('[data-servicios-image]', section)
+        const progressBar = $<HTMLElement>('[data-servicios-progress]', section)
+        const counter = $<HTMLElement>('[data-servicios-counter]', section)
+
+        if (!stage || !track || panels.length === 0) {
+            return
+        }
+
+        const mm = gsap.matchMedia()
+
+        // Debe coincidir con las variantes `min-[900px]:motion-safe:` del markup.
+        mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+            const getDistance = () => track.scrollWidth - stage.clientWidth
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top top',
+                    end: () => `+=${getDistance()}`,
+                    scrub: 1,
+                    pin: stage,
+                    pinSpacing: true,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true,
+                    onUpdate: (self) => {
+                        if (!counter) {
+                            return
+                        }
+                        const index = Math.round(self.progress * (panels.length - 1))
+                        counter.textContent = String(index + 1).padStart(2, '0')
+                    },
+                },
+            })
+
+            tl.to(track, {
+                x: () => -getDistance(),
+                ease: 'none',
+            })
+
+            if (progressBar) {
+                tl.fromTo(
+                    progressBar,
+                    { scaleX: 0 },
+                    {
+                        scaleX: 1,
+                        ease: 'none',
+                    },
+                    0,
+                )
+            }
+
+            panels.forEach((panel, index) => {
+                const image = images[index]
+                if (!image) {
+                    return
+                }
+                gsap.fromTo(
+                    image,
+                    { xPercent: -6 },
+                    {
+                        xPercent: 6,
+                        ease: 'none',
+                        scrollTrigger: {
+                            trigger: panel,
+                            containerAnimation: tl,
+                            start: 'left right',
+                            end: 'right left',
+                            scrub: true,
+                        },
+                    },
+                )
+            })
+
+            cards.slice(1).forEach((card) => {
+                gsap.from(card, {
+                    autoAlpha: 0,
+                    y: 48,
+                    duration: 0.9,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: card,
+                        containerAnimation: tl,
+                        start: 'left 75%',
+                    },
+                })
+            })
+
+            const intro = [header, cards[0]].filter(Boolean)
+            if (intro.length > 0) {
+                gsap.from(intro, {
+                    autoAlpha: 0,
+                    y: 36,
+                    duration: 1,
+                    ease: 'power2.out',
+                    stagger: 0.15,
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 75%',
+                    },
+                })
+            }
+        })
+
+        cleanupServicios = () => {
+            mm.revert()
+        }
+    }
+
+    document.addEventListener('astro:before-swap', () => {
+        if (cleanupServicios) {
+            cleanupServicios()
+            cleanupServicios = null
+        }
+    })
+
+    document.addEventListener('astro:page-load', setupServicios)
+    setupServicios()
+</script>
