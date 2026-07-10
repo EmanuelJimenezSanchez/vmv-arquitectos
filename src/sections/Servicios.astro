@@ -25,12 +25,12 @@ const totalLabel = String(servicios.length).padStart(2, '0')
             </header>
 
             <div
-                class="flex snap-x snap-mandatory gap-4 overflow-x-auto px-[clamp(1.25rem,5vw,3rem)] pb-4 min-[900px]:motion-safe:contents"
+                class="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-px-[clamp(1.25rem,5vw,3rem)] px-[clamp(1.25rem,5vw,3rem)] pb-4 [scrollbar-width:none] sm:gap-6 min-[900px]:motion-safe:contents [&::-webkit-scrollbar]:hidden"
             >
                 {
                     servicios.map((servicio, index) => (
                         <article
-                            class="group relative w-[min(78vw,20rem)] shrink-0 snap-start min-[900px]:motion-safe:w-[clamp(17rem,26vw,23rem)] min-[900px]:motion-safe:even:top-[clamp(1.5rem,4vh,3rem)]"
+                            class="group relative w-[min(78vw,19rem)] shrink-0 snap-start sm:w-[clamp(16rem,42vw,20rem)] min-[900px]:motion-safe:w-[clamp(15rem,min(26vw,42vh),23rem)] min-[900px]:motion-safe:even:top-[clamp(1.5rem,4vh,3rem)]"
                             data-servicios-card
                         >
                             <figure class="relative aspect-[3/4.3] overflow-hidden bg-vmv-gray-12 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]">
