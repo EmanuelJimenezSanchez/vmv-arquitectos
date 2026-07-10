@@ -1,0 +1,89 @@
+---
+const desktopVideoSrc = '/hero/video-horizontal.webm'
+const mobileVideoSrc = '/hero/video-vertical.webm'
+---
+
+<div class="relative min-h-screen w-full overflow-hidden">
+  <video
+    class="absolute inset-0 hidden h-full w-full object-cover md:block"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+  >
+    <source src={desktopVideoSrc} type="video/webm" />
+  </video>
+
+  <video
+    class="absolute inset-0 h-full w-full object-cover md:hidden"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+  >
+    <source src={mobileVideoSrc} type="video/webm" />
+  </video>
+
+  <div class="absolute inset-0 bg-linear-to-t from-black/55 via-black/25 to-black/10"></div>
+
+  <div
+    class="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl items-end px-6 pb-12 md:px-12 md:pb-16"
+  >
+    <h1 class="max-w-3xl text-4xl leading-tight font-light tracking-tight text-white md:text-6xl">
+      <span class="block">Arquitectura pensada para habitar mejor</span>
+      <span class="relative mt-3 block min-h-[1.35em] overflow-hidden text-3xl md:mt-4 md:text-5xl">
+        <span class="hero-phrase absolute inset-0">+10 años de experiencia</span>
+        <span class="hero-phrase absolute inset-0">+120 proyectos realizados</span>
+        <span class="hero-phrase absolute inset-0">+85.000 metros cuadrados construidos</span>
+      </span>
+    </h1>
+  </div>
+</div>
+
+<script>
+  import { gsap } from 'gsap'
+  import { $$ } from '@/lib/dom-selector'
+
+  let phraseTimeline: gsap.core.Timeline | null = null
+
+  function killHeroTimeline() {
+    phraseTimeline?.kill()
+    phraseTimeline = null
+  }
+
+  function initHeroPhraseRotation() {
+    killHeroTimeline()
+
+    const phrases = $$<HTMLElement>('.hero-phrase')
+    if (phrases.length < 2) return
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    gsap.set(phrases, { position: 'absolute', inset: 0, yPercent: 120 })
+    gsap.set(phrases[0], { yPercent: 0 })
+
+    if (prefersReducedMotion) return
+
+    const tl = gsap.timeline({ repeat: -1 })
+    phraseTimeline = tl
+
+    phrases.forEach((_, index) => {
+      const current = phrases[index]
+      const next = phrases[(index + 1) % phrases.length]
+
+      tl.to({}, { duration: 3 })
+        .set(next, { yPercent: 120 })
+        .to(current, { yPercent: -120, duration: 0.6, ease: 'power2.inOut' })
+        .to(next, { yPercent: 0, duration: 0.6, ease: 'power2.inOut' }, '<')
+        .set(current, { yPercent: 120 })
+    })
+  }
+
+  document.addEventListener('astro:before-swap', killHeroTimeline)
+  document.addEventListener('astro:page-load', initHeroPhraseRotation)
+  initHeroPhraseRotation()
+</script>

@@ -1,122 +1,100 @@
 ---
 import logoVmv from '@/assets/svg/logo-vmv.svg'
-import ThemeToggle from '@/components/ThemeToggle.astro'
 import Button from '@/components/ui/Button.astro'
 ---
 
 <header
   id="site-header"
-  class="group fixed inset-x-0 top-0 z-50 px-4 py-4 transition-transform duration-500 md:px-8"
+  class="group absolute inset-x-0 top-0 z-50 w-full transition-transform duration-500"
 >
   <div
-    class="header-shell mx-auto w-full max-w-330 animate-[headerReveal_0.8s_cubic-bezier(0.19,1,0.22,1)_both] rounded-[28px] border border-transparent bg-transparent px-4 py-3 backdrop-blur-[0px] transition-[backdrop-filter,-webkit-backdrop-filter,border-color,background-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-6 md:py-4"
+    class="header-shell w-full animate-[headerReveal_0.8s_cubic-bezier(0.19,1,0.22,1)_both] border border-transparent bg-transparent px-4 py-3 transition-[border-color,background-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-8 md:py-4"
   >
-    <div class="flex items-center justify-between gap-3">
-      <button
-        id="menu-toggle"
-        type="button"
-        class="menu-toggle relative inline-flex min-h-11 items-center gap-[0.55rem] rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 px-[0.9rem] py-[0.62rem] text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] max-md:px-[0.82rem]"
-        aria-label="Abrir menú"
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-      >
-        <span class="menu-toggle-icon relative inline-block h-[0.8rem] w-4" aria-hidden="true">
-          <span
-            class="line absolute block h-[0.09rem] w-4 origin-center bg-current transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
-          ></span>
-          <span
-            class="line absolute block h-[0.09rem] w-4 origin-center bg-current transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
-          ></span>
-          <span
-            class="line absolute block h-[0.09rem] w-4 origin-center bg-current transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
-          ></span>
-        </span>
-        <span
-          class="menu-toggle-label text-[0.68rem] font-medium tracking-[0.22em] uppercase max-md:text-[0.61rem] max-md:tracking-[0.16em]"
-          >Menu</span
-        >
-      </button>
-
-      <a href="/" class="logo-link top-center shrink-0" aria-label="Inicio VMV Arquitectos">
-        <img src={logoVmv.src} alt="VMV Arquitectos" class="h-9 w-auto md:h-11" loading="eager" />
+    <div class="flex min-h-14 items-center justify-start sm:justify-center md:min-h-18">
+      <a href="/" class="logo-link shrink-0" aria-label="Inicio VMV Arquitectos">
+        <img src={logoVmv.src} alt="VMV Arquitectos" class="h-12 w-auto md:h-26" loading="eager" />
       </a>
-
-      <div class="top-right flex items-center gap-2.5">
-        <!-- <ThemeToggle /> -->
-        <Button href="/#contacto" variant="white" class="header-cta">Contacto</Button>
-      </div>
     </div>
+  </div>
 
-    <nav class="header-nav mt-4 hidden justify-center md:flex" aria-label="Navegación principal">
-      <ul class="flex items-center gap-10 text-[0.72rem] font-medium tracking-[0.28em] uppercase">
-        <li>
-          <a
-            class="header-link relative pb-[0.3rem] text-vmv-sand-1/88 transition-colors duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
-            href="/#nosotros">Nosotros</a
-          >
-        </li>
-        <li>
-          <a
-            class="header-link relative pb-[0.3rem] text-vmv-sand-1/88 transition-colors duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
-            href="/#galeria">Galeria</a
-          >
-        </li>
-        <li>
-          <a
-            class="header-link relative pb-[0.3rem] text-vmv-sand-1/88 transition-colors duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
-            href="/#servicios">Servicios</a
-          >
-        </li>
-        <!-- <li><a class="header-link" href="/projects">Proyectos</a></li> -->
-      </ul>
-    </nav>
+  <div
+    class="top-right fixed top-4 right-4 z-60 flex h-12 items-stretch sm:h-16 md:top-6 md:right-8"
+  >
+    <Button href="/#contacto" variant="header" class="header-cta h-full px-10" size="xxl"
+      >Contacto</Button
+    >
+
+    <button
+      id="menu-toggle"
+      type="button"
+      class="menu-toggle relative inline-flex h-12 w-12 items-center justify-center border border-vmv-sand-1/30 bg-vmv-gray-12/80 text-vmv-sand-1 transition-[color,border-color,background-color,transform] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] sm:h-16 sm:w-16"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="menu-toggle-icon relative inline-block h-6 w-6" aria-hidden="true">
+        <span
+          class="line absolute block h-[0.09rem] w-full origin-center bg-current transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        ></span>
+        <span
+          class="line absolute block h-[0.09rem] w-full origin-center bg-current transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        ></span>
+        <span
+          class="line absolute block h-[0.09rem] w-full origin-center bg-current transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        ></span>
+      </span>
+    </button>
   </div>
 
   <div
     id="mobile-menu"
-    class="mobile-menu pointer-events-none fixed inset-0 z-40 flex items-start justify-center bg-vmv-gray-12/26 px-4 pt-24 opacity-0 backdrop-blur-[0px] transition-[opacity,backdrop-filter,-webkit-backdrop-filter] duration-450"
+    class="mobile-menu pointer-events-none fixed inset-0 z-40 opacity-0 transition-opacity duration-450"
     aria-hidden="true"
   >
     <div
-      class="mobile-panel relative w-full max-w-170 rounded-[28px] border border-vmv-sand-1/20 bg-linear-to-br from-vmv-gray-12 to-vmv-gray-11 p-8 text-vmv-sand-1 opacity-0 transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
+      class="mobile-panel absolute inset-0 flex min-h-screen w-full flex-col bg-vmv-gray-12 px-4 py-6 text-vmv-sand-1 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-8 md:py-8"
     >
-      <button
-        id="menu-close"
-        type="button"
-        class="menu-close absolute top-[1.1rem] right-[1.1rem] inline-flex h-9 w-9 items-center justify-center rounded-full border border-vmv-sand-1/24 bg-vmv-sand-1/8 p-0 text-[1.2rem] leading-none text-vmv-sand-1/92 transition-[background-color,border-color] duration-300 hover:border-vmv-sand-1/52 hover:bg-vmv-sand-1/16"
-        aria-label="Cerrar menu"
+      <div class="mt-24 mb-6 flex items-center justify-center gap-4">
+        <a href="/" class="logo-link shrink-0" aria-label="Inicio VMV Arquitectos">
+          <img
+            src={logoVmv.src}
+            alt="VMV Arquitectos"
+            class="h-16 w-auto md:h-26"
+            loading="eager"
+          />
+        </a>
+      </div>
+
+      <ul
+        class="menu-links mx-auto flex h-full max-w-160 flex-col items-center justify-center gap-5 text-center"
       >
-        <span aria-hidden="true">×</span>
-      </button>
-      <p class="mb-6 text-xs tracking-[0.35em] text-vmv-sand-2/70 uppercase">Navegacion</p>
-      <ul class="space-y-5 text-2xl font-light tracking-[0.08em]">
         <li>
           <a
-            class="mobile-link inline-block translate-x-0 transition-[transform,color] duration-300 hover:translate-x-2 hover:text-vmv-sand-1/82"
+            class="mobile-link inline-block text-[clamp(1.85rem,4.5vw,3.7rem)] leading-[1.08] font-light tracking-[0.03em] text-vmv-sand-1/94 transition-[transform,color,opacity] duration-450 hover:text-vmv-sand-1"
             href="/#nosotros">Nosotros</a
           >
         </li>
         <li>
           <a
-            class="mobile-link inline-block translate-x-0 transition-[transform,color] duration-300 hover:translate-x-2 hover:text-vmv-sand-1/82"
+            class="mobile-link inline-block text-[clamp(1.85rem,4.5vw,3.7rem)] leading-[1.08] font-light tracking-[0.03em] text-vmv-sand-1/94 transition-[transform,color,opacity] duration-450 hover:text-vmv-sand-1"
             href="/#galeria">Galeria</a
           >
         </li>
         <li>
           <a
-            class="mobile-link inline-block translate-x-0 transition-[transform,color] duration-300 hover:translate-x-2 hover:text-vmv-sand-1/82"
+            class="mobile-link inline-block text-[clamp(1.85rem,4.5vw,3.7rem)] leading-[1.08] font-light tracking-[0.03em] text-vmv-sand-1/94 transition-[transform,color,opacity] duration-450 hover:text-vmv-sand-1"
             href="/#servicios">Servicios</a
           >
         </li>
         <li>
           <a
-            class="mobile-link inline-block translate-x-0 transition-[transform,color] duration-300 hover:translate-x-2 hover:text-vmv-sand-1/82"
+            class="mobile-link inline-block text-[clamp(1.85rem,4.5vw,3.7rem)] leading-[1.08] font-light tracking-[0.03em] text-vmv-sand-1/94 transition-[transform,color,opacity] duration-450 hover:text-vmv-sand-1"
             href="/projects">Proyectos</a
           >
         </li>
         <li>
           <a
-            class="mobile-link inline-block translate-x-0 transition-[transform,color] duration-300 hover:translate-x-2 hover:text-vmv-sand-1/82"
+            class="mobile-link inline-block text-[clamp(1.85rem,4.5vw,3.7rem)] leading-[1.08] font-light tracking-[0.03em] text-vmv-sand-1/94 transition-[transform,color,opacity] duration-450 hover:text-vmv-sand-1"
             href="/#contacto">Contacto</a
           >
         </li>
@@ -130,7 +108,6 @@ import Button from '@/components/ui/Button.astro'
 
   const setupHeader = () => {
     const header = $('#site-header')
-    const headerShell = $('.header-shell', header ?? undefined)
     const menuToggle = $('#menu-toggle')
     const menuClose = $('#menu-close')
     const mobileMenu = $('#mobile-menu')
@@ -148,21 +125,8 @@ import Button from '@/components/ui/Button.astro'
     const { signal } = controller
 
     let ticking = false
-    let lastScrollY = window.scrollY
     let previousBodyPaddingRight = ''
-
-    const setBackdropBlur = (element: HTMLElement | null, blurValue: string) => {
-      if (!element) {
-        return
-      }
-
-      element.style.backdropFilter = blurValue
-      ;(
-        element.style as CSSStyleDeclaration & {
-          webkitBackdropFilter?: string
-        }
-      ).webkitBackdropFilter = blurValue
-    }
+    let closeAnimationTimer: number | undefined
 
     const lockBodyScroll = () => {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
@@ -180,12 +144,21 @@ import Button from '@/components/ui/Button.astro'
     }
 
     const closeMenu = () => {
+      if (!mobileMenu) {
+        return
+      }
+
+      window.clearTimeout(closeAnimationTimer)
       unlockBodyScroll()
       menuToggle?.setAttribute('aria-expanded', 'false')
-      mobileMenu?.setAttribute('aria-hidden', 'true')
-      mobileMenu?.classList.remove('is-open')
+      mobileMenu.setAttribute('aria-hidden', 'true')
+      mobileMenu.classList.remove('is-open')
+      mobileMenu.classList.add('is-closing')
       header.classList.remove('is-menu-open')
-      setBackdropBlur(mobileMenu as HTMLElement | null, 'blur(0px)')
+
+      closeAnimationTimer = window.setTimeout(() => {
+        mobileMenu.classList.remove('is-closing')
+      }, 430)
     }
 
     const openMenu = () => {
@@ -193,31 +166,22 @@ import Button from '@/components/ui/Button.astro'
         return
       }
 
+      window.clearTimeout(closeAnimationTimer)
+      mobileMenu.classList.remove('is-closing')
       lockBodyScroll()
       menuToggle.setAttribute('aria-expanded', 'true')
       mobileMenu.setAttribute('aria-hidden', 'false')
       mobileMenu.classList.add('is-open')
       header.classList.add('is-menu-open')
       header.classList.remove('is-hidden')
-      setBackdropBlur(mobileMenu as HTMLElement, 'blur(8px)')
-      setBackdropBlur(headerShell as HTMLElement | null, 'blur(14px)')
     }
 
     const syncScrollState = () => {
       const currentScrollY = window.scrollY
       const isScrolled = currentScrollY > 34
-      const isScrollingDown = currentScrollY > lastScrollY + 2
-    //   const shouldHideHeader =
-    //     isScrollingDown && currentScrollY > 140 && !header.classList.contains('is-menu-open')
 
       header.classList.toggle('is-scrolled', isScrolled)
-    //   header.classList.toggle('is-hidden', shouldHideHeader)
       header.classList.toggle('is-top', currentScrollY <= 20)
-
-      const shouldBlurHeader = isScrolled || header.classList.contains('is-menu-open')
-      setBackdropBlur(headerShell as HTMLElement | null, shouldBlurHeader ? 'blur(14px)' : 'blur(0px)')
-
-      lastScrollY = currentScrollY
       ticking = false
     }
 
@@ -287,13 +251,26 @@ import Button from '@/components/ui/Button.astro'
     transform: translateY(-125%);
   }
 
+  .group .header-cta {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background-color: transparent;
+  }
+
+  .group .header-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--vmv-sand-9);
+    clip-path: inset(0 0 0 100%);
+    transition: clip-path 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: clip-path;
+  }
+
   .group.is-scrolled .header-shell,
   .group.is-menu-open .header-shell {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-color: color-mix(in srgb, var(--vmv-sand-1) 44%, transparent);
-    background-color: color-mix(in srgb, var(--vmv-sand-4) 40%, transparent);
-    box-shadow: 0 18px 45px color-mix(in srgb, var(--vmv-gray-12) 22%, transparent);
   }
 
   .menu-toggle .line:first-of-type {
@@ -329,97 +306,93 @@ import Button from '@/components/ui/Button.astro'
     transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .header-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    transform: scaleX(0);
-    transform-origin: center;
-    background: color-mix(in srgb, var(--vmv-sand-1) 90%, transparent);
-    transition: transform 0.35s ease;
+  .mobile-panel {
+    transform-origin: top;
+    transform: scaleY(0);
   }
 
-  .header-link:hover::after {
-    transform: scaleX(1);
-  }
-
-  .header-nav {
-    max-height: 4rem;
-    opacity: 1;
-    transform: translateY(0);
-    transition:
-      max-height 0.45s ease,
-      opacity 0.35s ease,
-      transform 0.35s ease,
-      margin-top 0.35s ease;
-  }
-
-  .menu-close > span {
-    transform: translateY(-1px);
+  .mobile-link {
+    opacity: 0;
   }
 
   .mobile-menu.is-open {
     pointer-events: auto;
     opacity: 1;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
   .mobile-menu.is-open .mobile-panel {
-    transform: translateY(0) scale(1);
+    transform: scaleY(1);
+  }
+
+  .mobile-menu.is-open .mobile-link {
+    animation: menuLinkFadeIn 0.45s ease forwards;
+  }
+
+  .mobile-menu.is-open li:nth-child(1) .mobile-link {
+    animation-delay: 0.08s;
+  }
+
+  .mobile-menu.is-open li:nth-child(2) .mobile-link {
+    animation-delay: 0.14s;
+  }
+
+  .mobile-menu.is-open li:nth-child(3) .mobile-link {
+    animation-delay: 0.2s;
+  }
+
+  .mobile-menu.is-open li:nth-child(4) .mobile-link {
+    animation-delay: 0.26s;
+  }
+
+  .mobile-menu.is-open li:nth-child(5) .mobile-link {
+    animation-delay: 0.32s;
+  }
+
+  .mobile-menu.is-closing {
+    pointer-events: none;
     opacity: 1;
+  }
+
+  .mobile-menu.is-closing .mobile-panel {
+    transform: scaleY(0);
+  }
+
+  .mobile-menu.is-closing .mobile-link {
+    opacity: 0;
   }
 
   /* .group.is-scrolled .menu-toggle, */
   .group .menu-toggle,
   .group.is-menu-open .menu-toggle {
-    color: color-mix(in srgb, var(--vmv-gray-12) 86%, transparent);
-    border-color: color-mix(in srgb, var(--vmv-gray-9) 30%, transparent);
-    background: color-mix(in srgb, var(--vmv-gray-2) 55%, transparent);
+    color: color-mix(in srgb, var(--vmv-sand-1) 95%, transparent);
+    border-color: color-mix(in srgb, var(--vmv-sand-1) 30%, transparent);
+    background: color-mix(in srgb, var(--vmv-gray-12) 80%, transparent);
   }
 
   .group.is-scrolled .logo-link img,
   .group.is-menu-open .logo-link img {
-    filter: none;
+    /* filter: none; */
+    /* background-color: var(--vmv-sand-9); */
   }
 
-  .group.is-scrolled .header-link,
-  .group.is-menu-open .header-link {
-    color: color-mix(in srgb, var(--vmv-gray-12) 88%, transparent);
-  }
-
-  .group.is-scrolled .header-link::after,
-  .group.is-menu-open .header-link::after {
-    background: color-mix(in srgb, var(--vmv-gray-12) 75%, transparent);
-  }
-
-  /* .group.is-scrolled .header-cta, */
-  .group .header-cta,
+  .group.is-scrolled .header-cta,
   .group.is-menu-open .header-cta {
-    /* border-color: color-mix(in srgb, var(--vmv-gray-9) 30%, transparent);
-    background: color-mix(in srgb, var(--vmv-gray-1) 86%, transparent);
-    color: color-mix(in srgb, var(--vmv-gray-12) 90%, transparent); */
   }
 
-  .group.is-scrolled .header-cta:hover,
-  .group.is-menu-open .header-cta:hover {
-    background: color-mix(in srgb, var(--vmv-gray-1) 95%, transparent);
+  .group.is-scrolled .header-cta::before,
+  .group.is-menu-open .header-cta::before {
+    clip-path: inset(0 0 0 0);
   }
 
-  .group.is-scrolled .header-nav {
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-8px);
-    margin-top: 0;
-    pointer-events: none;
+  .group .header-cta,
+  .group.is-menu-open .header-cta,
+  .group .menu-contact-cta {
+    color: white;
   }
 
-  .group.is-menu-open .header-nav {
-    opacity: 0;
-    pointer-events: none;
+  .group.is-scrolled .header-cta,
+  .group.is-menu-open .header-cta {
+    /* color: color-mix(in srgb, var(--vmv-gray-12) 90%, transparent); */
   }
 
   @keyframes headerReveal {
@@ -433,12 +406,22 @@ import Button from '@/components/ui/Button.astro'
     }
   }
 
+  @keyframes menuLinkFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .header-shell,
     .mobile-panel,
     .mobile-link,
     .header-cta,
-    .header-link::after {
+    .header-cta::before,
+    .menu-toggle .line {
       animation: none;
       transition: none;
     }

@@ -1,410 +1,406 @@
 ---
 import { galeria } from '@/data/galeria'
 import Button from '@/components/ui/Button.astro'
-
 ---
 
 <section id="galeria" class="galeria-scroll" data-galeria aria-label="Galeria visual de proyectos">
-    <div class="galeria-stage" data-galeria-stage>
-        <div class="galeria-media" data-galeria-media>
-            <div class="galeria-frame">
-                {
-                    galeria.map((item, index) => (
-                        <img
-                            src={item.image}
-                            alt={item.description}
-                            class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
-                            data-galeria-image
-                            loading="lazy"
-                        />
-                    ))
-                }
-                {
-                    galeria.map((item, index) => (
-                        <img
-                            src={item.image}
-                            alt={item.description}
-                            class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
-                            data-galeria-image
-                            loading="lazy"
-                        />
-                    ))
-                }
-                {
-                    galeria.map((item, index) => (
-                        <img
-                            src={item.image}
-                            alt={item.description}
-                            class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
-                            data-galeria-image
-                            loading="lazy"
-                        />
-                    ))
-                }
-                <!-- <img
-                    src="/images/hero/hero-1.webp"
-                    alt="Interior arquitectonico con iluminacion natural"
-                    class="galeria-image is-active"
-                    data-galeria-image
-                    loading="lazy"
-                />
-                <img
-                    src="/images/hero/hero-2.webp"
-                    alt="Detalle de diseno interior contemporaneo"
-                    class="galeria-image"
-                    data-galeria-image
-                    loading="lazy"
-                />
-                <img
-                    src="/images/hero/hero-3.webp"
-                    alt="Espacio construido con acabados de alta calidad"
-                    class="galeria-image"
-                    data-galeria-image
-                    loading="lazy"
-                />
-                <img
-                    src="/images/hero/hero-4.webp"
-                    alt="Proyecto arquitectonico integral terminado"
-                    class="galeria-image"
-                    data-galeria-image
-                    loading="lazy"
-                /> -->
-            </div>
-        </div>
-
-        <div class="galeria-copy" data-galeria-copy>
-            <p class="galeria-main vmv-title-1 mx-auto" data-galeria-main>
-                Disenamos interiores que emocionan y construimos 
-            </p>
-            <p class="galeria-sub vmv-title-1 mx-auto" data-galeria-sub>
-                espacios que perduran.
-            </p>
-            <div class="galeria-cta" data-galeria-cta>
-                <Button href="/#contacto" variant="white" size="xxl" class="galeria-cta-button">
-                    Contacto
-                </Button>
-            </div>
-        </div>
+  <div class="galeria-stage" data-galeria-stage>
+    <div class="galeria-media" data-galeria-media>
+      <div class="galeria-frame">
+        {
+          galeria.map((item, index) => (
+            <img
+              src={item.image}
+              alt={item.description}
+              class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
+              data-galeria-image
+            />
+          ))
+        }
+      </div>
     </div>
+
+    <div class="galeria-copy" data-galeria-copy>
+      <p class="galeria-main vmv-title-1 mx-auto" data-galeria-main>
+        Disenamos interiores que emocionan y construimos
+      </p>
+      <p class="galeria-sub vmv-title-1 mx-auto" data-galeria-sub>espacios que perduran.</p>
+      <div class="galeria-cta" data-galeria-cta>
+        <Button href="/#contacto" variant="white" size="xxl" class="galeria-cta-button">
+          Contacto
+        </Button>
+      </div>
+    </div>
+  </div>
 </section>
 
 <script type="module">
-    import gsap from 'gsap'
-    import { ScrollTrigger } from 'gsap/ScrollTrigger'
-    import { $, $$ } from '@/lib/dom-selector'
-    import { SplitText } from 'gsap/SplitText'
+  import gsap from 'gsap'
+  // import Lenis from 'lenis'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { $, $$ } from '@/lib/dom-selector'
+  import { SplitText } from 'gsap/SplitText'
 
-    gsap.registerPlugin(ScrollTrigger)
-    gsap.registerPlugin(SplitText)
+  gsap.registerPlugin(ScrollTrigger)
+  gsap.registerPlugin(SplitText)
 
-    let cleanupGaleria = null
+  // const lenis = new Lenis({
+  //     duration: 1.5,
+  //     smoothWheel: true,
+  //     smoothTouch: false,
+  //     touchMultiplier: 1.5,
+  //     overscroll: true,
+  //     easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+  // });
 
-    const setupGaleria = () => {
-        if (cleanupGaleria) {
-            cleanupGaleria()
-            cleanupGaleria = null
-        }
+  // lenis.on("scroll", ScrollTrigger.update);
 
-        const section = $<HTMLElement>('[data-galeria]')
-        if (!section) {
-            return
-        }
+  // gsap.ticker.add((time) => {
+  //     lenis.raf(time * 1000);
+  // });
 
-        const stage = $<HTMLElement>('[data-galeria-stage]', section)
-        const copy = $<HTMLElement>('[data-galeria-copy]', section)
-        const main = $<HTMLElement>('[data-galeria-main]', section)
-        const sub = $<HTMLElement>('[data-galeria-sub]', section)
-        const media = $<HTMLElement>('[data-galeria-media]', section)
-        const cta = $<HTMLElement>('[data-galeria-cta]', section)
-        const images = $$<HTMLImageElement>('[data-galeria-image]', section)
+  // gsap.ticker.lagSmoothing(0);
 
-        if (!stage || !copy || !main || !sub || !cta) {
-            return
-        }
+  let cleanupGaleria = null
 
-        const baseWordColor = 'color-mix(in srgb, var(--vmv-gray-12) 32%, var(--vmv-sand-1))'
-        const activeWordColor = 'var(--vmv-gray-12)'
+  // const ensureImageReady = async (image) => {
+  //     if (!image) {
+  //         return
+  //     }
 
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  //     if (!image.complete) {
+  //         await new Promise((resolve) => {
+  //             const done = () => {
+  //                 image.removeEventListener('load', done)
+  //                 image.removeEventListener('error', done)
+  //                 resolve()
+  //             }
 
-        if (reducedMotion) {
-            gsap.set(media, {
-                width: '100vw',
-                height: '100vh',
-                borderRadius: '0px',
-            })
-            gsap.set(cta, { opacity: 1, y: 0 })
-            gsap.set(images, { opacity: 0 })
-            gsap.set(images[0], { opacity: 1 })
-            return
-        }
+  //             image.addEventListener('load', done, { once: true })
+  //             image.addEventListener('error', done, { once: true })
+  //         })
+  //     }
 
-        const mainSplit = SplitText.create(main, {
-            type: 'chars',
-            smartWrap: true,
-            aria: 'auto',
-        })
-        const subSplit = SplitText.create(sub, {
-            type: 'chars',
-            smartWrap: true,
-            aria: 'auto',
-        })
+  //     if ('decode' in image) {
+  //         try {
+  //             await image.decode()
+  //         } catch {
+  //             // Ignore decode failures and continue with the loaded image.
+  //         }
+  //     }
+  // }
 
-        const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: section,
-                    start: 'top top',
-                    end: '+=340%',
-                    scrub: 1,
-                    pin: stage,
-                    pinSpacing: true,
-                    anticipatePin: 1,
-                    invalidateOnRefresh: true,
-                },
-            })
-
-            gsap.set(copy, { opacity: 1, y: 0 })
-            gsap.set(main, { y: 0 })
-            gsap.set(sub, { y: 0 })
-            gsap.set(cta, { opacity: 0, y: 20 })
-            gsap.set(mainSplit.chars, {
-                color: baseWordColor,
-                opacity: 0.50,
-                willChange: 'color, opacity',
-            })
-            gsap.set(subSplit.chars, {
-                color: baseWordColor,
-                opacity: 0.50,
-                willChange: 'color, opacity',
-            })
-            if (media) {
-                gsap.set(media, {
-                    width: '16rem',
-                    height: '16rem',
-                    borderRadius: '999px',
-                    opacity: 0,
-                })
-            }
-            if (images.length > 0) {
-                gsap.set(images, { opacity: 0 })
-                gsap.set(images[0], { opacity: 1 })
-            }
-
-            tl.to(
-                mainSplit.chars,
-                {
-                    color: activeWordColor,
-                    opacity: 1,
-                    duration: 1,
-                    stagger: {
-                        each: 0.1,
-                        from: 'start',
-                    },
-                    ease: 'none',
-                },
-                0,
-            )
-            .to(
-                main,
-                {
-                    y: () => {
-                        const mainRect = main.getBoundingClientRect()
-                        const stageRect = stage.getBoundingClientRect()
-                        return stageRect.top - mainRect.bottom
-                    },
-                    duration: 8,
-                    ease: 'none',
-                },
-            )
-            .to(
-                subSplit.chars,
-                {
-                    color: activeWordColor,
-                    opacity: 1,
-                    duration: 1,
-                    stagger: {
-                        each: 0.1,
-                        from: 'start',
-                    },
-                    ease: 'none',
-                },
-                "<",
-            )
-            .to(
-                media,
-                {
-                    opacity: 1,
-                    duration: 0,
-                    ease: 'none',
-                },
-            )
-            .to(
-                subSplit.chars,
-                {
-                    opacity: 0,
-                    duration: 4,
-                    ease: 'none',
-                },
-            )
-            .to(
-                media,
-                {
-                    width: '100vw',
-                    height: '100vh',
-                    borderRadius: '0px',
-                    duration: 24,
-                    ease: 'none',
-                },
-                "<",
-            )
-
-            if (images.length > 1) {
-                images.slice(1).forEach((image, index) => {
-                    const previousImage = images[index]
-                    const timeGap = 2
-                    // const at = imageChangePoints[index]
-
-                    tl.to(
-                        previousImage,
-                        {
-                            opacity: 0,
-                            duration: 0.45,
-                            ease: 'none',
-                        },
-                        `<+=${timeGap}`,
-                    ).to(
-                        image,
-                        {
-                            opacity: 1,
-                            duration: 0.45,
-                            ease: 'none',
-                        },
-                        `<`,
-                    )
-                })
-            }
-
-            tl.to(
-                cta,
-                {
-                    delay: 4,
-                    opacity: 1,
-                    y: 0,
-                    duration: 8,
-                    ease: 'power2.out',
-                },
-            )
-        }, section)
-
-        cleanupGaleria = () => {
-            mainSplit.revert()
-            subSplit.revert()
-            ctx.revert()
-        }
+  const setupGaleria = () => {
+    if (cleanupGaleria) {
+      cleanupGaleria()
+      cleanupGaleria = null
     }
 
-    document.addEventListener('astro:before-swap', () => {
-        if (cleanupGaleria) {
-            cleanupGaleria()
-            cleanupGaleria = null
-        }
+    const section = $('[data-galeria]')
+    if (!section) {
+      return
+    }
+
+    const stage = $('[data-galeria-stage]', section)
+    const copy = $('[data-galeria-copy]', section)
+    const main = $('[data-galeria-main]', section)
+    const sub = $('[data-galeria-sub]', section)
+    const media = $('[data-galeria-media]', section)
+    const cta = $('[data-galeria-cta]', section)
+    const images = $$('[data-galeria-image]', section)
+
+    // void Promise.allSettled(images.map((image) => ensureImageReady(image)))
+
+    if (!stage || !copy || !main || !sub || !cta) {
+      return
+    }
+
+    const baseWordColor = 'color-mix(in srgb, var(--vmv-gray-12) 32%, var(--vmv-sand-1))'
+    const activeWordColor = 'var(--vmv-gray-12)'
+    // const imageTransitions = Math.max(images.length - 1, 0)
+    // const imageScrollBlocks = imageTransitions * 0.9
+    // const timelineScrollBlocks = 4.2 + imageScrollBlocks
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reducedMotion) {
+      gsap.set(media, {
+        width: '100vw',
+        height: '100vh',
+        borderRadius: '0px',
+      })
+      gsap.set(cta, { opacity: 1, y: 0 })
+      gsap.set(images, { opacity: 0 })
+      gsap.set(images[0], { opacity: 1 })
+      return
+    }
+
+    const mainSplit = SplitText.create(main, {
+      type: 'chars',
+      smartWrap: true,
+      aria: 'auto',
+    })
+    const subSplit = SplitText.create(sub, {
+      type: 'chars',
+      smartWrap: true,
+      aria: 'auto',
     })
 
-    document.addEventListener('astro:page-load', setupGaleria)
-    setupGaleria()
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: '+=520%',
+          scrub: 1,
+          pin: stage,
+          anticipatePin: 1,
+          pinSpacing: true,
+          invalidateOnRefresh: true,
+        },
+      })
+
+      gsap.set(copy, { opacity: 1, y: 0 })
+      gsap.set(main, { y: 0 })
+      gsap.set(sub, { y: 0 })
+      gsap.set(cta, { opacity: 0, y: 20 })
+      gsap.set(mainSplit.chars, {
+        color: baseWordColor,
+        opacity: 0.5,
+        willChange: 'color, opacity',
+      })
+      gsap.set(subSplit.chars, {
+        color: baseWordColor,
+        opacity: 0.5,
+        willChange: 'color, opacity',
+      })
+      if (media) {
+        gsap.set(media, {
+          width: '16rem',
+          height: '16rem',
+          borderRadius: '999px',
+          opacity: 0,
+          //   willChange: 'width, height, border-radius, opacity',
+        })
+      }
+      if (images.length > 0) {
+        gsap.set(images, { opacity: 0 })
+        gsap.set(images[0], { opacity: 1 })
+      }
+
+      tl.to(
+        mainSplit.chars,
+        {
+          color: activeWordColor,
+          opacity: 1,
+          duration: 0.25,
+          stagger: {
+            each: 0.5,
+            from: 'start',
+          },
+          ease: 'none',
+        },
+        0,
+      )
+        .to(main, {
+          y: () => {
+            const mainRect = main.getBoundingClientRect()
+            const stageRect = stage.getBoundingClientRect()
+            return stageRect.top - mainRect.bottom
+          },
+          duration: 16,
+          ease: 'none',
+        })
+        .to(
+          subSplit.chars,
+          {
+            color: activeWordColor,
+            opacity: 1,
+            duration: 0.25,
+            stagger: {
+              each: 0.5,
+              from: 'start',
+            },
+            ease: 'none',
+          },
+          '<',
+        )
+        .to(
+          media,
+          {
+            opacity: 1,
+            duration: 2,
+            ease: 'none',
+            delay: 4,
+          },
+          '<',
+        )
+        .to(subSplit.chars, {
+          opacity: 0,
+          duration: 2,
+          ease: 'none',
+        })
+        .to(
+          media,
+          {
+            width: '100vw',
+            height: '100vh',
+            borderRadius: '0px',
+            duration: 160,
+            ease: 'none',
+          },
+          '<',
+        )
+
+      if (images.length > 1) {
+        images.slice(1).forEach((image, index) => {
+          const previousImage = images[index]
+          const timeGap = 16
+
+          tl.to(
+            previousImage,
+            {
+              opacity: 0,
+              duration: 0.45,
+              ease: 'none',
+            },
+            `<+=${timeGap}`,
+          ).to(
+            image,
+            {
+              opacity: 1,
+              duration: 0.45,
+              ease: 'none',
+            },
+            `<`,
+          )
+        })
+      }
+
+      ;(tl.to(cta, {
+        delay: 0.25,
+        opacity: 1,
+        y: 0,
+        duration: 0.25,
+        ease: 'power2.out',
+      }),
+        tl.to(null, {
+          duration: 0.25,
+        }))
+    }, section)
+
+    cleanupGaleria = () => {
+      mainSplit.revert()
+      subSplit.revert()
+      ctx.revert()
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    if (cleanupGaleria) {
+      cleanupGaleria()
+      cleanupGaleria = null
+    }
+  })
+
+  document.addEventListener('astro:page-load', setupGaleria)
+  setupGaleria()
 </script>
 
 <style>
-    .galeria-scroll {
-        position: relative;
-        min-height: 200vh;
-        background: var(--vmv-sand-1);
-    }
+  .galeria-scroll {
+    position: relative;
+    min-height: 200vh;
+    background: var(--vmv-sand-1);
+  }
 
-    .galeria-stage {
-        position: relative;
-        height: 100vh;
-        overflow: hidden;
-        isolation: isolate;
-    }
+  .galeria-stage {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    isolation: isolate;
+  }
 
-    .galeria-copy {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0.08em;
-        z-index: 3;
-        text-align: center;
-        pointer-events: none;
-        padding-inline: clamp(1rem, 4vw, 3rem);
-    }
+  .galeria-copy {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.08em;
+    z-index: 3;
+    text-align: center;
+    pointer-events: none;
+    padding-inline: clamp(1rem, 4vw, 3rem);
+  }
 
+  .galeria-main {
+    max-width: 20ch;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--vmv-gray-12) 92%, var(--vmv-sand-1));
+    text-wrap: balance;
+    text-shadow: 0 14px 30px color-mix(in srgb, var(--vmv-gray-12) 20%, transparent);
+    margin-bottom: -0.04em;
+  }
+
+  .galeria-sub {
+    max-width: 20ch;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--vmv-gray-12) 92%, var(--vmv-sand-1));
+    text-wrap: balance;
+    text-shadow: 0 14px 30px color-mix(in srgb, var(--vmv-gray-12) 20%, transparent);
+  }
+
+  .galeria-cta {
+    pointer-events: auto;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .galeria-cta-button {
+    box-shadow: 0 18px 45px color-mix(in srgb, var(--vmv-gray-12) 22%, transparent);
+  }
+
+  .galeria-media {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    contain: paint;
+    overflow: hidden;
+    box-shadow: 0 25px 65px color-mix(in srgb, var(--vmv-gray-12) 30%, transparent);
+  }
+
+  .galeria-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .galeria-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* opacity: 1; */
+    transform: translateZ(0);
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+  }
+
+  .galeria-image.is-active {
+    opacity: 1;
+  }
+
+  @media (max-width: 900px) {
     .galeria-main {
-        max-width: 20ch;
-        text-transform: uppercase;
-        color: color-mix(in srgb, var(--vmv-gray-12) 92%, var(--vmv-sand-1));
-        text-wrap: balance;
-        text-shadow: 0 14px 30px color-mix(in srgb, var(--vmv-gray-12) 20%, transparent);
-        margin-bottom: -0.04em;
+      max-width: 15ch;
     }
 
     .galeria-sub {
-        max-width: 20ch;
-        text-transform: uppercase;
-        color: color-mix(in srgb, var(--vmv-gray-12) 92%, var(--vmv-sand-1));
-        text-wrap: balance;
-        text-shadow: 0 14px 30px color-mix(in srgb, var(--vmv-gray-12) 20%, transparent);
+      max-width: 15ch;
     }
-
-    .galeria-cta {
-        pointer-events: auto;
-        margin-top: clamp(1.5rem, 3vw, 2.5rem);
-    }
-
-    .galeria-cta-button {
-        box-shadow: 0 18px 45px color-mix(in srgb, var(--vmv-gray-12) 22%, transparent);
-    }
-
-    .galeria-media {
-        position: absolute;
-        z-index: 2;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        overflow: hidden;
-        box-shadow: 0 25px 65px color-mix(in srgb, var(--vmv-gray-12) 30%, transparent);
-    }
-
-    .galeria-frame {
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-
-    .galeria-image {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0;
-    }
-
-    .galeria-image.is-active {
-        opacity: 1;
-    }
-
-    @media (max-width: 900px) {
-        .galeria-main {
-            max-width: 15ch;
-        }
-
-        .galeria-sub {
-            max-width: 15ch;
-        }
-    }
+  }
 </style>
