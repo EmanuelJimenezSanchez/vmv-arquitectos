@@ -1,0 +1,95 @@
+---
+const {
+  class: className = '',
+  tag: TagName = 'h1',
+  title = 'Arquitectura pensada para habitar mejor',
+  phrases = [
+    '+10 años de experiencia',
+    '+120 proyectos realizados',
+    '+85.000 metros cuadrados construidos',
+  ],
+} = Astro.props as {
+  class?: string
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div'
+  title?: string
+  phrases?: string[]
+}
+
+const Tag = TagName
+---
+
+<div data-hero-copy class={className}>
+  <Tag class="max-w-3xl text-4xl leading-tight font-light tracking-tight text-white md:text-6xl">
+    <span class="block">{title}</span>
+    <span class="relative mt-3 block min-h-[1.35em] overflow-hidden text-3xl md:mt-4 md:text-5xl">
+      {
+        phrases.map((phrase) => (
+          <span data-hero-phrase class="absolute inset-0">
+            {phrase}
+          </span>
+        ))
+      }
+    </span>
+  </Tag>
+</div>
+
+<script>
+  import { gsap } from 'gsap'
+  import { $$ } from '@/lib/dom-selector'
+
+  const animationRoots = new Set<HTMLElement>()
+  const heroTimelines = new WeakMap<HTMLElement, gsap.core.Timeline>()
+
+  function killHeroCopy(root: HTMLElement) {
+    heroTimelines.get(root)?.kill()
+    heroTimelines.delete(root)
+    animationRoots.delete(root)
+  }
+
+  function killAllHeroCopies() {
+    animationRoots.forEach((root) => {
+      killHeroCopy(root)
+    })
+  }
+
+  function initHeroCopyRotation() {
+    killAllHeroCopies()
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const roots = $$<HTMLElement>('[data-hero-copy]')
+
+    roots.forEach((root) => {
+      const phrases = $$<HTMLElement>('[data-hero-phrase]', root)
+      if (phrases.length < 2) return
+
+      animationRoots.add(root)
+      gsap.set(phrases, { position: 'absolute', inset: 0, yPercent: 120 })
+      gsap.set(phrases[0], { yPercent: 0 })
+
+      if (prefersReducedMotion) return
+
+      const timeline = gsap.timeline({ repeat: -1 })
+      heroTimelines.set(root, timeline)
+
+      phrases.forEach((_, index) => {
+        const current = phrases[index]
+        const next = phrases[(index + 1) % phrases.length]
+
+        timeline
+          .to({}, { duration: 3 })
+          .set(next, { yPercent: 120 })
+          .to(current, { yPercent: -120, duration: 0.6, ease: 'power2.inOut' })
+          .to(next, { yPercent: 0, duration: 0.6, ease: 'power2.inOut' }, '<')
+          .set(current, { yPercent: 120 })
+      })
+    })
+  }
+
+  if (!(window as Window & { __heroCopyListenersBound?: boolean }).__heroCopyListenersBound) {
+    ;(window as Window & { __heroCopyListenersBound?: boolean }).__heroCopyListenersBound = true
+    document.addEventListener('astro:before-swap', killAllHeroCopies)
+    document.addEventListener('astro:page-load', initHeroCopyRotation)
+  }
+
+  initHeroCopyRotation()
+</script>
