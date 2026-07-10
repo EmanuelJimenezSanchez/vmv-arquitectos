@@ -1,7 +1,209 @@
 ---
+import Button from '@/components/ui/Button.astro'
+import { servicios } from '@/data/servicios'
 
+const totalLabel = String(servicios.length).padStart(2, '0')
 ---
 
-<section id="servicios" class="h-screen flex items-center justify-center">
-    Servicios
+<section id="servicios" class="relative bg-vmv-background" data-servicios aria-label="Servicios de la constructora">
+    <div class="relative min-[900px]:motion-safe:h-screen min-[900px]:motion-safe:overflow-hidden" data-servicios-stage>
+        <div
+            class="flex flex-col gap-10 py-[clamp(3.5rem,8vw,6rem)] min-[900px]:motion-safe:h-full min-[900px]:motion-safe:w-max min-[900px]:motion-safe:flex-row min-[900px]:motion-safe:items-center min-[900px]:motion-safe:gap-[clamp(2rem,4vw,4.5rem)] min-[900px]:motion-safe:py-0 min-[900px]:motion-safe:pr-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:pl-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:will-change-transform"
+            data-servicios-track
+        >
+            <header
+                class="flex flex-col items-start gap-6 px-[clamp(1.25rem,5vw,3rem)] min-[900px]:motion-safe:w-[clamp(24rem,36vw,32rem)] min-[900px]:motion-safe:shrink-0 min-[900px]:motion-safe:px-0 min-[900px]:motion-safe:pr-[clamp(2rem,5vw,5rem)]"
+                data-servicios-intro
+            >
+                <p class="vmv-overline-1 text-vmv-muted-foreground">Nuestros servicios</p>
+                <h2 class="vmv-title-1 max-w-[12ch] text-balance text-vmv-foreground">Construimos cada etapa</h2>
+                <p class="vmv-body-2 max-w-[42ch] text-vmv-muted-foreground">
+                    Acompañamos tu proyecto del concepto a la obra terminada, con un equipo que cuida el diseño, los
+                    tiempos y cada acabado.
+                </p>
+                <Button href="#contacto" variant="outline" size="xl">Conversemos tu proyecto</Button>
+            </header>
+
+            <div
+                class="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-px-[clamp(1.25rem,5vw,3rem)] px-[clamp(1.25rem,5vw,3rem)] pb-4 [scrollbar-width:none] sm:gap-6 min-[900px]:motion-safe:contents [&::-webkit-scrollbar]:hidden"
+            >
+                {
+                    servicios.map((servicio, index) => (
+                        <article
+                            class="group relative w-[min(78vw,19rem)] shrink-0 snap-start sm:w-[clamp(16rem,42vw,20rem)] min-[900px]:motion-safe:w-[clamp(15rem,min(26vw,42vh),23rem)] min-[900px]:motion-safe:even:top-[clamp(1.5rem,4vh,3rem)]"
+                            data-servicios-card
+                        >
+                            <figure class="relative aspect-[3/4.3] overflow-hidden bg-vmv-gray-12 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]">
+                                <img
+                                    src={servicio.image}
+                                    alt={servicio.imageAlt}
+                                    class="absolute top-0 left-[-5%] h-full w-[110%] object-cover"
+                                    data-servicios-image
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                                <div
+                                    class="absolute inset-0 bg-[#5c4938]/35 mix-blend-multiply transition-opacity duration-700 group-hover:opacity-0"
+                                    aria-hidden="true"
+                                />
+                                <div
+                                    class="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,9,8,0.12)_0%,transparent_38%,rgba(10,9,8,0.78)_100%)]"
+                                    aria-hidden="true"
+                                />
+                                <figcaption class="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-[clamp(1.25rem,2vw,1.75rem)]">
+                                    <h3 class="vmv-title-3 text-balance tracking-[0.08em] text-white uppercase">
+                                        {servicio.title}
+                                    </h3>
+                                    <p class="vmv-body-3 text-white/78">{servicio.description}</p>
+                                </figcaption>
+                            </figure>
+                            <div class="mt-4 h-px w-full bg-vmv-border">
+                                <div
+                                    class="h-full origin-left scale-x-0 bg-vmv-foreground transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+                                    aria-hidden="true"
+                                />
+                            </div>
+                            <div class="vmv-caption-1 mt-2.5 flex items-baseline justify-between tracking-[0.22em] text-vmv-muted-foreground uppercase">
+                                <span>{String(index + 1).padStart(2, '0')}</span>
+                                <span>Servicio</span>
+                            </div>
+                        </article>
+                    ))
+                }
+            </div>
+        </div>
+
+        <footer
+            class="pointer-events-none absolute inset-x-[clamp(2rem,6vw,6rem)] bottom-[clamp(1.25rem,3vw,2rem)] z-2 hidden flex-col gap-3 min-[900px]:motion-safe:flex"
+            aria-hidden="true"
+        >
+            <span class="vmv-caption-1 self-end tracking-[0.22em] text-vmv-muted-foreground">
+                <span data-servicios-counter>01</span> / {totalLabel}
+            </span>
+            <div class="h-px w-full bg-vmv-foreground/12">
+                <div class="h-full origin-left bg-vmv-foreground [transform:scaleX(0)]" data-servicios-progress></div>
+            </div>
+        </footer>
+    </div>
 </section>
+
+<script>
+    import gsap from 'gsap'
+    import { ScrollTrigger } from 'gsap/ScrollTrigger'
+    import { $, $$ } from '@/lib/dom-selector'
+
+    gsap.registerPlugin(ScrollTrigger)
+
+    let cleanupServicios: (() => void) | null = null
+
+    const setupServicios = () => {
+        if (cleanupServicios) {
+            cleanupServicios()
+            cleanupServicios = null
+        }
+
+        const section = $<HTMLElement>('[data-servicios]')
+        if (!section) {
+            return
+        }
+
+        const stage = $<HTMLElement>('[data-servicios-stage]', section)
+        const track = $<HTMLElement>('[data-servicios-track]', section)
+        const intro = $<HTMLElement>('[data-servicios-intro]', section)
+        const cards = $$<HTMLElement>('[data-servicios-card]', section)
+        const images = $$<HTMLImageElement>('[data-servicios-image]', section)
+        const progressBar = $<HTMLElement>('[data-servicios-progress]', section)
+        const counter = $<HTMLElement>('[data-servicios-counter]', section)
+
+        if (!stage || !track || cards.length === 0) {
+            return
+        }
+
+        const mm = gsap.matchMedia()
+
+        // Debe coincidir con las variantes `min-[900px]:motion-safe:` del markup.
+        mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+            const getDistance = () => track.scrollWidth - stage.clientWidth
+            // Cuánto scroll vertical se necesita por pixel de desplazamiento horizontal.
+            const scrollFactor = 1.8
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top top',
+                    end: () => `+=${getDistance() * scrollFactor}`,
+                    scrub: 1,
+                    pin: stage,
+                    pinSpacing: true,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true,
+                    onUpdate: (self) => {
+                        if (!counter) {
+                            return
+                        }
+                        const index = Math.round(self.progress * (cards.length - 1))
+                        counter.textContent = String(index + 1).padStart(2, '0')
+                    },
+                },
+            })
+
+            tl.to(track, {
+                x: () => -getDistance(),
+                ease: 'none',
+            })
+
+            if (progressBar) {
+                tl.fromTo(progressBar, { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0)
+            }
+
+            cards.forEach((card, index) => {
+                const image = images[index]
+                if (!image) {
+                    return
+                }
+                gsap.fromTo(
+                    image,
+                    { xPercent: -4 },
+                    {
+                        xPercent: 4,
+                        ease: 'none',
+                        scrollTrigger: {
+                            trigger: card,
+                            containerAnimation: tl,
+                            start: 'left right',
+                            end: 'right left',
+                            scrub: true,
+                        },
+                    },
+                )
+            })
+
+            const entrance = [intro, ...cards].filter(Boolean)
+            gsap.from(entrance, {
+                autoAlpha: 0,
+                y: 44,
+                duration: 1,
+                ease: 'power3.out',
+                stagger: 0.12,
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top 70%',
+                },
+            })
+        })
+
+        cleanupServicios = () => {
+            mm.revert()
+        }
+    }
+
+    document.addEventListener('astro:before-swap', () => {
+        if (cleanupServicios) {
+            cleanupServicios()
+            cleanupServicios = null
+        }
+    })
+
+    document.addEventListener('astro:page-load', setupServicios)
+    setupServicios()
+</script>
