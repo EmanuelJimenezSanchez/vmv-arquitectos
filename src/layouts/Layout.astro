@@ -1,11 +1,11 @@
 ---
-import { ClientRouter } from "astro:transitions";
-import Analytics from "@vercel/analytics/astro";
+import { ClientRouter } from 'astro:transitions'
+import Analytics from '@vercel/analytics/astro'
 
 import '@/styles/global.css'
 
-import Header from "../sections/Header.astro";
-import Footer from "@/sections/Footer.astro";
+import Header from '../sections/Header.astro'
+import Footer from '@/sections/Footer.astro'
 
 const SITE_URL = 'https://www.vmv-arquitectos.com'
 const DEFAULT_OG_IMAGE = `https://cdn.vmv-arquitectos.com/og.jpg`
@@ -47,16 +47,17 @@ const finalRobots = robots ?? 'index, follow'
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos
-    </title>
+    <title>VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos</title>
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <meta name="description" content="VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos" />
+    <meta
+      name="description"
+      content="VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos"
+    />
     <meta name="author" content="VMV Arquitectos" />
     <link rel="canonical" href="https://www.vmv-arquitectos.com/" />
     <meta name="robots" content="index, follow" />
@@ -95,5 +96,10 @@ const finalRobots = robots ?? 'index, follow'
       <slot />
     </main>
     <Footer />
+
+    <script type="module">
+      import { initLenis } from '../scripts/lenis.js'
+      initLenis()
+    </script>
   </body>
 </html>
