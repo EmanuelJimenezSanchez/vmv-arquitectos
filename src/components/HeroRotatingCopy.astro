@@ -2,17 +2,19 @@
 const {
   class: className = '',
   tag: TagName = 'h1',
-  title = 'Arquitectura pensada para habitar mejor',
+  title = 'Arquitectura, diseño y construcción de calidad',
   phrases = [
     '+10 años de experiencia',
     '+120 proyectos realizados',
     '+85.000 metros cuadrados construidos',
   ],
+  description = 'Despacho de arquitectura especializado en diseño, construcción y remodelación comercial y habitacional, incluyendo casas de lujo en las mejores zonas de la ciudad.',
 } = Astro.props as {
   class?: string
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div'
   title?: string
   phrases?: string[]
+  description?: string
 }
 
 const Tag = TagName
@@ -21,16 +23,24 @@ const Tag = TagName
 <div data-hero-copy class={className}>
   <Tag class="max-w-3xl text-4xl leading-tight font-light tracking-tight text-white md:text-6xl">
     <span class="block">{title}</span>
-    <span class="relative mt-3 block min-h-[1.35em] overflow-hidden text-3xl md:mt-4 md:text-5xl">
+  </Tag>
+
+  <div class="mt-5 flex items-center gap-3 md:mt-6">
+    <span class="h-px w-8 shrink-0 bg-white/50 md:w-10"></span>
+    <span class="relative block min-h-[1.4em] w-full max-w-xl overflow-hidden text-sm font-light tracking-wide text-white/85 sm:text-lg md:text-2xl">
       {
         phrases.map((phrase) => (
-          <span data-hero-phrase class="absolute inset-0">
+          <span data-hero-phrase class="absolute inset-0 whitespace-nowrap">
             {phrase}
           </span>
         ))
       }
     </span>
-  </Tag>
+  </div>
+
+  <p class="mt-6 max-w-lg border-t border-white/15 pt-5 text-sm leading-relaxed font-light text-white/70 md:mt-8 md:max-w-xl md:pt-6 md:text-base">
+    {description}
+  </p>
 </div>
 
 <script>
