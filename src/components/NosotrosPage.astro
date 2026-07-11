@@ -27,6 +27,42 @@ const panelLabelClasses =
 
 const navDotClasses =
   'size-[5px] shrink-0 rounded-full border border-vmv-sand-9/40 bg-vmv-sand-9/22 transition-[background-color,border-color,scale] duration-[400ms] data-active:scale-[1.6] data-active:border-vmv-sand-12 data-active:bg-vmv-sand-12';
+
+// Imágenes decorativas que aparecen alrededor de la frase del hero.
+// Tamaños, posiciones y formas deliberadamente desiguales para un efecto
+// desacomodado; agregar más objetos aquí para sumar imágenes al collage.
+const revealImages = [
+  {
+    src: '/images/nosotros/fade-1.webp',
+    position: 'top-[7%] left-[3%] -rotate-6',
+    size: 'h-[clamp(7rem,11.5vw,11rem)] w-[clamp(7rem,11.5vw,11rem)]',
+    shape: '[clip-path:circle(50%)]',
+  },
+  {
+    src: '/images/nosotros/fade-2.webp',
+    position: 'top-[14%] right-[10%] rotate-3',
+    size: 'h-[clamp(13rem,20vw,19rem)] w-[clamp(9.5rem,15vw,14.5rem)]',
+    shape: 'rounded-[45%_55%_60%_40%/50%_45%_55%_50%]',
+  },
+  {
+    src: '/images/nosotros/fade-3.webp',
+    position: 'bottom-[4%] left-[15%] -rotate-2',
+    size: 'h-[clamp(9.5rem,15vw,14.5rem)] w-[clamp(9.5rem,15vw,14.5rem)]',
+    shape: 'rounded-[60%_40%_30%_70%/60%_30%_70%_40%]',
+  },
+  {
+    src: '/images/nosotros/fade-4.webp',
+    position: 'right-[3%] bottom-[16%] rotate-6',
+    size: 'h-[clamp(6.5rem,10vw,9.5rem)] w-[clamp(8.5rem,13vw,12.5rem)]',
+    shape: 'rounded-full',
+  },
+  {
+    src: '/images/nosotros/fade-5.webp',
+    position: 'top-[1%] left-[36%] -rotate-8',
+    size: 'h-[clamp(7.5rem,12vw,11.5rem)] w-[clamp(7.5rem,12vw,11.5rem)]',
+    shape: 'rounded-[2.5rem_0.5rem_2.5rem_0.5rem]',
+  },
+];
 ---
 
 <section id="nosotros" class="relative">
@@ -82,6 +118,29 @@ const navDotClasses =
       <span
         class="scroll-drop block h-14 w-px bg-linear-to-b from-vmv-sand-1/0 via-vmv-sand-1/65 to-vmv-sand-1/0"
       ></span>
+    </div>
+
+    <div
+      data-nosotros="reveal-images"
+      class="pointer-events-none absolute inset-0 z-10 hidden md:block"
+      aria-hidden="true"
+    >
+      {
+        revealImages.map((img) => (
+          <div
+            data-nosotros="reveal-img"
+            class={`absolute ${img.position} ${img.size} overflow-hidden opacity-0 ${img.shape}`}
+          >
+            <img
+              src={img.src}
+              alt=""
+              class="block h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        ))
+      }
     </div>
 
     <div
@@ -204,7 +263,7 @@ const navDotClasses =
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { SplitText } from 'gsap/SplitText';
-  import { $ } from '@/lib/dom-selector';
+  import { $, $$ } from '@/lib/dom-selector';
 
   gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -229,6 +288,7 @@ const navDotClasses =
     const scrollHint  = $<HTMLElement>('[data-nosotros="scroll-hint"]');
     const revealEl    = $<HTMLElement>('[data-nosotros="reveal"]');
     const revealText  = $<HTMLParagraphElement>('[data-nosotros="reveal-text"]');
+    const revealImgs  = $$<HTMLElement>('[data-nosotros="reveal-img"]');
 
     if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return;
 
@@ -237,6 +297,7 @@ const navDotClasses =
 
     gsap.set(revealEl, { opacity: 0 });
     gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' });
+    gsap.set(revealImgs, { opacity: 0, scale: 0.85 });
 
     const heroTl = gsap.timeline({
       scrollTrigger: {
@@ -259,6 +320,27 @@ const navDotClasses =
         { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.12 }, duration: 0.12, ease: 'none' },
         1.55,
       )
+
+    // Imágenes decorativas: entran una a una con distintas formas; cada una
+    // empieza a desvanecerse apenas termina de aparecer, así el fade out
+    // arranca en cuanto el usuario sigue haciendo scroll hacia abajo.
+    const revealImgFadeIn = 0.55;
+    const revealImgFadeOut = 0.5;
+    revealImgs.forEach((img, i) => {
+      const start = 1.05 + i * 0.2;
+      heroTl
+        .fromTo(
+          img,
+          { opacity: 0, scale: 0.85 },
+          { opacity: 1, scale: 1, duration: revealImgFadeIn, ease: 'power2.out' },
+          start,
+        )
+        .to(
+          img,
+          { opacity: 0, scale: 1.06, duration: revealImgFadeOut, ease: 'power2.in' },
+          start + revealImgFadeIn,
+        );
+    });
 
     const heroSt = heroTl.scrollTrigger;
     if (heroSt) activeTriggers.push(heroSt);
