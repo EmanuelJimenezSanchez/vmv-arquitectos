@@ -1,6 +1,7 @@
 ---
-import 'swiper/css';
-import 'swiper/css/effect-fade';
+import 'swiper/css'
+import 'swiper/css/effect-fade'
+import HeroRotatingCopy from './HeroRotatingCopy.astro'
 
 const slides = [
   {
@@ -19,10 +20,10 @@ const slides = [
     src: '/images/hero/hero-4.webp',
     alt: 'Detalle de proyecto con materiales calidos',
   },
-];
+]
 ---
 
-<div class="hero-slider" id="hero-slider">
+<div class="hero-slider relative" id="hero-slider">
   <div class="swiper hero-swiper" id="hero-swiper" aria-label="Galeria principal del hero">
     <div class="swiper-wrapper">
       {
@@ -39,6 +40,12 @@ const slides = [
         ))
       }
     </div>
+  </div>
+
+  <div
+    class="absolute inset-0 z-10 mx-auto flex min-h-screen w-full max-w-7xl items-end px-6 pb-12 md:px-12 md:pb-16"
+  >
+    <HeroRotatingCopy tag="h2" class="hero-copy-layout" />
   </div>
 
   <div class="hero-pagination" id="hero-pagination" aria-hidden="true"></div>
@@ -95,7 +102,9 @@ const slides = [
     height: 0.8rem;
     border: 1px solid rgba(255, 255, 255, 0.75);
     background: transparent;
-    transition: background-color 240ms ease, transform 240ms ease;
+    transition:
+      background-color 240ms ease,
+      transform 240ms ease;
     cursor: pointer;
   }
 
@@ -124,7 +133,9 @@ const slides = [
     display: grid;
     place-items: center;
     font-size: 1rem;
-    transition: background-color 220ms ease, border-color 220ms ease;
+    transition:
+      background-color 220ms ease,
+      border-color 220ms ease;
   }
 
   .hero-nav-btn:hover {
@@ -138,6 +149,10 @@ const slides = [
   }
 
   @media (max-width: 768px) {
+    .hero-copy-layout {
+      padding: 0 1rem 2rem;
+    }
+
     .hero-pagination {
       left: 0.9rem;
       gap: 0.5rem;
@@ -161,14 +176,14 @@ const slides = [
 </style>
 
 <script>
-  import { $ } from '@/lib/dom-selector';
-  import Swiper from 'swiper';
-  import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+  import { $ } from '@/lib/dom-selector'
+  import Swiper from 'swiper'
+  import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules'
 
-  const swiperRoot = $<HTMLElement>('#hero-swiper');
-  const paginationEl = $<HTMLElement>('#hero-pagination');
-  const prevEl = $<HTMLElement>('#hero-prev');
-  const nextEl = $<HTMLElement>('#hero-next');
+  const swiperRoot = $<HTMLElement>('#hero-swiper')
+  const paginationEl = $<HTMLElement>('#hero-pagination')
+  const prevEl = $<HTMLElement>('#hero-prev')
+  const nextEl = $<HTMLElement>('#hero-next')
 
   if (swiperRoot && paginationEl && prevEl && nextEl) {
     new Swiper(swiperRoot, {
@@ -195,6 +210,6 @@ const slides = [
         prevEl,
         nextEl,
       },
-    });
+    })
   }
 </script>
