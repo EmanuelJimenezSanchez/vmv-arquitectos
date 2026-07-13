@@ -1,5 +1,6 @@
 ---
 import { galeria } from '@/data/galeria';
+import Button from '@/components/ui/Button.astro';
 
 const services = [
   {
@@ -167,6 +168,21 @@ const revealImages = [
     </div>
 
     <div
+      data-nosotros="galeria-copy"
+      class="pointer-events-none absolute inset-0 z-7 flex flex-col items-center justify-center gap-[0.08em] px-[clamp(1rem,4vw,3rem)] text-center opacity-0"
+    >
+      <p
+        data-nosotros="galeria-main"
+        class="vmv-title-1 mx-auto max-w-[24ch] text-balance uppercase text-vmv-sand-1 [text-shadow:0_14px_30px_rgba(0,0,0,0.35)]"
+      >
+        Convertimos tu visión en el espacio de lujo que siempre soñaste.
+      </p>
+      <div data-nosotros="galeria-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
+        <Button href="/#contacto" variant="white" size="xxl">Contacto</Button>
+      </div>
+    </div>
+
+    <div
       data-nosotros="reveal"
       class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-[clamp(2rem,9vw,7rem)]"
     >
@@ -314,6 +330,9 @@ const revealImages = [
     const revealImgs  = $$<HTMLElement>('[data-nosotros="reveal-img"]');
     const galeriaMedia  = $<HTMLElement>('[data-nosotros="galeria-media"]');
     const galeriaImages = $$<HTMLElement>('[data-nosotros="galeria-image"]');
+    const galeriaCopy   = $<HTMLElement>('[data-nosotros="galeria-copy"]');
+    const galeriaMain   = $<HTMLParagraphElement>('[data-nosotros="galeria-main"]');
+    const galeriaCta    = $<HTMLElement>('[data-nosotros="galeria-cta"]');
 
     if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return;
 
@@ -323,6 +342,14 @@ const revealImages = [
     gsap.set(revealEl, { opacity: 0 });
     gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' });
     gsap.set(revealImgs, { opacity: 0, scale: 0.85 });
+
+    const hasGaleriaCopy = galeriaCopy && galeriaMain && galeriaCta;
+
+    if (hasGaleriaCopy) {
+      gsap.set(galeriaCopy, { opacity: 0 });
+      gsap.set(galeriaMain, { opacity: 0, y: 10 });
+      gsap.set(galeriaCta, { opacity: 0, y: 20 });
+    }
 
     if (galeriaMedia) {
       gsap.set(galeriaMedia, {
@@ -339,7 +366,7 @@ const revealImages = [
       scrollTrigger: {
         trigger: hero,
         start: 'top top',
-        end: galeriaMedia ? '+=650%' : '+=260%',
+        end: hasGaleriaCopy ? '+=750%' : galeriaMedia ? '+=650%' : '+=260%',
         scrub: 1,
         pin: true,
         anticipatePin: 1,
@@ -394,15 +421,37 @@ const revealImages = [
           'galeriaReveal+=0.3',
         );
 
+      let imageCycleEnd = 0.5;
       if (galeriaImages.length > 1) {
         galeriaImages.slice(1).forEach((image, i) => {
           const previousImage = galeriaImages[i];
           const swapTime = 0.8 + i * 0.55;
+          imageCycleEnd = swapTime + 0.3;
 
           heroTl
             .to(previousImage, { opacity: 0, duration: 0.3, ease: 'none' }, `galeriaReveal+=${swapTime}`)
             .to(image, { opacity: 1, duration: 0.3, ease: 'none' }, '<');
         });
+      }
+
+      // Frase de conversión y botón de contacto: el mismo remate que tiene
+      // Galeria.astro al final de su animación, ahora aparece cuando el
+      // ciclo de imágenes de la galería termina.
+      if (hasGaleriaCopy) {
+        heroTl.addLabel('galeriaCopyReveal', `galeriaReveal+=${imageCycleEnd + 0.2}`);
+
+        heroTl
+          .to(galeriaCopy, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 'galeriaCopyReveal')
+          .to(
+            galeriaMain,
+            { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+            'galeriaCopyReveal',
+          )
+          .to(
+            galeriaCta,
+            { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' },
+            'galeriaCopyReveal+=0.4',
+          );
       }
     }
 
