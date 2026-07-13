@@ -275,13 +275,17 @@ const revealImages = [
     if (galeriaMedia && galeriaImages.length > 0) {
       heroTl.addLabel('galeriaReveal');
 
+      const scaleStartOffset = 0.3;
+      const scaleDuration = 3;
+      const imageSwapDuration = 0.05;
+
       heroTl
         .to(revealEl, { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
         .to(galeriaMedia, { opacity: 1, duration: 0.5, ease: 'none' }, 'galeriaReveal')
         .to(
           galeriaMedia,
-          { width: '100vw', height: '100vh', borderRadius: '0px', duration: 3, ease: 'none' },
-          'galeriaReveal+=0.3',
+          { width: '100vw', height: '100vh', borderRadius: '0px', duration: scaleDuration, ease: 'none' },
+          `galeriaReveal+=${scaleStartOffset}`,
         )
         .to(
           revealImgs,
@@ -292,19 +296,25 @@ const revealImages = [
             ease: 'power2.in',
             stagger: 0.1,
           },
-          'galeriaReveal+=0.3',
+          `galeriaReveal+=${scaleStartOffset}`,
         );
 
-      let imageCycleEnd = 0.5;
-      if (galeriaImages.length > 1) {
+      // El ciclo de imágenes se reparte a lo largo de la misma duración que
+      // el escalado de galeriaMedia, así ambos terminan al mismo tiempo sin
+      // importar cuántas imágenes tenga la galería.
+      let imageCycleEnd = scaleStartOffset + scaleDuration;
+      const swapCount = galeriaImages.length - 1;
+      if (swapCount > 0) {
+        const swapSpacing =
+          swapCount > 1 ? (scaleDuration - imageSwapDuration) / (swapCount - 1) : 0;
+
         galeriaImages.slice(1).forEach((image, i) => {
           const previousImage = galeriaImages[i];
-          const swapTime = 0.8 + i * 0.55;
-          imageCycleEnd = swapTime + 0.3;
+          const swapTime = scaleStartOffset + i * swapSpacing;
 
           heroTl
-            .to(previousImage, { opacity: 0, duration: 0.3, ease: 'none' }, `galeriaReveal+=${swapTime}`)
-            .to(image, { opacity: 1, duration: 0.3, ease: 'none' }, '<');
+            .to(previousImage, { opacity: 0, duration: imageSwapDuration, ease: 'none' }, `galeriaReveal+=${swapTime}`)
+            .to(image, { opacity: 1, duration: imageSwapDuration, ease: 'none' }, '<');
         });
       }
 
