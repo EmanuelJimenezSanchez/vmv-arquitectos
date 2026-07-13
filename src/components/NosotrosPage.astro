@@ -2,35 +2,6 @@
 import { galeria } from '@/data/galeria';
 import Button from '@/components/ui/Button.astro';
 
-const services = [
-  {
-    num: '01',
-    title: 'Diseño Arquitectónico',
-    desc: 'Personalización, ambientes únicos y auténticos acorde al gusto y necesidades del cliente.',
-  },
-  {
-    num: '02',
-    title: 'Asesoramiento de Construcción',
-    desc: 'Tu proyecto arquitectónico de la mano de profesionales.',
-  },
-  {
-    num: '03',
-    title: 'Servicio Personalizado',
-    desc: 'En cada una de las etapas del diseño, acompañándote de principio a fin.',
-  },
-];
-
-// Paneles de la columna izquierda: en desktop (con motion) son capas
-// absolutas que GSAP intercambia; en mobile o reduced-motion fluyen normal.
-const panelClasses =
-  'relative flex flex-col justify-center px-[clamp(1.5rem,6vw,3rem)] py-[clamp(3rem,7vw,5rem)] md:py-[clamp(3.5rem,8vw,7rem)] md:pr-[clamp(2rem,6vw,5rem)] md:pl-[clamp(2rem,9vw,8rem)] md:motion-safe:absolute md:motion-safe:inset-0';
-
-const panelLabelClasses =
-  'mb-[clamp(1.2rem,2.5vw,2rem)] block text-[clamp(0.58rem,1vw,0.7rem)] tracking-[0.3em] indent-[0.3em] uppercase text-vmv-sand-9';
-
-const navDotClasses =
-  'size-[5px] shrink-0 rounded-full border border-vmv-sand-9/40 bg-vmv-sand-9/22 transition-[background-color,border-color,scale] duration-[400ms] data-active:scale-[1.6] data-active:border-vmv-sand-12 data-active:bg-vmv-sand-12';
-
 // Imágenes decorativas que aparecen alrededor de la frase del hero.
 // Tamaños, posiciones y formas deliberadamente desiguales para un efecto
 // desacomodado; agregar más objetos aquí para sumar imágenes al collage.
