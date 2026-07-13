@@ -149,7 +149,7 @@ const revealImages = [
         Convertimos tu visión en el espacio de lujo que siempre soñaste.
       </p>
       <div data-nosotros="galeria-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
-        <Button href="/#contacto" variant="white" size="xxl">Contacto</Button>
+        <Button href="/#contacto" variant="white" size="xxl">Contacta a un arquitecto</Button>
       </div>
     </div>
 
@@ -306,7 +306,7 @@ const revealImages = [
       const swapCount = galeriaImages.length - 1;
       if (swapCount > 0) {
         const swapSpacing =
-          swapCount > 1 ? (scaleDuration - imageSwapDuration) / (swapCount - 1) : 0;
+          swapCount > 1 ? (scaleDuration - 0.3 - imageSwapDuration) / (swapCount - 1) : 0;
 
         galeriaImages.slice(1).forEach((image, i) => {
           const previousImage = galeriaImages[i];
