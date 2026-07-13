@@ -65,17 +65,17 @@ const totalLabel = String(servicios.length).padStart(2, '0')
               data-servicios-card
             >
               <figure class="relative aspect-[3.6/5.3] rounded-sm overflow-hidden">
-                <div class="absolute inset-0 transition-transform duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
+                <div class="absolute inset-0 transition-transform duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05] group-data-[active=true]:scale-[1.05]">
                   <img
                     src={servicio.image}
                     alt={servicio.imageAlt}
-                    class="absolute top-0 h-full w-[110%] object-cover translate-x-1 grayscale transition-[filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grayscale-0"
+                    class="absolute top-0 h-full w-[110%] object-cover translate-x-1 grayscale transition-[filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grayscale-0 group-data-[active=true]:grayscale-0"
                     data-servicios-image
                     loading="lazy"
                     decoding="async"
                   />
                   <div
-                    class="absolute inset-0 bg-[#5c4938]/35 mix-blend-multiply transition-opacity duration-700 group-hover:opacity-0"
+                    class="absolute inset-0 bg-[#5c4938]/35 mix-blend-multiply transition-opacity duration-700 group-hover:opacity-0 group-data-[active=true]:opacity-0"
                     aria-hidden="true"
                   />
                 </div>
@@ -89,17 +89,17 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                 />
                 <figcaption class="absolute inset-x-0 bottom-0 flex flex-col gap-2.5 p-[clamp(1.25rem,2vw,1.75rem)]">
                   <span
-                    class="h-px w-9 bg-white/40 transition-[width,background-color] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-14 group-hover:bg-white/75"
+                    class="h-px w-9 bg-white/40 transition-[width,background-color] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-14 group-hover:bg-white/75 group-data-[active=true]:w-14 group-data-[active=true]:bg-white/75"
                     aria-hidden="true"
                   />
                   <h3 class="vmv-title-3 tracking-[0.08em] text-balance text-white uppercase">
                     {servicio.title}
                   </h3>
                   <div class="grid max-w-[32ch]">
-                    <p class="vmv-body-3 col-start-1 row-start-1 text-white/72 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:opacity-0">
+                    <p class="vmv-body-3 col-start-1 row-start-1 text-white/72 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:opacity-0 group-data-[active=true]:-translate-y-1 group-data-[active=true]:opacity-0">
                       {servicio.description}
                     </p>
-                    <p class="vmv-body-3 pointer-events-none col-start-1 row-start-1 translate-y-2 self-start text-white/72 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:translate-y-0 group-hover:opacity-100">
+                    <p class="vmv-body-3 pointer-events-none col-start-1 row-start-1 translate-y-2 self-start text-white/72 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:translate-y-0 group-hover:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100">
                       {servicio.details}
                     </p>
                   </div>
@@ -107,7 +107,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
               </figure>
               <div class="mt-4 h-px w-full bg-vmv-border">
                 <div
-                  class="h-full origin-left scale-x-0 bg-vmv-foreground transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+                  class="h-full origin-left scale-x-0 bg-vmv-foreground transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-data-[active=true]:scale-x-100"
                   aria-hidden="true"
                 />
               </div>
@@ -185,6 +185,23 @@ const totalLabel = String(servicios.length).padStart(2, '0')
     if (!stage || !track || cards.length === 0) {
       return
     }
+
+    // Tap para fijar el efecto "hover" en pantallas táctiles: alterna
+    // data-active en la tarjeta y se mantiene hasta el próximo toque.
+    const tapController = new AbortController()
+    cards.forEach((card) => {
+      card.addEventListener(
+        'click',
+        () => {
+          const isActive = card.dataset.active === 'true'
+          cards.forEach((c) => delete c.dataset.active)
+          if (!isActive) {
+            card.dataset.active = 'true'
+          }
+        },
+        { signal: tapController.signal },
+      )
+    })
 
     const mm = gsap.matchMedia()
 
@@ -306,6 +323,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
     })
 
     cleanupServicios = () => {
+      tapController.abort()
       mm.revert()
     }
   }
