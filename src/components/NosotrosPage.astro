@@ -2,35 +2,6 @@
 import { galeria } from '@/data/galeria';
 import Button from '@/components/ui/Button.astro';
 
-const services = [
-  {
-    num: '01',
-    title: 'Diseño Arquitectónico',
-    desc: 'Personalización, ambientes únicos y auténticos acorde al gusto y necesidades del cliente.',
-  },
-  {
-    num: '02',
-    title: 'Asesoramiento de Construcción',
-    desc: 'Tu proyecto arquitectónico de la mano de profesionales.',
-  },
-  {
-    num: '03',
-    title: 'Servicio Personalizado',
-    desc: 'En cada una de las etapas del diseño, acompañándote de principio a fin.',
-  },
-];
-
-// Paneles de la columna izquierda: en desktop (con motion) son capas
-// absolutas que GSAP intercambia; en mobile o reduced-motion fluyen normal.
-const panelClasses =
-  'relative flex flex-col justify-center px-[clamp(1.5rem,6vw,3rem)] py-[clamp(3rem,7vw,5rem)] md:py-[clamp(3.5rem,8vw,7rem)] md:pr-[clamp(2rem,6vw,5rem)] md:pl-[clamp(2rem,9vw,8rem)] md:motion-safe:absolute md:motion-safe:inset-0';
-
-const panelLabelClasses =
-  'mb-[clamp(1.2rem,2.5vw,2rem)] block text-[clamp(0.58rem,1vw,0.7rem)] tracking-[0.3em] indent-[0.3em] uppercase text-vmv-sand-9';
-
-const navDotClasses =
-  'size-[5px] shrink-0 rounded-full border border-vmv-sand-9/40 bg-vmv-sand-9/22 transition-[background-color,border-color,scale] duration-[400ms] data-active:scale-[1.6] data-active:border-vmv-sand-12 data-active:bg-vmv-sand-12';
-
 // Imágenes decorativas que aparecen alrededor de la frase del hero.
 // Tamaños, posiciones y formas deliberadamente desiguales para un efecto
 // desacomodado; agregar más objetos aquí para sumar imágenes al collage.
@@ -178,7 +149,7 @@ const revealImages = [
         Convertimos tu visión en el espacio de lujo que siempre soñaste.
       </p>
       <div data-nosotros="galeria-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
-        <Button href="/#contacto" variant="white" size="xxl">Contacto</Button>
+        <Button href="/#contacto" variant="white" size="xxl">Contacta a un arquitecto</Button>
       </div>
     </div>
 
@@ -195,107 +166,6 @@ const revealImages = [
     </div>
   </div>
 
-  <!-- ─── ABOUT: PINNEADO ──────── -->
-  <div
-    data-nosotros="about"
-    class="relative grid min-h-svh grid-cols-1 overflow-hidden bg-vmv-sand-1 md:h-svh md:grid-cols-[55fr_45fr]"
-  >
-    <!-- Columna izquierda -->
-    <div data-nosotros="about-left" class="relative min-h-svh overflow-hidden">
-      <!-- Panel 1: información de la empresa -->
-      <div data-nosotros="panel-info" class={panelClasses}>
-        <span class={panelLabelClasses}>Sobre nosotros</span>
-        <h2
-          class="mb-[clamp(1.2rem,2.5vw,2rem)] max-w-104 text-[clamp(1.45rem,2.8vw,2.5rem)] font-light tracking-[-0.01em] text-vmv-gray-12 leading-[1.25]"
-        >
-          Diseño, construcción y remodelación con más de 10&nbsp;años de
-          experiencia.
-        </h2>
-        <p
-          class="max-w-lg text-[clamp(0.875rem,1.25vw,0.975rem)] font-light tracking-[0.02em] text-vmv-gray-10 leading-[1.9]"
-        >
-          Somos un despacho de arquitectura especializado en el ramo del diseño,
-          construcción y remodelación comercial y habitacional. Nos
-          especializamos en la construcción de casas de lujo en las mejores
-          zonas de la ciudad, creando ambientes únicos y auténticos acorde al
-          gusto y necesidades de cada cliente.
-        </p>
-      </div>
-
-      <!-- Panel 2: servicios (GSAP lo trae desde abajo) -->
-      <div
-        data-nosotros="panel-services"
-        class={`${panelClasses} motion-reduce:hidden`}
-      >
-        <span class={panelLabelClasses}>Nuestros servicios</span>
-        <ul class="border-t border-vmv-sand-6/28">
-          {
-            services.map((service) => (
-              <li class="grid grid-cols-[clamp(2.5rem,6vw,4.5rem)_1fr] items-start gap-[clamp(1rem,3vw,2.5rem)] border-b border-vmv-sand-6/28 py-[clamp(1.2rem,2.5vw,1.8rem)] max-[480px]:grid-cols-1 max-[480px]:gap-[0.3rem]">
-                <span
-                  class="text-right text-[clamp(1.8rem,4vw,3.5rem)] font-thin tracking-[-0.02em] text-vmv-sand-9/30 leading-[0.9] max-[480px]:text-left max-[480px]:text-[1.6rem]"
-                  aria-hidden="true"
-                >
-                  {service.num}
-                </span>
-                <div class="pt-1">
-                  <h3 class="mb-[0.45rem] text-[clamp(0.85rem,1.6vw,1.15rem)] font-light tracking-[0.16em] uppercase text-vmv-gray-12">
-                    {service.title}
-                  </h3>
-                  <p class="text-[clamp(0.8rem,1.15vw,0.88rem)] font-light tracking-[0.02em] text-vmv-gray-10 leading-[1.8]">
-                    {service.desc}
-                  </p>
-                </div>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    </div>
-
-    <!-- Columna derecha -->
-    <div
-      data-nosotros="about-right"
-      class="relative h-[60vw] overflow-hidden md:h-auto"
-    >
-      <div data-nosotros="img-layer-1" class="absolute inset-0">
-        <img
-          src="/images/nosotros/nosotros-3.webp"
-          alt="Proyecto VMV Arquitectos"
-          class="block h-full w-full object-cover object-center"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-      <div data-nosotros="img-layer-2" class="absolute inset-0">
-        <img
-          src="/images/nosotros/nosotros-4.webp"
-          alt="Servicios VMV Arquitectos"
-          class="block h-full w-full object-cover object-center"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-    </div>
-
-    <!-- Indicador de progreso lateral izquierdo -->
-    <div
-      class="pointer-events-none absolute top-1/2 left-[clamp(0.9rem,2.2vw,1.6rem)] z-20 flex -translate-y-1/2 flex-col items-center"
-      aria-hidden="true"
-    >
-      <span data-nosotros="nav-dot-1" class={navDotClasses}></span>
-      <div
-        class="relative my-[9px] h-[clamp(2.5rem,4.5vw,3.75rem)] w-px overflow-hidden bg-vmv-sand-6/28"
-      >
-        <div
-          data-nosotros="nav-fill"
-          class="absolute top-0 left-0 h-0 w-full bg-vmv-sand-12"
-        >
-        </div>
-      </div>
-      <span data-nosotros="nav-dot-2" class={navDotClasses}></span>
-    </div>
-  </div>
 </section>
 
 <script>
@@ -384,25 +254,18 @@ const revealImages = [
         1.55,
       )
 
-    // Imágenes decorativas: entran una a una con distintas formas; cada una
-    // empieza a desvanecerse apenas termina de aparecer, así el fade out
-    // arranca en cuanto el usuario sigue haciendo scroll hacia abajo.
+    // Imágenes decorativas: entran una a una con distintas formas; todas
+    // se desvanecen juntas cuando arranca el escalado de la galería media.
     const revealImgFadeIn = 0.55;
     const revealImgFadeOut = 0.5;
     revealImgs.forEach((img, i) => {
       const start = 1.05 + i * 0.2;
-      heroTl
-        .fromTo(
-          img,
-          { opacity: 0, scale: 0.85 },
-          { opacity: 1, scale: 1, duration: revealImgFadeIn, ease: 'power2.out' },
-          start,
-        )
-        .to(
-          img,
-          { opacity: 0, scale: 1.06, duration: revealImgFadeOut, ease: 'power2.in' },
-          start + revealImgFadeIn,
-        );
+      heroTl.fromTo(
+        img,
+        { opacity: 0, scale: 0.85 },
+        { opacity: 1, scale: 1, duration: revealImgFadeIn, ease: 'power2.out' },
+        start,
+      );
     });
 
     // Galería: arranca cuando termina la animación de la frase y las
@@ -412,25 +275,46 @@ const revealImages = [
     if (galeriaMedia && galeriaImages.length > 0) {
       heroTl.addLabel('galeriaReveal');
 
+      const scaleStartOffset = 0.3;
+      const scaleDuration = 3;
+      const imageSwapDuration = 0.05;
+
       heroTl
-        .to(revealEl, { opacity: 0, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
+        .to(revealEl, { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
         .to(galeriaMedia, { opacity: 1, duration: 0.5, ease: 'none' }, 'galeriaReveal')
         .to(
           galeriaMedia,
-          { width: '100vw', height: '100vh', borderRadius: '0px', duration: 3, ease: 'none' },
-          'galeriaReveal+=0.3',
+          { width: '100vw', height: '100vh', borderRadius: '0px', duration: scaleDuration, ease: 'none' },
+          `galeriaReveal+=${scaleStartOffset}`,
+        )
+        .to(
+          revealImgs,
+          {
+            opacity: 0,
+            scale: 1.06,
+            duration: revealImgFadeOut,
+            ease: 'power2.in',
+            stagger: 0.1,
+          },
+          `galeriaReveal+=${scaleStartOffset}`,
         );
 
-      let imageCycleEnd = 0.5;
-      if (galeriaImages.length > 1) {
+      // El ciclo de imágenes se reparte a lo largo de la misma duración que
+      // el escalado de galeriaMedia, así ambos terminan al mismo tiempo sin
+      // importar cuántas imágenes tenga la galería.
+      let imageCycleEnd = scaleStartOffset + scaleDuration;
+      const swapCount = galeriaImages.length - 1;
+      if (swapCount > 0) {
+        const swapSpacing =
+          swapCount > 1 ? (scaleDuration - 0.3 - imageSwapDuration) / (swapCount - 1) : 0;
+
         galeriaImages.slice(1).forEach((image, i) => {
           const previousImage = galeriaImages[i];
-          const swapTime = 0.8 + i * 0.55;
-          imageCycleEnd = swapTime + 0.3;
+          const swapTime = scaleStartOffset + i * swapSpacing;
 
           heroTl
-            .to(previousImage, { opacity: 0, duration: 0.3, ease: 'none' }, `galeriaReveal+=${swapTime}`)
-            .to(image, { opacity: 1, duration: 0.3, ease: 'none' }, '<');
+            .to(previousImage, { opacity: 0, duration: imageSwapDuration, ease: 'none' }, `galeriaReveal+=${swapTime}`)
+            .to(image, { opacity: 1, duration: imageSwapDuration, ease: 'none' }, '<');
         });
       }
 

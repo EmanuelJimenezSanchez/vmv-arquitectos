@@ -62,58 +62,58 @@ export const galeria: Galeria[] = [
       'Nos especializamos en la restauración y conservación de edificios históricos, preservando su valor cultural.',
     image: '/images/galeria/galeria-8.webp',
   },
-  // {
-  //   id: 'galeria-09',
-  //   title: 'Diseño de Interiores Comerciales',
-  //   description:
-  //     'Creamos interiores comerciales que reflejan la identidad de la marca y mejoran la experiencia del cliente.',
-  //   image: '/images/galeria/galeria-9.webp',
-  // },
-  // {
-  //   id: 'galeria-10',
-  //   title: 'Arquitectura Sostenible',
-  //   description:
-  //     'Implementamos principios de arquitectura sostenible en todos nuestros proyectos, promoviendo un futuro más verde.',
-  //   image: '/images/galeria/galeria-10.webp',
-  // },
-  // {
-  //   id: 'galeria-11',
-  //   title: 'Diseño Minimalista',
-  //   description:
-  //     'Desarrollamos proyectos de diseño minimalista que priorizan la simplicidad, la luz natural y la funcionalidad.',
-  //   image: '/images/galeria/galeria-11.webp',
-  // },
-  // {
-  //   id: 'galeria-12',
-  //   title: 'Viviendas Multifamiliares',
-  //   description:
-  //     'Diseñamos viviendas multifamiliares con soluciones eficientes que equilibran privacidad, confort y comunidad.',
-  //   image: '/images/galeria/galeria-12.webp',
-  // },
-  // {
-  //   id: 'galeria-13',
-  //   title: 'Espacios Corporativos',
-  //   description: 'Creamos espacios corporativos modernos que potencian la productividad, el bienestar y la identidad empresarial.',
-  //   image: '/images/galeria/galeria-13.webp'
-  // },
-  // {
-  //   id: 'galeria-14',
-  //   title: 'Centros Educativos',
-  //   description: 'Proyectamos centros educativos funcionales y flexibles, orientados al aprendizaje y la interacción colaborativa.',
-  //   image: '/images/galeria/galeria-14.webp'
-  // },
-  // {
-  //   id: 'galeria-15',
-  //   title: 'Hospitalidad y Turismo',
-  //   description: 'Diseñamos espacios de hospitalidad y turismo que ofrecen experiencias memorables con alto valor estético y operativo.',
-  //   image: '/images/galeria/galeria-15.webp'
-  // },
-  // {
-  //   id: 'galeria-16',
-  //   title: 'Remodelación Integral',
-  //   description: 'Ejecutamos remodelaciones integrales que actualizan espacios existentes con propuestas contemporáneas y eficientes.',
-  //   image: '/images/galeria/galeria-16.webp'
-  // },
+  {
+    id: 'galeria-09',
+    title: 'Diseño de Interiores Comerciales',
+    description:
+      'Creamos interiores comerciales que reflejan la identidad de la marca y mejoran la experiencia del cliente.',
+    image: '/images/galeria/galeria-9.webp',
+  },
+  {
+    id: 'galeria-10',
+    title: 'Arquitectura Sostenible',
+    description:
+      'Implementamos principios de arquitectura sostenible en todos nuestros proyectos, promoviendo un futuro más verde.',
+    image: '/images/galeria/galeria-10.webp',
+  },
+  {
+    id: 'galeria-11',
+    title: 'Diseño Minimalista',
+    description:
+      'Desarrollamos proyectos de diseño minimalista que priorizan la simplicidad, la luz natural y la funcionalidad.',
+    image: '/images/galeria/galeria-11.webp',
+  },
+  {
+    id: 'galeria-12',
+    title: 'Viviendas Multifamiliares',
+    description:
+      'Diseñamos viviendas multifamiliares con soluciones eficientes que equilibran privacidad, confort y comunidad.',
+    image: '/images/galeria/galeria-12.webp',
+  },
+  {
+    id: 'galeria-13',
+    title: 'Espacios Corporativos',
+    description: 'Creamos espacios corporativos modernos que potencian la productividad, el bienestar y la identidad empresarial.',
+    image: '/images/galeria/galeria-13.webp'
+  },
+  {
+    id: 'galeria-14',
+    title: 'Centros Educativos',
+    description: 'Proyectamos centros educativos funcionales y flexibles, orientados al aprendizaje y la interacción colaborativa.',
+    image: '/images/galeria/galeria-14.webp'
+  },
+  {
+    id: 'galeria-15',
+    title: 'Hospitalidad y Turismo',
+    description: 'Diseñamos espacios de hospitalidad y turismo que ofrecen experiencias memorables con alto valor estético y operativo.',
+    image: '/images/galeria/galeria-15.webp'
+  },
+  {
+    id: 'galeria-16',
+    title: 'Remodelación Integral',
+    description: 'Ejecutamos remodelaciones integrales que actualizan espacios existentes con propuestas contemporáneas y eficientes.',
+    image: '/images/galeria/galeria-16.webp'
+  },
   // {
   //   id: 'galeria-17',
   //   title: 'Arquitectura Bioclimática',
