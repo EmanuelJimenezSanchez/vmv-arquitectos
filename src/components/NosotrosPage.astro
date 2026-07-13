@@ -73,15 +73,17 @@ import Button from '@/components/ui/Button.astro';
     <div
       data-nosotros="label"
       class="pointer-events-none absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
-      aria-hidden="true"
     >
-      <div class="h-11 w-px bg-vmv-sand-1/50"></div>
+      <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
       <span
         class="text-[clamp(2.25rem,7vw,5.5rem)] font-extralight tracking-[0.45em] indent-[0.45em] uppercase text-vmv-sand-1"
       >
         NOSOTROS
       </span>
-      <div class="h-11 w-px bg-vmv-sand-1/50"></div>
+      <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
+      <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
+        <Button href="/#contacto" variant="white" size="lg">Contacta a un arquitecto</Button>
+      </div>
     </div>
 
     <div
@@ -244,13 +246,13 @@ import Button from '@/components/ui/Button.astro';
     });
 
     heroTl
-      .to([label, scrollHint], { opacity: 0, y: -10, duration: 0.3, ease: 'power2.in' }, 0)
+      .to([label, scrollHint], { opacity: 0, y: -200, duration: 0.3, ease: 'power2.in' }, 0)
       .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 0.7 }, 0.18)
       .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 0.7 }, 0.18)
       .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 0.6)
       .to(
         revealSplit.words,
-        { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.12 }, duration: 0.12, ease: 'none' },
+        { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.08 }, duration: 0.08, ease: 'none' },
         1,
       )
 
