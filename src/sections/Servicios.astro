@@ -23,7 +23,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       {
         servicios.map((servicio) => (
           <span
-            class="invisible absolute top-0 left-0 text-[clamp(4rem,8.5vw,8rem)] leading-none font-thin tracking-[0.02em] whitespace-nowrap text-vmv-foreground/[0.12] uppercase"
+            class="invisible absolute top-0 left-0 text-[clamp(4rem,8.5vw,8rem)] leading-none font-thin tracking-[0.02em] whitespace-nowrap text-vmv-foreground/12 uppercase"
             data-servicios-word
           >
             {servicio.footer}
@@ -64,8 +64,8 @@ const totalLabel = String(servicios.length).padStart(2, '0')
               class="group relative w-[min(82vw,21rem)] shrink-0 snap-start min-[900px]:motion-safe:w-[clamp(17rem,min(29vw,46vh),26rem)] min-[900px]:motion-safe:even:top-[clamp(1.5rem,4vh,3rem)] sm:w-[clamp(18rem,46vw,22rem)]"
               data-servicios-card
             >
-              <figure class="relative aspect-[3.6/5.3] rounded-[4px] overflow-hidden">
-                <div class="absolute inset-0 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
+              <figure class="relative aspect-[3.6/5.3] rounded-sm overflow-hidden">
+                <div class="absolute inset-0 transition-transform duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
                   <img
                     src={servicio.image}
                     alt={servicio.imageAlt}
@@ -84,7 +84,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                   aria-hidden="true"
                 />
                 <div
-                  class="pointer-events-none absolute inset-0 rounded-[4px] ring-1 ring-white/12 ring-inset"
+                  class="pointer-events-none absolute inset-0 rounded-sm ring-1 ring-white/12 ring-inset"
                   aria-hidden="true"
                 />
                 <figcaption class="absolute inset-x-0 bottom-0 flex flex-col gap-2.5 p-[clamp(1.25rem,2vw,1.75rem)]">
@@ -135,7 +135,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       </div>
       <div class="h-px w-full bg-vmv-foreground/12">
         <div
-          class="h-full origin-left [transform:scaleX(0)] bg-vmv-foreground"
+          class="h-full origin-left transform-[scaleX(0)] bg-vmv-foreground"
           data-servicios-progress
         >
         </div>
