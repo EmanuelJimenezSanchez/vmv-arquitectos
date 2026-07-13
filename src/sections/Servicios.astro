@@ -16,6 +16,22 @@ const totalLabel = String(servicios.length).padStart(2, '0')
     data-servicios-stage
   >
     <div
+      class="pointer-events-none absolute inset-x-[clamp(2rem,6vw,6rem)] top-[6%] hidden select-none min-[900px]:motion-safe:block"
+      aria-hidden="true"
+      data-servicios-words
+    >
+      {
+        servicios.map((servicio) => (
+          <span
+            class="invisible absolute top-0 left-0 text-[clamp(4rem,8.5vw,8rem)] leading-none font-thin tracking-[0.02em] whitespace-nowrap text-vmv-foreground/[0.12] uppercase"
+            data-servicios-word
+          >
+            {servicio.footer}
+          </span>
+        ))
+      }
+    </div>
+    <div
       class="flex flex-col gap-10 py-[clamp(3.5rem,8vw,6rem)] min-[900px]:motion-safe:h-full min-[900px]:motion-safe:w-max min-[900px]:motion-safe:flex-row min-[900px]:motion-safe:items-center min-[900px]:motion-safe:gap-[clamp(2rem,4vw,4.5rem)] min-[900px]:motion-safe:py-0 min-[900px]:motion-safe:pr-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:pl-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:will-change-transform"
       data-servicios-track
     >
@@ -131,9 +147,10 @@ const totalLabel = String(servicios.length).padStart(2, '0')
 <script>
   import gsap from 'gsap'
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { SplitText } from 'gsap/SplitText'
   import { $, $$ } from '@/lib/dom-selector'
 
-  gsap.registerPlugin(ScrollTrigger)
+  gsap.registerPlugin(ScrollTrigger, SplitText)
 
   let cleanupServicios: (() => void) | null = null
 
@@ -155,6 +172,8 @@ const totalLabel = String(servicios.length).padStart(2, '0')
     const images = $$<HTMLImageElement>('[data-servicios-image]', section)
     const progressBar = $<HTMLElement>('[data-servicios-progress]', section)
     const counter = $<HTMLElement>('[data-servicios-counter]', section)
+    const wordsLayer = $<HTMLElement>('[data-servicios-words]', section)
+    const words = $$<HTMLElement>('[data-servicios-word]', section)
 
     if (!stage || !track || cards.length === 0) {
       return
@@ -168,6 +187,42 @@ const totalLabel = String(servicios.length).padStart(2, '0')
 
       const scrollFactor = 2.6
 
+      const splits = words.map((word) => new SplitText(word, { type: 'chars', aria: 'none' }))
+
+      let activeWordIndex = -1
+      const setActiveWord = (index: number) => {
+        const nextWord = words[index]
+        const nextSplit = splits[index]
+        if (index === activeWordIndex || !nextWord || !nextSplit) {
+          return
+        }
+        const currentSplit = splits[activeWordIndex]
+        activeWordIndex = index
+        if (currentSplit) {
+          gsap.to(currentSplit.chars, {
+            yPercent: -40,
+            autoAlpha: 0,
+            duration: 0.6,
+            ease: 'sine.in',
+            stagger: 0.025,
+            overwrite: 'auto',
+          })
+        }
+        gsap.set(nextWord, { autoAlpha: 1 })
+        gsap.fromTo(
+          nextSplit.chars,
+          { yPercent: 60, autoAlpha: 0 },
+          {
+            yPercent: 0,
+            autoAlpha: 1,
+            duration: 1.2,
+            ease: 'expo.out',
+            stagger: 0.04,
+            overwrite: 'auto',
+          },
+        )
+      }
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
@@ -179,11 +234,11 @@ const totalLabel = String(servicios.length).padStart(2, '0')
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            if (!counter) {
-              return
-            }
             const index = Math.round(self.progress * (cards.length - 1))
-            counter.textContent = String(index + 1).padStart(2, '0')
+            if (counter) {
+              counter.textContent = String(index + 1).padStart(2, '0')
+            }
+            setActiveWord(index)
           },
         },
       })
@@ -196,6 +251,11 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       if (progressBar) {
         tl.fromTo(progressBar, { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0)
       }
+
+      if (wordsLayer) {
+        tl.to(wordsLayer, { xPercent: -5, ease: 'none', duration: 1 }, 0)
+      }
+      setActiveWord(0)
 
       cards.forEach((card, index) => {
         const image = images[index]
@@ -231,6 +291,11 @@ const totalLabel = String(servicios.length).padStart(2, '0')
           start: 'top 70%',
         },
       })
+
+      // SplitText altera el DOM: restaurar el markup original al revertir.
+      return () => {
+        splits.forEach((split) => split.revert())
+      }
     })
 
     cleanupServicios = () => {
