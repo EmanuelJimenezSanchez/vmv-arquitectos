@@ -1,4 +1,6 @@
 ---
+import { galeria } from '@/data/galeria';
+
 const services = [
   {
     num: '01',
@@ -141,6 +143,27 @@ const revealImages = [
           </div>
         ))
       }
+    </div>
+
+    <div
+      data-nosotros="galeria-media"
+      class="pointer-events-none absolute top-1/2 left-1/2 z-6 -translate-x-1/2 -translate-y-1/2 overflow-hidden opacity-0"
+      aria-hidden="true"
+    >
+      <div class="relative h-full w-full">
+        {
+          galeria.map((item, index) => (
+            <img
+              src={item.image}
+              alt={item.description}
+              class={`absolute inset-0 block h-full w-full object-cover ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+              data-nosotros="galeria-image"
+              loading="lazy"
+              decoding="async"
+            />
+          ))
+        }
+      </div>
     </div>
 
     <div
@@ -289,6 +312,8 @@ const revealImages = [
     const revealEl    = $<HTMLElement>('[data-nosotros="reveal"]');
     const revealText  = $<HTMLParagraphElement>('[data-nosotros="reveal-text"]');
     const revealImgs  = $$<HTMLElement>('[data-nosotros="reveal-img"]');
+    const galeriaMedia  = $<HTMLElement>('[data-nosotros="galeria-media"]');
+    const galeriaImages = $$<HTMLElement>('[data-nosotros="galeria-image"]');
 
     if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return;
 
@@ -299,11 +324,22 @@ const revealImages = [
     gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' });
     gsap.set(revealImgs, { opacity: 0, scale: 0.85 });
 
+    if (galeriaMedia) {
+      gsap.set(galeriaMedia, {
+        width: '16rem',
+        height: '16rem',
+        borderRadius: '999px',
+        opacity: 0,
+      });
+      gsap.set(galeriaImages, { opacity: 0 });
+      if (galeriaImages[0]) gsap.set(galeriaImages[0], { opacity: 1 });
+    }
+
     const heroTl = gsap.timeline({
       scrollTrigger: {
         trigger: hero,
         start: 'top top',
-        end: '+=260%',
+        end: galeriaMedia ? '+=650%' : '+=260%',
         scrub: 1,
         pin: true,
         anticipatePin: 1,
@@ -341,6 +377,34 @@ const revealImages = [
           start + revealImgFadeIn,
         );
     });
+
+    // Galería: arranca cuando termina la animación de la frase y las
+    // imágenes decorativas (label = final del timeline hasta este punto),
+    // luego reproduce el mismo escalado circulo→pantalla completa y el
+    // cambio de imágenes de la sección Galeria.
+    if (galeriaMedia && galeriaImages.length > 0) {
+      heroTl.addLabel('galeriaReveal');
+
+      heroTl
+        .to(revealEl, { opacity: 0, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
+        .to(galeriaMedia, { opacity: 1, duration: 0.5, ease: 'none' }, 'galeriaReveal')
+        .to(
+          galeriaMedia,
+          { width: '100vw', height: '100vh', borderRadius: '0px', duration: 3, ease: 'none' },
+          'galeriaReveal+=0.3',
+        );
+
+      if (galeriaImages.length > 1) {
+        galeriaImages.slice(1).forEach((image, i) => {
+          const previousImage = galeriaImages[i];
+          const swapTime = 0.8 + i * 0.55;
+
+          heroTl
+            .to(previousImage, { opacity: 0, duration: 0.3, ease: 'none' }, `galeriaReveal+=${swapTime}`)
+            .to(image, { opacity: 1, duration: 0.3, ease: 'none' }, '<');
+        });
+      }
+    }
 
     const heroSt = heroTl.scrollTrigger;
     if (heroSt) activeTriggers.push(heroSt);
