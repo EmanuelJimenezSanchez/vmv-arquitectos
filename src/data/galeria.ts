@@ -34,20 +34,20 @@ export const galeria: Galeria[] = [
       'Transformamos espacios comerciales en experiencias unicas que atraen y retienen a los clientes.',
     image: '/images/galeria/galeria-4.webp',
   },
-  {
-    id: 'galeria-05',
-    title: 'Arquitectura Residencial',
-    description:
-      'Creamos hogares que combinan diseño, funcionalidad y confort, adaptados a las necesidades de cada familia.',
-    image: '/images/galeria/galeria-5.webp',
-  },
-  {
-    id: 'galeria-06',
-    title: 'Paisajismo y Exteriores',
-    description:
-      'Nuestros proyectos de paisajismo transforman los exteriores en espacios armoniosos y sostenibles.',
-    image: '/images/galeria/galeria-6.webp',
-  },
+  // {
+  //   id: 'galeria-05',
+  //   title: 'Arquitectura Residencial',
+  //   description:
+  //     'Creamos hogares que combinan diseño, funcionalidad y confort, adaptados a las necesidades de cada familia.',
+  //   image: '/images/galeria/galeria-5.webp',
+  // },
+  // {
+  //   id: 'galeria-06',
+  //   title: 'Paisajismo y Exteriores',
+  //   description:
+  //     'Nuestros proyectos de paisajismo transforman los exteriores en espacios armoniosos y sostenibles.',
+  //   image: '/images/galeria/galeria-6.webp',
+  // },
   {
     id: 'galeria-07',
     title: 'Proyectos Urbanos',
@@ -76,13 +76,13 @@ export const galeria: Galeria[] = [
       'Implementamos principios de arquitectura sostenible en todos nuestros proyectos, promoviendo un futuro más verde.',
     image: '/images/galeria/galeria-10.webp',
   },
-  {
-    id: 'galeria-11',
-    title: 'Diseño Minimalista',
-    description:
-      'Desarrollamos proyectos de diseño minimalista que priorizan la simplicidad, la luz natural y la funcionalidad.',
-    image: '/images/galeria/galeria-11.webp',
-  },
+  // {
+  //   id: 'galeria-11',
+  //   title: 'Diseño Minimalista',
+  //   description:
+  //     'Desarrollamos proyectos de diseño minimalista que priorizan la simplicidad, la luz natural y la funcionalidad.',
+  //   image: '/images/galeria/galeria-11.webp',
+  // },
   {
     id: 'galeria-12',
     title: 'Viviendas Multifamiliares',
@@ -96,12 +96,12 @@ export const galeria: Galeria[] = [
     description: 'Creamos espacios corporativos modernos que potencian la productividad, el bienestar y la identidad empresarial.',
     image: '/images/galeria/galeria-13.webp'
   },
-  {
-    id: 'galeria-14',
-    title: 'Centros Educativos',
-    description: 'Proyectamos centros educativos funcionales y flexibles, orientados al aprendizaje y la interacción colaborativa.',
-    image: '/images/galeria/galeria-14.webp'
-  },
+  // {
+  //   id: 'galeria-14',
+  //   title: 'Centros Educativos',
+  //   description: 'Proyectamos centros educativos funcionales y flexibles, orientados al aprendizaje y la interacción colaborativa.',
+  //   image: '/images/galeria/galeria-14.webp'
+  // },
   {
     id: 'galeria-15',
     title: 'Hospitalidad y Turismo',
