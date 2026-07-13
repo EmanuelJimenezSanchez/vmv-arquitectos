@@ -69,7 +69,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                   <img
                     src={servicio.image}
                     alt={servicio.imageAlt}
-                    class="absolute top-0 h-full w-[110%] object-cover"
+                    class="absolute top-0 h-full w-[110%] object-cover translate-x-1"
                     data-servicios-image
                     loading="lazy"
                     decoding="async"
@@ -257,27 +257,27 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       }
       setActiveWord(0)
 
-      cards.forEach((card, index) => {
-        const image = images[index]
-        if (!image) {
-          return
-        }
-        gsap.fromTo(
-          image,
-          { xPercent: -4 },
-          {
-            xPercent: 4,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: card,
-              containerAnimation: tl,
-              start: 'left right',
-              end: 'right left',
-              scrub: true,
-            },
-          },
-        )
-      })
+      // cards.forEach((card, index) => {
+      //   const image = images[index]
+      //   if (!image) {
+      //     return
+      //   }
+      //   gsap.fromTo(
+      //     image,
+      //     { xPercent: -4 },
+      //     {
+      //       xPercent: 4,
+      //       ease: 'none',
+      //       scrollTrigger: {
+      //         trigger: card,
+      //         containerAnimation: tl,
+      //         start: 'left right',
+      //         end: 'right left',
+      //         scrub: true,
+      //       },
+      //     },
+      //   )
+      // })
 
       const entrance = [intro, ...cards].filter(Boolean)
       gsap.from(entrance, {
