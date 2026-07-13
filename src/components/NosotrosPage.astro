@@ -254,25 +254,18 @@ const revealImages = [
         1.55,
       )
 
-    // Imágenes decorativas: entran una a una con distintas formas; cada una
-    // empieza a desvanecerse apenas termina de aparecer, así el fade out
-    // arranca en cuanto el usuario sigue haciendo scroll hacia abajo.
+    // Imágenes decorativas: entran una a una con distintas formas; todas
+    // se desvanecen juntas cuando arranca el escalado de la galería media.
     const revealImgFadeIn = 0.55;
     const revealImgFadeOut = 0.5;
     revealImgs.forEach((img, i) => {
       const start = 1.05 + i * 0.2;
-      heroTl
-        .fromTo(
-          img,
-          { opacity: 0, scale: 0.85 },
-          { opacity: 1, scale: 1, duration: revealImgFadeIn, ease: 'power2.out' },
-          start,
-        )
-        .to(
-          img,
-          { opacity: 0, scale: 1.06, duration: revealImgFadeOut, ease: 'power2.in' },
-          start + revealImgFadeIn,
-        );
+      heroTl.fromTo(
+        img,
+        { opacity: 0, scale: 0.85 },
+        { opacity: 1, scale: 1, duration: revealImgFadeIn, ease: 'power2.out' },
+        start,
+      );
     });
 
     // Galería: arranca cuando termina la animación de la frase y las
@@ -283,11 +276,22 @@ const revealImages = [
       heroTl.addLabel('galeriaReveal');
 
       heroTl
-        .to(revealEl, { opacity: 0, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
+        .to(revealEl, { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
         .to(galeriaMedia, { opacity: 1, duration: 0.5, ease: 'none' }, 'galeriaReveal')
         .to(
           galeriaMedia,
           { width: '100vw', height: '100vh', borderRadius: '0px', duration: 3, ease: 'none' },
+          'galeriaReveal+=0.3',
+        )
+        .to(
+          revealImgs,
+          {
+            opacity: 0,
+            scale: 1.06,
+            duration: revealImgFadeOut,
+            ease: 'power2.in',
+            stagger: 0.1,
+          },
           'galeriaReveal+=0.3',
         );
 
