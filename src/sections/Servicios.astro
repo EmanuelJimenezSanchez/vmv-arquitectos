@@ -69,7 +69,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                   <img
                     src={servicio.image}
                     alt={servicio.imageAlt}
-                    class="absolute top-0 h-full w-[110%] object-cover translate-x-1"
+                    class="absolute top-0 h-full w-[110%] object-cover translate-x-1 grayscale transition-[filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grayscale-0"
                     data-servicios-image
                     loading="lazy"
                     decoding="async"
