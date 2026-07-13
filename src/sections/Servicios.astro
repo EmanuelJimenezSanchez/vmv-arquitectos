@@ -95,7 +95,14 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                   <h3 class="vmv-title-3 tracking-[0.08em] text-balance text-white uppercase">
                     {servicio.title}
                   </h3>
-                  <p class="vmv-body-3 max-w-[32ch] text-white/72">{servicio.description}</p>
+                  <div class="grid max-w-[32ch]">
+                    <p class="vmv-body-3 col-start-1 row-start-1 text-white/72 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:opacity-0">
+                      {servicio.description}
+                    </p>
+                    <p class="vmv-body-3 pointer-events-none col-start-1 row-start-1 translate-y-2 self-start text-white/72 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:translate-y-0 group-hover:opacity-100">
+                      {servicio.details}
+                    </p>
+                  </div>
                 </figcaption>
               </figure>
               <div class="mt-4 h-px w-full bg-vmv-border">
