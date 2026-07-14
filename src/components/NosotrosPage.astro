@@ -5,38 +5,38 @@ import Button from '@/components/ui/Button.astro';
 // Imágenes decorativas que aparecen alrededor de la frase del hero.
 // Tamaños, posiciones y formas deliberadamente desiguales para un efecto
 // desacomodado; agregar más objetos aquí para sumar imágenes al collage.
-const revealImages = [
-  {
-    src: '/images/nosotros/fade-1.webp',
-    position: 'top-[7%] left-[3%] -rotate-6',
-    size: 'h-[clamp(7rem,11.5vw,11rem)] w-[clamp(7rem,11.5vw,11rem)]',
-    shape: '[clip-path:circle(50%)]',
-  },
-  {
-    src: '/images/nosotros/fade-2.webp',
-    position: 'top-[14%] right-[10%] rotate-3',
-    size: 'h-[clamp(13rem,20vw,19rem)] w-[clamp(9.5rem,15vw,14.5rem)]',
-    shape: 'rounded-[45%_55%_60%_40%/50%_45%_55%_50%]',
-  },
-  {
-    src: '/images/nosotros/fade-3.webp',
-    position: 'bottom-[4%] left-[15%] -rotate-2',
-    size: 'h-[clamp(9.5rem,15vw,14.5rem)] w-[clamp(9.5rem,15vw,14.5rem)]',
-    shape: 'rounded-[60%_40%_30%_70%/60%_30%_70%_40%]',
-  },
-  {
-    src: '/images/nosotros/fade-4.webp',
-    position: 'right-[3%] bottom-[16%] rotate-6',
-    size: 'h-[clamp(6.5rem,10vw,9.5rem)] w-[clamp(8.5rem,13vw,12.5rem)]',
-    shape: 'rounded-full',
-  },
-  {
-    src: '/images/nosotros/fade-5.webp',
-    position: 'top-[1%] left-[36%] -rotate-8',
-    size: 'h-[clamp(7.5rem,12vw,11.5rem)] w-[clamp(7.5rem,12vw,11.5rem)]',
-    shape: 'rounded-[2.5rem_0.5rem_2.5rem_0.5rem]',
-  },
-];
+// const revealImages = [
+//   {
+//     src: '/images/nosotros/fade-1.webp',
+//     position: 'top-[7%] left-[3%] -rotate-6',
+//     size: 'h-[clamp(7rem,11.5vw,11rem)] w-[clamp(7rem,11.5vw,11rem)]',
+//     shape: '[clip-path:circle(50%)]',
+//   },
+//   {
+//     src: '/images/nosotros/fade-2.webp',
+//     position: 'top-[14%] right-[10%] rotate-3',
+//     size: 'h-[clamp(13rem,20vw,19rem)] w-[clamp(9.5rem,15vw,14.5rem)]',
+//     shape: 'rounded-[45%_55%_60%_40%/50%_45%_55%_50%]',
+//   },
+//   {
+//     src: '/images/nosotros/fade-3.webp',
+//     position: 'bottom-[4%] left-[15%] -rotate-2',
+//     size: 'h-[clamp(9.5rem,15vw,14.5rem)] w-[clamp(9.5rem,15vw,14.5rem)]',
+//     shape: 'rounded-[60%_40%_30%_70%/60%_30%_70%_40%]',
+//   },
+//   {
+//     src: '/images/nosotros/fade-4.webp',
+//     position: 'right-[3%] bottom-[16%] rotate-6',
+//     size: 'h-[clamp(6.5rem,10vw,9.5rem)] w-[clamp(8.5rem,13vw,12.5rem)]',
+//     shape: 'rounded-full',
+//   },
+//   {
+//     src: '/images/nosotros/fade-5.webp',
+//     position: 'top-[1%] left-[36%] -rotate-8',
+//     size: 'h-[clamp(7.5rem,12vw,11.5rem)] w-[clamp(7.5rem,12vw,11.5rem)]',
+//     shape: 'rounded-[2.5rem_0.5rem_2.5rem_0.5rem]',
+//   },
+// ];
 ---
 
 <section id="nosotros" class="relative">
@@ -73,15 +73,17 @@ const revealImages = [
     <div
       data-nosotros="label"
       class="pointer-events-none absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
-      aria-hidden="true"
     >
-      <div class="h-11 w-px bg-vmv-sand-1/50"></div>
+      <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
       <span
         class="text-[clamp(2.25rem,7vw,5.5rem)] font-extralight tracking-[0.45em] indent-[0.45em] uppercase text-vmv-sand-1"
       >
         NOSOTROS
       </span>
-      <div class="h-11 w-px bg-vmv-sand-1/50"></div>
+      <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
+      <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
+        <Button href="/#contacto" variant="white" size="lg">Contacta a un arquitecto</Button>
+      </div>
     </div>
 
     <div
@@ -94,7 +96,7 @@ const revealImages = [
       ></span>
     </div>
 
-    <div
+    <!-- <div
       data-nosotros="reveal-images"
       class="pointer-events-none absolute inset-0 z-10 hidden md:block"
       aria-hidden="true"
@@ -115,7 +117,7 @@ const revealImages = [
           </div>
         ))
       }
-    </div>
+    </div> -->
 
     <div
       data-nosotros="galeria-media"
@@ -155,7 +157,7 @@ const revealImages = [
 
     <div
       data-nosotros="reveal"
-      class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-[clamp(2rem,9vw,7rem)]"
+      class="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-[clamp(2rem,9vw,7rem)]"
     >
       <p
         data-nosotros="reveal-text"
@@ -163,6 +165,9 @@ const revealImages = [
       >
         Más de diez años convirtiendo visiones en espacios de lujo.
       </p>
+      <div data-nosotros="reveal-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
+        <Button href="/#contacto" variant="white" size="xl">Ponte en contacto</Button>
+      </div>
     </div>
   </div>
 
@@ -197,7 +202,7 @@ const revealImages = [
     const scrollHint  = $<HTMLElement>('[data-nosotros="scroll-hint"]');
     const revealEl    = $<HTMLElement>('[data-nosotros="reveal"]');
     const revealText  = $<HTMLParagraphElement>('[data-nosotros="reveal-text"]');
-    const revealImgs  = $$<HTMLElement>('[data-nosotros="reveal-img"]');
+    // const revealImgs  = $$<HTMLElement>('[data-nosotros="reveal-img"]');
     const galeriaMedia  = $<HTMLElement>('[data-nosotros="galeria-media"]');
     const galeriaImages = $$<HTMLElement>('[data-nosotros="galeria-image"]');
     const galeriaCopy   = $<HTMLElement>('[data-nosotros="galeria-copy"]');
@@ -211,7 +216,7 @@ const revealImages = [
 
     gsap.set(revealEl, { opacity: 0 });
     gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' });
-    gsap.set(revealImgs, { opacity: 0, scale: 0.85 });
+    // gsap.set(revealImgs, { opacity: 0, scale: 0.85 });
 
     const hasGaleriaCopy = galeriaCopy && galeriaMain && galeriaCta;
 
@@ -244,29 +249,29 @@ const revealImages = [
     });
 
     heroTl
-      .to([label, scrollHint], { opacity: 0, y: -10, duration: 0.3, ease: 'power2.in' }, 0)
-      .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 1 }, 0.18)
-      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1 }, 0.18)
-      .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1.2)
+      .to([label, scrollHint], { opacity: 0, y: -200, duration: 0.3, ease: 'power2.in' }, 0)
+      .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 0.7 }, 0.18)
+      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 0.7 }, 0.18)
+      .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 0.6)
       .to(
         revealSplit.words,
-        { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.12 }, duration: 0.12, ease: 'none' },
-        1.55,
+        { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.08 }, duration: 0.08, ease: 'none' },
+        1,
       )
 
     // Imágenes decorativas: entran una a una con distintas formas; todas
     // se desvanecen juntas cuando arranca el escalado de la galería media.
-    const revealImgFadeIn = 0.55;
-    const revealImgFadeOut = 0.5;
-    revealImgs.forEach((img, i) => {
-      const start = 1.05 + i * 0.2;
-      heroTl.fromTo(
-        img,
-        { opacity: 0, scale: 0.85 },
-        { opacity: 1, scale: 1, duration: revealImgFadeIn, ease: 'power2.out' },
-        start,
-      );
-    });
+    // const revealImgFadeIn = 0.55;
+    // const revealImgFadeOut = 0.5;
+    // revealImgs.forEach((img, i) => {
+    //   const start = 1.05 + i * 0.2;
+    //   heroTl.fromTo(
+    //     img,
+    //     { opacity: 0, scale: 0.85 },
+    //     { opacity: 1, scale: 1, duration: revealImgFadeIn, ease: 'power2.out' },
+    //     start,
+    //   );
+    // });
 
     // Galería: arranca cuando termina la animación de la frase y las
     // imágenes decorativas (label = final del timeline hasta este punto),
@@ -275,9 +280,10 @@ const revealImages = [
     if (galeriaMedia && galeriaImages.length > 0) {
       heroTl.addLabel('galeriaReveal');
 
-      const scaleStartOffset = 0.3;
-      const scaleDuration = 3;
-      const imageSwapDuration = 0.05;
+      const scaleStartOffset = 0.5;
+      const scaleDuration = 1.5;
+      const imageSwapStart = scaleStartOffset + 0.1;
+      const imageSwapDuration = 0.03;
 
       heroTl
         .to(revealEl, { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
@@ -287,17 +293,17 @@ const revealImages = [
           { width: '100vw', height: '100vh', borderRadius: '0px', duration: scaleDuration, ease: 'none' },
           `galeriaReveal+=${scaleStartOffset}`,
         )
-        .to(
-          revealImgs,
-          {
-            opacity: 0,
-            scale: 1.06,
-            duration: revealImgFadeOut,
-            ease: 'power2.in',
-            stagger: 0.1,
-          },
-          `galeriaReveal+=${scaleStartOffset}`,
-        );
+        // .to(
+        //   revealImgs,
+        //   {
+        //     opacity: 0,
+        //     scale: 1.06,
+        //     duration: revealImgFadeOut,
+        //     ease: 'power2.in',
+        //     stagger: 0.1,
+        //   },
+        //   `galeriaReveal+=${scaleStartOffset}`,
+        // );
 
       // El ciclo de imágenes se reparte a lo largo de la misma duración que
       // el escalado de galeriaMedia, así ambos terminan al mismo tiempo sin
@@ -310,7 +316,7 @@ const revealImages = [
 
         galeriaImages.slice(1).forEach((image, i) => {
           const previousImage = galeriaImages[i];
-          const swapTime = scaleStartOffset + i * swapSpacing;
+          const swapTime = imageSwapStart + i * swapSpacing;
 
           heroTl
             .to(previousImage, { opacity: 0, duration: imageSwapDuration, ease: 'none' }, `galeriaReveal+=${swapTime}`)
