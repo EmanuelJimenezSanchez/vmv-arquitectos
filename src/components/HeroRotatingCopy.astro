@@ -21,14 +21,14 @@ const Tag = TagName
 ---
 
 <div data-hero-copy class={`[text-shadow:0_1px_6px_rgba(0,0,0,0.45)] ${className}`}>
-  <Tag class="vmv-title-1 max-w-3xl leading-tight font-light tracking-tight text-white md:text-6xl">
+  <Tag class="vmv-title-1 max-w-3xl text-white">
     <span class="block">{title}</span>
   </Tag>
 
   <div class="mt-5 flex items-center gap-3 md:mt-6">
     <span class="h-px w-8 shrink-0 bg-white/50 md:w-10"></span>
     <span
-      class="relative block min-h-[1.4em] w-full max-w-xl overflow-hidden text-sm font-light tracking-wide text-white/85 sm:text-lg md:text-2xl"
+      class="vmv-subtitle-1 relative block min-h-[1.4em] w-full max-w-xl overflow-hidden text-white/85"
     >
       {
         phrases.map((phrase) => (
