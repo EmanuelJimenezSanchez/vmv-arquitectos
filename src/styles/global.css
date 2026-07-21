@@ -77,6 +77,28 @@
 :root {
 	color-scheme: light;
 
+	/*
+	  Pruebas de tipografía (temporal): para cambiar de opción, comenta el
+	  par --font-display/--font-body activo y descomenta el que quieras
+	  probar. El <link> de Google Fonts en Layout.astro ya carga las 4.
+	*/
+
+	/* Opción 1 (activa): Fraunces + Inter — serif editorial cálida + sans limpio */
+	--font-display: 'Fraunces', serif;
+	--font-body: 'Inter', sans-serif;
+
+	/* Opción 2: Space Grotesk — grotesk geométrico, look "studio" moderno */
+	/* --font-display: 'Space Grotesk', sans-serif; */
+	/* --font-body: 'Space Grotesk', sans-serif; */
+
+	/* Opción 3: Cormorant Garamond + Jost — serif clásico refinado + sans limpio */
+	/* --font-display: 'Cormorant Garamond', serif; */
+	/* --font-body: 'Jost', sans-serif; */
+
+	/* Opción 4: Manrope — un solo sans elegante para todo el sitio */
+	/* --font-display: 'Manrope', sans-serif; */
+	/* --font-body: 'Manrope', sans-serif; */
+
 	--vmv-sand-1: #fcfaf6;
 	--vmv-sand-2: #f8f4ec;
 	--vmv-sand-3: #f1eadf;
@@ -240,6 +262,7 @@
 	body {
 		background: var(--vmv-background);
 		color: var(--vmv-foreground);
+		font-family: var(--font-body);
 	}
 
 	::selection {
@@ -250,6 +273,7 @@
 
 @layer utilities {
 	.vmv-display-1 {
+		font-family: var(--font-display);
 		font-size: var(--display-1-size);
 		font-weight: var(--display-1-weight);
 		line-height: var(--display-1-line);
@@ -257,6 +281,7 @@
 	}
 
 	.vmv-title-1 {
+		font-family: var(--font-display);
 		font-size: var(--title-1-size);
 		font-weight: var(--title-1-weight);
 		line-height: var(--title-1-line);
@@ -264,6 +289,7 @@
 	}
 
 	.vmv-title-2 {
+		font-family: var(--font-display);
 		font-size: var(--title-2-size);
 		font-weight: var(--title-2-weight);
 		line-height: var(--title-2-line);
@@ -271,6 +297,7 @@
 	}
 
 	.vmv-title-3 {
+		font-family: var(--font-display);
 		font-size: var(--title-3-size);
 		font-weight: var(--title-3-weight);
 		line-height: var(--title-3-line);
@@ -278,6 +305,7 @@
 	}
 
 	.vmv-subtitle-1 {
+		font-family: var(--font-body);
 		font-size: var(--subtitle-1-size);
 		font-weight: var(--subtitle-1-weight);
 		line-height: var(--subtitle-1-line);
