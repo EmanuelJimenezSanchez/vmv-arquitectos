@@ -5,17 +5,40 @@ import Button from '@/components/ui/Button.astro'
 
 <header
   id="site-header"
-  class="group absolute inset-x-0 top-0 z-50 w-full transition-transform duration-500"
+  class="group fixed inset-x-0 top-0 z-50 w-full transition-transform duration-500"
 >
   <div
     class="header-shell w-full animate-[headerReveal_0.8s_cubic-bezier(0.19,1,0.22,1)_both] border border-transparent bg-transparent px-4 py-3 transition-[border-color,background-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-8 md:py-4"
   >
     <div class="flex min-h-14 items-center justify-start sm:justify-center md:min-h-18">
       <a href="/" class="logo-link shrink-0" aria-label="Inicio VMV Arquitectos">
-        <img src={logoVmv.src} alt="VMV Arquitectos" class="h-12 w-auto md:h-26" loading="eager" />
+        <img
+          src={logoVmv.src}
+          alt="VMV Arquitectos"
+          class="h-16 w-auto md:h-20 lg:h-24"
+          loading="eager"
+        />
       </a>
     </div>
   </div>
+
+  <nav
+    class="top-left fixed top-4 left-4 z-60 hidden items-center gap-8 md:top-6 md:left-8 md:flex"
+    aria-label="Navegación principal"
+  >
+    <a
+      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-vmv-sand-1/90 transition-colors duration-450 hover:text-vmv-sand-1"
+      href="/#nosotros">Nosotros</a
+    >
+    <a
+      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-vmv-sand-1/90 transition-colors duration-450 hover:text-vmv-sand-1"
+      href="/#servicios">Servicios</a
+    >
+    <a
+      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-vmv-sand-1/90 transition-colors duration-450 hover:text-vmv-sand-1"
+      href="/projects">Proyectos</a
+    >
+  </nav>
 
   <div
     class="top-right fixed top-4 right-4 z-60 flex h-12 items-stretch sm:h-16 md:top-6 md:right-8"
@@ -27,7 +50,7 @@ import Button from '@/components/ui/Button.astro'
     <button
       id="menu-toggle"
       type="button"
-      class="menu-toggle relative inline-flex h-12 w-12 items-center justify-center border border-vmv-sand-1/30 bg-vmv-gray-12/80 text-vmv-sand-1 transition-[color,border-color,background-color,transform] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] sm:h-16 sm:w-16"
+      class="menu-toggle relative inline-flex h-12 w-12 items-center justify-center border border-vmv-sand-1/30 bg-vmv-gray-12/80 text-vmv-sand-1 transition-[color,border-color,background-color,transform] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] sm:h-16 sm:w-16 md:hidden"
       aria-label="Abrir menú"
       aria-expanded="false"
       aria-controls="mobile-menu"
@@ -48,7 +71,7 @@ import Button from '@/components/ui/Button.astro'
 
   <div
     id="mobile-menu"
-    class="mobile-menu pointer-events-none fixed inset-0 z-40 opacity-0 transition-opacity duration-450"
+    class="mobile-menu pointer-events-none fixed inset-0 z-40 opacity-0 transition-opacity duration-450 md:hidden"
     aria-hidden="true"
   >
     <div
