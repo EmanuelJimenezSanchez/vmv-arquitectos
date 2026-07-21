@@ -23,25 +23,25 @@ import Button from '@/components/ui/Button.astro'
   </div>
 
   <nav
-    class="top-left fixed top-4 left-4 z-60 hidden items-center gap-8 md:top-6 md:left-8 md:flex"
+    class="top-left absolute top-4 left-4 z-60 hidden items-center gap-8 md:top-6 md:left-8 md:flex"
     aria-label="Navegación principal"
   >
     <a
-      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-vmv-sand-1/90 transition-colors duration-450 hover:text-vmv-sand-1"
+      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-white mix-blend-difference transition-opacity duration-450 hover:opacity-80"
       href="/#nosotros">Nosotros</a
     >
     <a
-      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-vmv-sand-1/90 transition-colors duration-450 hover:text-vmv-sand-1"
+      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-white mix-blend-difference transition-opacity duration-450 hover:opacity-80"
       href="/#servicios">Servicios</a
     >
     <a
-      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-vmv-sand-1/90 transition-colors duration-450 hover:text-vmv-sand-1"
+      class="nav-link inline-block text-lg font-light tracking-[0.03em] text-white mix-blend-difference transition-opacity duration-450 hover:opacity-80"
       href="/projects">Proyectos</a
     >
   </nav>
 
   <div
-    class="top-right fixed top-4 right-4 z-60 flex h-12 items-stretch sm:h-16 md:top-6 md:right-8"
+    class="top-right absolute top-4 right-4 z-60 flex h-12 items-stretch sm:h-16 md:top-6 md:right-8"
   >
     <Button href="/#contacto" variant="header" class="header-cta h-full px-10" size="xxl"
       >Contacto</Button
@@ -115,12 +115,12 @@ import Button from '@/components/ui/Button.astro'
             href="/projects">Proyectos</a
           >
         </li>
-        <li>
+        <!-- <li>
           <a
             class="mobile-link inline-block text-[clamp(1.85rem,4.5vw,3.7rem)] leading-[1.08] font-light tracking-[0.03em] text-vmv-sand-1/94 transition-[transform,color,opacity] duration-450 hover:text-vmv-sand-1"
             href="/#contacto">Contacto</a
           >
-        </li>
+        </li> -->
       </ul>
     </div>
   </div>
