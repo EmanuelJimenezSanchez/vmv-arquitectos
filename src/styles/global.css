@@ -278,6 +278,7 @@
 		font-weight: var(--display-1-weight);
 		line-height: var(--display-1-line);
 		letter-spacing: var(--display-1-tracking);
+		text-transform: uppercase;
 	}
 
 	.vmv-title-1 {
@@ -286,6 +287,7 @@
 		font-weight: var(--title-1-weight);
 		line-height: var(--title-1-line);
 		letter-spacing: var(--title-1-tracking);
+		text-transform: uppercase;
 	}
 
 	.vmv-title-2 {
@@ -294,6 +296,7 @@
 		font-weight: var(--title-2-weight);
 		line-height: var(--title-2-line);
 		letter-spacing: var(--title-2-tracking);
+		text-transform: uppercase;
 	}
 
 	.vmv-title-3 {
@@ -302,6 +305,7 @@
 		font-weight: var(--title-3-weight);
 		line-height: var(--title-3-line);
 		letter-spacing: var(--title-3-tracking);
+		text-transform: uppercase;
 	}
 
 	.vmv-subtitle-1 {
