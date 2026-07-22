@@ -1,7 +1,7 @@
 <button
-  id="theme-toggle"
   type="button"
-  class="theme-toggle inline-flex h-11 items-center gap-2 rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 px-3 text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)]"
+  class="theme-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)]"
+  data-theme-toggle
   aria-label="Activar modo oscuro"
   aria-pressed="false"
   title="Cambiar tema"
@@ -15,25 +15,27 @@
       <path d="M20.2 13.2a8 8 0 1 1-9.4-9.4 7 7 0 1 0 9.4 9.4z"></path>
     </svg>
   </span>
-  <span class="theme-label text-[0.62rem] tracking-[0.18em] uppercase">Tema</span>
 </button>
 
 <script>
-  import { $ } from '@/lib/dom-selector'
+  import { $$ } from '@/lib/dom-selector'
 
   const THEME_STORAGE_KEY = 'vmv-theme'
 
+  let cleanupThemeToggle: (() => void) | null = null
+
   const setupThemeToggle = () => {
-    const toggle = $('#theme-toggle')
-    if (!toggle) {
+    cleanupThemeToggle?.()
+    cleanupThemeToggle = null
+
+    const toggles = $$<HTMLButtonElement>('[data-theme-toggle]')
+    if (toggles.length === 0) {
       return
     }
 
-    ;(toggle as HTMLElement & { __abortController?: AbortController }).__abortController?.abort()
-
     const controller = new AbortController()
-    ;(toggle as HTMLElement & { __abortController?: AbortController }).__abortController = controller
     const { signal } = controller
+    cleanupThemeToggle = () => controller.abort()
 
     const root = document.documentElement
     const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -52,8 +54,10 @@
       root.classList.toggle('dark', isDark)
       root.setAttribute('data-theme', theme)
 
-      toggle.setAttribute('aria-pressed', String(isDark))
-      toggle.setAttribute('aria-label', isDark ? 'Activar modo claro' : 'Activar modo oscuro')
+      toggles.forEach((toggle) => {
+        toggle.setAttribute('aria-pressed', String(isDark))
+        toggle.setAttribute('aria-label', isDark ? 'Activar modo claro' : 'Activar modo oscuro')
+      })
 
       if (persist) {
         try {
@@ -74,14 +78,16 @@
       applyTheme(colorSchemeQuery.matches ? 'dark' : 'light', false)
     }
 
-    toggle.addEventListener(
-      'click',
-      () => {
-        const nextTheme = root.classList.contains('dark') ? 'light' : 'dark'
-        applyTheme(nextTheme, true)
-      },
-      { signal },
-    )
+    toggles.forEach((toggle) => {
+      toggle.addEventListener(
+        'click',
+        () => {
+          const nextTheme = root.classList.contains('dark') ? 'light' : 'dark'
+          applyTheme(nextTheme, true)
+        },
+        { signal },
+      )
+    })
 
     colorSchemeQuery.addEventListener(
       'change',
@@ -97,6 +103,7 @@
     initializeTheme()
   }
 
+  document.addEventListener('astro:before-swap', () => cleanupThemeToggle?.())
   document.addEventListener('astro:page-load', setupThemeToggle)
   setupThemeToggle()
 </script>
@@ -130,12 +137,12 @@
     transform: translateY(4px) scale(0.8);
   }
 
-  .dark .icon-sun {
+  :global(.dark) .icon-sun {
     opacity: 0;
     transform: translateY(-4px) scale(0.78);
   }
 
-  .dark .icon-moon {
+  :global(.dark) .icon-moon {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
@@ -147,17 +154,5 @@
   .theme-toggle:focus-visible {
     outline: 2px solid var(--vmv-ring);
     outline-offset: 2px;
-  }
-
-  @media (max-width: 768px) {
-    .theme-label {
-      display: none;
-    }
-
-    .theme-toggle {
-      width: 2.8rem;
-      justify-content: center;
-      padding-inline: 0;
-    }
   }
 </style>

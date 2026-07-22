@@ -20,16 +20,16 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       aria-hidden="true"
       data-servicios-words
     >
-      {
+      <!-- {
         servicios.map((servicio) => (
           <span
-            class="invisible absolute top-0 left-0 text-[clamp(4rem,8.5vw,8rem)] leading-none font-thin tracking-[0.02em] whitespace-nowrap text-vmv-foreground/12 uppercase"
+            class="vmv-display-1 invisible absolute top-0 left-0 whitespace-nowrap text-vmv-foreground/12"
             data-servicios-word
           >
             {servicio.footer}
           </span>
         ))
-      }
+      } -->
     </div>
     <div
       class="flex flex-col gap-10 py-[clamp(3.5rem,8vw,6rem)] min-[900px]:motion-safe:h-full min-[900px]:motion-safe:w-max min-[900px]:motion-safe:flex-row min-[900px]:motion-safe:items-center min-[900px]:motion-safe:gap-[clamp(2rem,4vw,4.5rem)] min-[900px]:motion-safe:py-0 min-[900px]:motion-safe:pr-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:pl-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:will-change-transform"
@@ -61,7 +61,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         {
           servicios.map((servicio, index) => (
             <article
-              class="group relative w-[min(82vw,21rem)] shrink-0 snap-start min-[900px]:motion-safe:w-auto min-[900px]:motion-safe:even:top-[clamp(0.5rem,2dvh,1.5rem)] sm:w-[clamp(18rem,46vw,22rem)]"
+              class="group relative w-[min(82vw,21rem)] shrink-0 snap-start min-[900px]:motion-safe:w-auto min-[900px]:motion-safe:even:top-[clamp(0.5rem,2dvh,1.5rem)] sm:w-[clamp(18rem,46vw,22rem)] hover:cursor-pointer"
               data-servicios-card
             >
               <figure class="relative aspect-[3.6/5.3] w-full rounded-sm overflow-hidden min-[900px]:motion-safe:h-[clamp(18rem,52dvh,29rem)] min-[900px]:motion-safe:w-auto">
@@ -75,37 +75,37 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                     decoding="async"
                   />
                   <div
-                    class="absolute inset-0 bg-[#5c4938]/35 mix-blend-multiply transition-opacity duration-700 group-hover:opacity-0 group-data-[active=true]:opacity-0"
+                    class="absolute inset-0 bg-vmv-sand-11/35 mix-blend-multiply transition-opacity duration-700 group-hover:opacity-0 group-data-[active=true]:opacity-0"
                     aria-hidden="true"
                   />
                 </div>
                 <div
-                  class="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,9,8,0.12)_0%,transparent_38%,rgba(10,9,8,0.82)_100%)]"
+                  class="absolute inset-0 bg-linear-to-b from-vmv-gray-12/12 via-transparent via-38% to-vmv-gray-12/82"
                   aria-hidden="true"
                 />
                 <div
-                  class="pointer-events-none absolute inset-0 rounded-sm ring-1 ring-white/12 ring-inset"
+                  class="pointer-events-none absolute inset-0 rounded-sm ring-1 ring-vmv-sand-1/12 ring-inset"
                   aria-hidden="true"
                 />
                 <figcaption class="absolute inset-x-0 bottom-0 flex flex-col gap-2.5 p-[clamp(1.25rem,2vw,1.75rem)]">
                   <span
-                    class="h-px w-9 bg-white/40 transition-[width,background-color] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-14 group-hover:bg-white/75 group-data-[active=true]:w-14 group-data-[active=true]:bg-white/75"
+                    class="h-px w-9 bg-vmv-sand-1/40 transition-[width,background-color] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-14 group-hover:bg-vmv-sand-1/75 group-data-[active=true]:w-14 group-data-[active=true]:bg-vmv-sand-1/75"
                     aria-hidden="true"
                   />
-                  <h3 class="vmv-title-3 tracking-[0.08em] text-balance text-white uppercase">
+                  <h3 class="vmv-title-3 tracking-[0.08em] text-balance text-vmv-sand-1">
                     {servicio.title}
                   </h3>
                   <div class="grid max-w-[32ch]">
-                    <p class="vmv-body-3 col-start-1 row-start-1 text-white/72 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:opacity-0 group-data-[active=true]:-translate-y-1 group-data-[active=true]:opacity-0">
+                    {/* <p class="vmv-body-3 col-start-1 row-start-1 text-vmv-sand-1/72 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:opacity-0 group-data-[active=true]:-translate-y-1 group-data-[active=true]:opacity-0">
                       {servicio.description}
-                    </p>
-                    <p class="vmv-body-3 pointer-events-none col-start-1 row-start-1 translate-y-2 self-start text-white/72 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:translate-y-0 group-hover:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100">
+                    </p> */}
+                    {/* <p class="vmv-body-3 pointer-events-none col-start-1 row-start-1 translate-y-2 self-start text-vmv-sand-1/72 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:translate-y-0 group-hover:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100">
                       {servicio.details}
-                    </p>
+                    </p> */}
                   </div>
                 </figcaption>
               </figure>
-              <div class="mt-4 h-px w-full bg-vmv-border">
+              {/* <div class="mt-4 h-px w-full bg-vmv-border">
                 <div
                   class="h-full origin-left scale-x-0 bg-vmv-foreground transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-data-[active=true]:scale-x-100"
                   aria-hidden="true"
@@ -113,7 +113,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
               </div>
               <div class="mt-3 flex items-baseline justify-between">
                 <span
-                  class="text-[clamp(1.35rem,1.8vw,1.6rem)] font-thin leading-none tracking-[-0.01em] text-vmv-sand-9/55 tabular-nums"
+                  class="vmv-subtitle-1 text-vmv-sand-9/55 tabular-nums"
                   aria-hidden="true"
                 >
                   {String(index + 1).padStart(2, '0')}
@@ -121,7 +121,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                 <span class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
                   {servicio.footer}
                 </span>
-              </div>
+              </div> */}
             </article>
           ))
         }
@@ -130,15 +130,68 @@ const totalLabel = String(servicios.length).padStart(2, '0')
 
     <footer
       class="pointer-events-none absolute inset-x-[clamp(2rem,6vw,6rem)] bottom-[clamp(1.25rem,3vw,2rem)] z-2 hidden flex-col gap-3 min-[900px]:motion-safe:flex"
-      aria-hidden="true"
     >
-      <div class="flex items-baseline justify-between">
-        <span class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
+      <div class="flex items-center justify-between">
+        <span
+          class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase"
+          aria-hidden="true"
+        >
           VMV — Servicios
         </span>
-        <span class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground tabular-nums">
-          <span data-servicios-counter>01</span> / {totalLabel}
-        </span>
+        <div class="flex items-center gap-4">
+          <span
+            class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground tabular-nums"
+            aria-hidden="true"
+          >
+            <span data-servicios-counter>01</span> / {totalLabel}
+          </span>
+          <div class="pointer-events-auto flex items-center gap-2">
+            <button
+              type="button"
+              class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
+              data-servicios-prev
+              aria-label="Servicio anterior"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M10 3.5L5 8l5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
+              data-servicios-next
+              aria-label="Siguiente servicio"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 3.5l5 4.5-5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
       <div class="h-px w-full bg-vmv-foreground/12">
         <div
@@ -181,6 +234,8 @@ const totalLabel = String(servicios.length).padStart(2, '0')
     const counter = $<HTMLElement>('[data-servicios-counter]', section)
     const wordsLayer = $<HTMLElement>('[data-servicios-words]', section)
     const words = $$<HTMLElement>('[data-servicios-word]', section)
+    const prevButton = $<HTMLButtonElement>('[data-servicios-prev]', section)
+    const nextButton = $<HTMLButtonElement>('[data-servicios-next]', section)
 
     if (!stage || !track || cards.length === 0) {
       return
@@ -247,6 +302,33 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         )
       }
 
+      let currentIndex = 0
+      let activeCardIndex = -1
+
+      const setActiveCard = (index: number) => {
+        if (index === activeCardIndex) {
+          return
+        }
+        const previousCard = cards[activeCardIndex]
+        if (previousCard) {
+          delete previousCard.dataset.active
+        }
+        activeCardIndex = index
+        const nextCard = cards[index]
+        if (nextCard) {
+          nextCard.dataset.active = 'true'
+        }
+      }
+
+      const updateNavButtons = () => {
+        if (prevButton) {
+          prevButton.disabled = currentIndex <= 0
+        }
+        if (nextButton) {
+          nextButton.disabled = currentIndex >= cards.length - 1
+        }
+      }
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
@@ -258,14 +340,41 @@ const totalLabel = String(servicios.length).padStart(2, '0')
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const index = Math.round(self.progress * (cards.length - 1))
+            currentIndex = Math.round(self.progress * (cards.length - 1))
             if (counter) {
-              counter.textContent = String(index + 1).padStart(2, '0')
+              counter.textContent = String(currentIndex + 1).padStart(2, '0')
             }
-            setActiveWord(index)
+            setActiveWord(currentIndex)
+            setActiveCard(currentIndex)
+            updateNavButtons()
           },
         },
       })
+
+      const goToIndex = (index: number) => {
+        const scrollTrigger = tl.scrollTrigger
+        if (!scrollTrigger) {
+          return
+        }
+        const clampedIndex = Math.max(0, Math.min(cards.length - 1, index))
+        const progress = cards.length > 1 ? clampedIndex / (cards.length - 1) : 0
+        const target = scrollTrigger.start + progress * (scrollTrigger.end - scrollTrigger.start)
+        const lenis = window.lenis
+        if (lenis) {
+          lenis.scrollTo(target, { duration: 1.2 })
+        } else {
+          window.scrollTo({ top: target, behavior: 'smooth' })
+        }
+      }
+
+      const navController = new AbortController()
+      prevButton?.addEventListener('click', () => goToIndex(currentIndex - 1), {
+        signal: navController.signal,
+      })
+      nextButton?.addEventListener('click', () => goToIndex(currentIndex + 1), {
+        signal: navController.signal,
+      })
+      updateNavButtons()
 
       tl.to(track, {
         x: () => -getDistance(),
@@ -280,6 +389,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         tl.to(wordsLayer, { xPercent: -5, ease: 'none', duration: 1 }, 0)
       }
       setActiveWord(0)
+      setActiveCard(0)
 
       // cards.forEach((card, index) => {
       //   const image = images[index]
@@ -318,6 +428,8 @@ const totalLabel = String(servicios.length).padStart(2, '0')
 
       // SplitText altera el DOM: restaurar el markup original al revertir.
       return () => {
+        navController.abort()
+        cards.forEach((card) => delete card.dataset.active)
         splits.forEach((split) => split.revert())
       }
     })
