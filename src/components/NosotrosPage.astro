@@ -1,6 +1,6 @@
 ---
-import { galeria } from '@/data/galeria';
-import Button from '@/components/ui/Button.astro';
+import { galeria } from '@/data/galeria'
+import Button from '@/components/ui/Button.astro'
 
 // Imágenes decorativas que aparecen alrededor de la frase del hero.
 // Tamaños, posiciones y formas deliberadamente desiguales para un efecto
@@ -75,9 +75,7 @@ import Button from '@/components/ui/Button.astro';
       class="pointer-events-none absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
     >
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
-      <span class="vmv-title-1 uppercase text-vmv-sand-1">
-        NOSOTROS
-      </span>
+      <span class="vmv-title-1 text-vmv-sand-1 uppercase"> NOSOTROS </span>
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
       <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
         <Button href="/#contacto" variant="white" size="lg">Contacta a un arquitecto</Button>
@@ -144,7 +142,7 @@ import Button from '@/components/ui/Button.astro';
     >
       <p
         data-nosotros="galeria-main"
-        class="vmv-title-1 mx-auto max-w-[24ch] text-balance uppercase text-vmv-sand-1 [text-shadow:0_14px_30px_rgba(0,0,0,0.35)]"
+        class="vmv-title-1 mx-auto max-w-[24ch] text-balance text-vmv-sand-1 uppercase [text-shadow:0_14px_30px_rgba(0,0,0,0.35)]"
       >
         Convertimos tu visión en el espacio de lujo que siempre soñaste.
       </p>
@@ -157,10 +155,7 @@ import Button from '@/components/ui/Button.astro';
       data-nosotros="reveal"
       class="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-[clamp(2rem,9vw,7rem)]"
     >
-      <p
-        data-nosotros="reveal-text"
-        class="vmv-title-2 max-w-3xl text-center"
-      >
+      <p data-nosotros="reveal-text" class="vmv-title-2 max-w-3xl text-center">
         Más de diez años convirtiendo visiones en espacios de lujo.
       </p>
       <div data-nosotros="reveal-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
@@ -168,60 +163,59 @@ import Button from '@/components/ui/Button.astro';
       </div>
     </div>
   </div>
-
 </section>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { SplitText } from 'gsap/SplitText';
-  import { $, $$ } from '@/lib/dom-selector';
+  import { gsap } from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { SplitText } from 'gsap/SplitText'
+  import { $, $$ } from '@/lib/dom-selector'
 
-  gsap.registerPlugin(ScrollTrigger, SplitText);
+  gsap.registerPlugin(ScrollTrigger, SplitText)
 
-  const activeTriggers: ScrollTrigger[] = [];
-  let revealSplit: SplitText | null = null;
+  const activeTriggers: ScrollTrigger[] = []
+  let revealSplit: SplitText | null = null
 
   function killAll() {
-    activeTriggers.forEach((t) => t.kill());
-    activeTriggers.length = 0;
-    revealSplit?.revert();
-    revealSplit = null;
+    activeTriggers.forEach((t) => t.kill())
+    activeTriggers.length = 0
+    revealSplit?.revert()
+    revealSplit = null
   }
 
   function initNosotros() {
-    killAll();
+    killAll()
 
     // ── HERO ─────────────────────────────────────────
-    const hero        = $<HTMLElement>('[data-nosotros="hero"]');
-    const panelL      = $<HTMLElement>('[data-nosotros="panel-l"]');
-    const panelR      = $<HTMLElement>('[data-nosotros="panel-r"]');
-    const label       = $<HTMLElement>('[data-nosotros="label"]');
-    const scrollHint  = $<HTMLElement>('[data-nosotros="scroll-hint"]');
-    const revealEl    = $<HTMLElement>('[data-nosotros="reveal"]');
-    const revealText  = $<HTMLParagraphElement>('[data-nosotros="reveal-text"]');
+    const hero = $<HTMLElement>('[data-nosotros="hero"]')
+    const panelL = $<HTMLElement>('[data-nosotros="panel-l"]')
+    const panelR = $<HTMLElement>('[data-nosotros="panel-r"]')
+    const label = $<HTMLElement>('[data-nosotros="label"]')
+    const scrollHint = $<HTMLElement>('[data-nosotros="scroll-hint"]')
+    const revealEl = $<HTMLElement>('[data-nosotros="reveal"]')
+    const revealText = $<HTMLParagraphElement>('[data-nosotros="reveal-text"]')
     // const revealImgs  = $$<HTMLElement>('[data-nosotros="reveal-img"]');
-    const galeriaMedia  = $<HTMLElement>('[data-nosotros="galeria-media"]');
-    const galeriaImages = $$<HTMLElement>('[data-nosotros="galeria-image"]');
-    const galeriaCopy   = $<HTMLElement>('[data-nosotros="galeria-copy"]');
-    const galeriaMain   = $<HTMLParagraphElement>('[data-nosotros="galeria-main"]');
-    const galeriaCta    = $<HTMLElement>('[data-nosotros="galeria-cta"]');
+    const galeriaMedia = $<HTMLElement>('[data-nosotros="galeria-media"]')
+    const galeriaImages = $$<HTMLElement>('[data-nosotros="galeria-image"]')
+    const galeriaCopy = $<HTMLElement>('[data-nosotros="galeria-copy"]')
+    const galeriaMain = $<HTMLParagraphElement>('[data-nosotros="galeria-main"]')
+    const galeriaCta = $<HTMLElement>('[data-nosotros="galeria-cta"]')
 
-    if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return;
+    if (!hero || !panelL || !panelR || !label || !revealEl || !revealText) return
 
     // Word-spans
-    revealSplit = SplitText.create(revealText, { type: 'words', aria: 'auto' });
+    revealSplit = SplitText.create(revealText, { type: 'words', aria: 'auto' })
 
-    gsap.set(revealEl, { opacity: 0 });
-    gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' });
+    gsap.set(revealEl, { opacity: 0 })
+    gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' })
     // gsap.set(revealImgs, { opacity: 0, scale: 0.85 });
 
-    const hasGaleriaCopy = galeriaCopy && galeriaMain && galeriaCta;
+    const hasGaleriaCopy = galeriaCopy && galeriaMain && galeriaCta
 
     if (hasGaleriaCopy) {
-      gsap.set(galeriaCopy, { opacity: 0 });
-      gsap.set(galeriaMain, { opacity: 0, y: 10 });
-      gsap.set(galeriaCta, { opacity: 0, y: 20 });
+      gsap.set(galeriaCopy, { opacity: 0 })
+      gsap.set(galeriaMain, { opacity: 0, y: 10 })
+      gsap.set(galeriaCta, { opacity: 0, y: 20 })
     }
 
     if (galeriaMedia) {
@@ -230,9 +224,9 @@ import Button from '@/components/ui/Button.astro';
         height: '16rem',
         borderRadius: '999px',
         opacity: 0,
-      });
-      gsap.set(galeriaImages, { opacity: 0 });
-      if (galeriaImages[0]) gsap.set(galeriaImages[0], { opacity: 1 });
+      })
+      gsap.set(galeriaImages, { opacity: 0 })
+      if (galeriaImages[0]) gsap.set(galeriaImages[0], { opacity: 1 })
     }
 
     const heroTl = gsap.timeline({
@@ -244,18 +238,45 @@ import Button from '@/components/ui/Button.astro';
         pin: true,
         anticipatePin: 1,
       },
-    });
+    })
 
-    heroTl
-      .to([label, scrollHint], { opacity: 0, y: -200, duration: 0.3, ease: 'power2.in' }, 0)
-      .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 0.7 }, 0.18)
-      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 0.7 }, 0.18)
+    // Intro del hero: se reproduce automáticamente una sola vez cuando la
+    // sección entra en pantalla, sin quedar ligada/scrubeada al scroll
+    // (el resto del timeline sigue ligado al scroll para la galería).
+    gsap
+      .timeline()
+      .to([label, scrollHint], {
+        opacity: 0,
+        y: -50,
+        duration: 0.3,
+        ease: 'power2.in',
+        scrollTrigger: {
+          markers: true,
+          trigger: hero,
+          toggleActions: 'play none reverse none',
+          start: 'top 05%',
+          end: 'top 10%',
+        },
+      })
+      .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 0.7 }, '<')
+      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 0.7 }, '<')
       .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 0.6)
-      .to(
-        revealSplit.words,
-        { color: 'rgba(255,255,255,0.92)', stagger: { each: 0.08 }, duration: 0.08, ease: 'none' },
-        1,
-      )
+
+    heroTl.to(revealSplit.words, {
+      color: 'rgba(255,255,255,0.92)',
+      stagger: { each: 0.08 },
+      duration: 0.08,
+      ease: 'none',
+    })
+
+    // activeTriggers.push(
+    //   ScrollTrigger.create({
+    //     trigger: hero,
+    //     start: 'top 85%',
+    //     once: true,
+    //     onEnter: () => introTl.play(),
+    //   }),
+    // )
 
     // Imágenes decorativas: entran una a una con distintas formas; todas
     // se desvanecen juntas cuando arranca el escalado de la galería media.
@@ -276,57 +297,71 @@ import Button from '@/components/ui/Button.astro';
     // luego reproduce el mismo escalado circulo→pantalla completa y el
     // cambio de imágenes de la sección Galeria.
     if (galeriaMedia && galeriaImages.length > 0) {
-      heroTl.addLabel('galeriaReveal');
+      heroTl.addLabel('galeriaReveal')
 
-      const scaleStartOffset = 0.5;
-      const scaleDuration = 1.5;
-      const imageSwapStart = scaleStartOffset + 0.1;
-      const imageSwapDuration = 0.03;
+      const scaleStartOffset = 0.5
+      const scaleDuration = 1.5
+      const imageSwapStart = scaleStartOffset + 0.1
+      const imageSwapDuration = 0.03
 
       heroTl
-        .to(revealEl, { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' }, 'galeriaReveal')
+        .to(
+          revealEl,
+          { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' },
+          'galeriaReveal',
+        )
         .to(galeriaMedia, { opacity: 1, duration: 0.5, ease: 'none' }, 'galeriaReveal')
         .to(
           galeriaMedia,
-          { width: '100vw', height: '100vh', borderRadius: '0px', duration: scaleDuration, ease: 'none' },
+          {
+            width: '100vw',
+            height: '100vh',
+            borderRadius: '0px',
+            duration: scaleDuration,
+            ease: 'none',
+          },
           `galeriaReveal+=${scaleStartOffset}`,
         )
-        // .to(
-        //   revealImgs,
-        //   {
-        //     opacity: 0,
-        //     scale: 1.06,
-        //     duration: revealImgFadeOut,
-        //     ease: 'power2.in',
-        //     stagger: 0.1,
-        //   },
-        //   `galeriaReveal+=${scaleStartOffset}`,
-        // );
+      // .to(
+      //   revealImgs,
+      //   {
+      //     opacity: 0,
+      //     scale: 1.06,
+      //     duration: revealImgFadeOut,
+      //     ease: 'power2.in',
+      //     stagger: 0.1,
+      //   },
+      //   `galeriaReveal+=${scaleStartOffset}`,
+      // );
 
       // El ciclo de imágenes se reparte a lo largo de la misma duración que
       // el escalado de galeriaMedia, así ambos terminan al mismo tiempo sin
       // importar cuántas imágenes tenga la galería.
-      let imageCycleEnd = scaleStartOffset + scaleDuration;
-      const swapCount = galeriaImages.length - 1;
+      let imageCycleEnd = scaleStartOffset + scaleDuration
+      const swapCount = galeriaImages.length - 1
       if (swapCount > 0) {
         const swapSpacing =
-          swapCount > 1 ? (scaleDuration - 0.3 - imageSwapDuration) / (swapCount - 1) : 0;
+          swapCount > 1 ? (scaleDuration - 0.3 - imageSwapDuration) / (swapCount - 1) : 0
 
         galeriaImages.slice(1).forEach((image, i) => {
-          const previousImage = galeriaImages[i];
-          const swapTime = imageSwapStart + i * swapSpacing;
+          const previousImage = galeriaImages[i]
+          const swapTime = imageSwapStart + i * swapSpacing
 
           heroTl
-            .to(previousImage, { opacity: 0, duration: imageSwapDuration, ease: 'none' }, `galeriaReveal+=${swapTime}`)
-            .to(image, { opacity: 1, duration: imageSwapDuration, ease: 'none' }, '<');
-        });
+            .to(
+              previousImage,
+              { opacity: 0, duration: imageSwapDuration, ease: 'none' },
+              `galeriaReveal+=${swapTime}`,
+            )
+            .to(image, { opacity: 1, duration: imageSwapDuration, ease: 'none' }, '<')
+        })
       }
 
       // Frase de conversión y botón de contacto: el mismo remate que tiene
       // Galeria.astro al final de su animación, ahora aparece cuando el
       // ciclo de imágenes de la galería termina.
       if (hasGaleriaCopy) {
-        heroTl.addLabel('galeriaCopyReveal', `galeriaReveal+=${imageCycleEnd + 0.2}`);
+        heroTl.addLabel('galeriaCopyReveal', `galeriaReveal+=${imageCycleEnd + 0.2}`)
 
         heroTl
           .to(galeriaCopy, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 'galeriaCopyReveal')
@@ -339,42 +374,48 @@ import Button from '@/components/ui/Button.astro';
             galeriaCta,
             { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' },
             'galeriaCopyReveal+=0.4',
-          );
+          )
       }
     }
 
-    const heroSt = heroTl.scrollTrigger;
-    if (heroSt) activeTriggers.push(heroSt);
+    const heroSt = heroTl.scrollTrigger
+    if (heroSt) activeTriggers.push(heroSt)
 
     // ── ABOUT (solo en pantallas grandes) ────────────
-    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-    const isPrefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches
+    const isPrefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     if (isDesktop && !isPrefersReducedMotion) {
-      const aboutSection  = $<HTMLElement>('[data-nosotros="about"]');
-      const aboutLeft     = $<HTMLElement>('[data-nosotros="about-left"]');
-      const aboutRight    = $<HTMLElement>('[data-nosotros="about-right"]');
-      const infoPanel     = $<HTMLElement>('[data-nosotros="panel-info"]');
-      const servicesPanel = $<HTMLElement>('[data-nosotros="panel-services"]');
-      const imgLayer1     = $<HTMLElement>('[data-nosotros="img-layer-1"]');
-      const imgLayer2     = $<HTMLElement>('[data-nosotros="img-layer-2"]');
-      const navDot1       = $<HTMLElement>('[data-nosotros="nav-dot-1"]');
-      const navDot2       = $<HTMLElement>('[data-nosotros="nav-dot-2"]');
-      const navFill       = $<HTMLElement>('[data-nosotros="nav-fill"]');
+      const aboutSection = $<HTMLElement>('[data-nosotros="about"]')
+      const aboutLeft = $<HTMLElement>('[data-nosotros="about-left"]')
+      const aboutRight = $<HTMLElement>('[data-nosotros="about-right"]')
+      const infoPanel = $<HTMLElement>('[data-nosotros="panel-info"]')
+      const servicesPanel = $<HTMLElement>('[data-nosotros="panel-services"]')
+      const imgLayer1 = $<HTMLElement>('[data-nosotros="img-layer-1"]')
+      const imgLayer2 = $<HTMLElement>('[data-nosotros="img-layer-2"]')
+      const navDot1 = $<HTMLElement>('[data-nosotros="nav-dot-1"]')
+      const navDot2 = $<HTMLElement>('[data-nosotros="nav-dot-2"]')
+      const navFill = $<HTMLElement>('[data-nosotros="nav-fill"]')
 
       if (
-        !aboutSection || !aboutLeft || !aboutRight ||
-        !infoPanel || !servicesPanel || !imgLayer1 || !imgLayer2
-      ) return;
+        !aboutSection ||
+        !aboutLeft ||
+        !aboutRight ||
+        !infoPanel ||
+        !servicesPanel ||
+        !imgLayer1 ||
+        !imgLayer2
+      )
+        return
 
       // Estado inicial
-      gsap.set(aboutLeft,     { x: -60, opacity: 0 });
-      gsap.set(aboutRight,    { x: 60, opacity: 0, scale: 1.05 });
-      gsap.set(servicesPanel, { yPercent: 100 });
-      gsap.set(imgLayer2,     { opacity: 0 });
+      gsap.set(aboutLeft, { x: -60, opacity: 0 })
+      gsap.set(aboutRight, { x: 60, opacity: 0, scale: 1.05 })
+      gsap.set(servicesPanel, { yPercent: 100 })
+      gsap.set(imgLayer2, { opacity: 0 })
 
       // Nav: dot 1 activo al inicio
-      navDot1?.setAttribute('data-active', '');
+      navDot1?.setAttribute('data-active', '')
 
       // Fase 0: Entrada cuando el about entra al viewport (antes del pin)
       activeTriggers.push(
@@ -383,11 +424,18 @@ import Button from '@/components/ui/Button.astro';
           start: 'top 78%',
           once: true,
           onEnter: () => {
-            gsap.to(aboutLeft,  { x: 0, opacity: 1, duration: 1.1, ease: 'power3.out' });
-            gsap.to(aboutRight, { x: 0, opacity: 1, scale: 1, duration: 1.3, ease: 'power3.out', delay: 0.08 });
+            gsap.to(aboutLeft, { x: 0, opacity: 1, duration: 1.1, ease: 'power3.out' })
+            gsap.to(aboutRight, {
+              x: 0,
+              opacity: 1,
+              scale: 1,
+              duration: 1.3,
+              ease: 'power3.out',
+              delay: 0.08,
+            })
           },
         }),
-      );
+      )
 
       // Fase 1→2: Pin + swap de contenido al hacer scroll
       const aboutTl = gsap.timeline({
@@ -399,32 +447,32 @@ import Button from '@/components/ui/Button.astro';
           pin: true,
           anticipatePin: 1,
           onUpdate: (self) => {
-            const p = self.progress;
+            const p = self.progress
             // Relleno del track proporcional al progreso del scroll
-            if (navFill) navFill.style.height = `${p * 100}%`;
+            if (navFill) navFill.style.height = `${p * 100}%`
             // Cambio de dot activo cuando el swap de paneles ocurre
             // (~0.52 del timeline / 1.35 de total ≈ 40% del scroll)
-            const inPhase2 = p > 0.4;
-            navDot1?.toggleAttribute('data-active', !inPhase2);
-            navDot2?.toggleAttribute('data-active', inPhase2);
+            const inPhase2 = p > 0.4
+            navDot1?.toggleAttribute('data-active', !inPhase2)
+            navDot2?.toggleAttribute('data-active', inPhase2)
           },
         },
-      });
+      })
 
       aboutTl
-        .to(infoPanel,     { yPercent: -100, opacity: 0, duration: 0.38, ease: 'power2.in' }, 0.38)
-        .to(imgLayer1,     { opacity: 0, duration: 0.32, ease: 'power2.inOut' },              0.42)
-        .to(servicesPanel, { yPercent: 0, duration: 0.44, ease: 'power3.out' },               0.56)
-        .to(imgLayer2,     { opacity: 1, duration: 0.38, ease: 'power2.inOut' },              0.54)
+        .to(infoPanel, { yPercent: -100, opacity: 0, duration: 0.38, ease: 'power2.in' }, 0.38)
+        .to(imgLayer1, { opacity: 0, duration: 0.32, ease: 'power2.inOut' }, 0.42)
+        .to(servicesPanel, { yPercent: 0, duration: 0.44, ease: 'power3.out' }, 0.56)
+        .to(imgLayer2, { opacity: 1, duration: 0.38, ease: 'power2.inOut' }, 0.54)
 
-      const aboutSt = aboutTl.scrollTrigger;
-      if (aboutSt) activeTriggers.push(aboutSt);
+      const aboutSt = aboutTl.scrollTrigger
+      if (aboutSt) activeTriggers.push(aboutSt)
     }
   }
 
-  document.addEventListener('astro:before-swap', killAll);
-  document.addEventListener('astro:page-load', initNosotros);
-  initNosotros();
+  document.addEventListener('astro:before-swap', killAll)
+  document.addEventListener('astro:page-load', initNosotros)
+  initNosotros()
 </script>
 
 <style>
