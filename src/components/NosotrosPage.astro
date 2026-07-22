@@ -240,17 +240,21 @@ import Button from '@/components/ui/Button.astro'
         const swapSpacing =
           swapCount > 1 ? (scaleDuration - 0.3 - imageSwapDuration) / (swapCount - 1) : 0
 
+        // La imagen nueva (más adelante en el DOM) queda apilada sobre la
+        // anterior, así que se desvanece encima de ella y ambas permanecen
+        // visibles durante toda la transición: la anterior solo se oculta
+        // una vez que la nueva ya la cubre por completo, sin parpadeo.
         galeriaImages.slice(1).forEach((image, i) => {
           const previousImage = galeriaImages[i]
           const swapTime = imageSwapStart + i * swapSpacing
 
           heroTl
             .to(
-              previousImage,
-              { opacity: 0, duration: imageSwapDuration, ease: 'none' },
+              image,
+              { opacity: 1, duration: imageSwapDuration, ease: 'none' },
               `galeriaReveal+=${swapTime}`,
             )
-            .to(image, { opacity: 1, duration: imageSwapDuration, ease: 'none' }, '<')
+            .set(previousImage, { opacity: 0 }, `galeriaReveal+=${swapTime + imageSwapDuration}`)
         })
       }
 
