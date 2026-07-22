@@ -7,38 +7,40 @@ import Button from '@/components/ui/Button.astro'
   id="site-header"
   class="group fixed inset-x-0 top-0 z-50 w-full transition-transform duration-500"
 >
-  <div
-    class="header-shell w-full animate-[headerReveal_0.8s_cubic-bezier(0.19,1,0.22,1)_both] border border-transparent bg-transparent px-4 py-3 transition-[border-color,background-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-8 md:py-4"
-  >
-    <div class="flex min-h-14 items-center justify-start sm:justify-center md:min-h-18">
-      <a href="/" class="logo-link shrink-0" aria-label="Inicio VMV Arquitectos">
-        <img
-          src={logoVmv.src}
-          alt="VMV Arquitectos"
-          class="h-16 w-auto md:h-20 lg:h-24"
-          loading="eager"
-        />
-      </a>
+  <div class="main-tool-bar relative w-full">
+    <div
+      class="header-shell w-full animate-[headerReveal_0.8s_cubic-bezier(0.19,1,0.22,1)_both] border border-transparent bg-transparent px-4 py-3 transition-[border-color,background-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-8 md:py-4"
+    >
+      <div class="flex min-h-14 items-center justify-start sm:justify-center md:min-h-18">
+        <a href="/" class="logo-link shrink-0" aria-label="Inicio VMV Arquitectos">
+          <img
+            src={logoVmv.src}
+            alt="VMV Arquitectos"
+            class="h-16 w-auto md:h-20 lg:h-24"
+            loading="eager"
+          />
+        </a>
+      </div>
     </div>
-  </div>
 
-  <nav
-    class="top-left absolute top-4 left-4 z-60 hidden items-center gap-8 md:top-6 md:left-8 md:flex"
-    aria-label="Navegación principal"
-  >
-    <a
-      class="nav-link vmv-body-1 inline-block text-white mix-blend-difference transition-opacity duration-450 hover:opacity-80"
-      href="/#nosotros">Nosotros</a
+    <nav
+      class="top-left absolute top-4 left-4 z-60 hidden items-center gap-8 md:top-6 md:left-8 md:flex"
+      aria-label="Navegación principal"
     >
-    <a
-      class="nav-link vmv-body-1 inline-block text-white mix-blend-difference transition-opacity duration-450 hover:opacity-80"
-      href="/#servicios">Servicios</a
-    >
-    <a
-      class="nav-link vmv-body-1 inline-block text-white mix-blend-difference transition-opacity duration-450 hover:opacity-80"
-      href="/projects">Proyectos</a
-    >
-  </nav>
+      <a
+        class="nav-link vmv-body-1 inline-block text-white transition-[opacity,color] duration-450 hover:opacity-80"
+        href="/#nosotros">Nosotros</a
+      >
+      <a
+        class="nav-link vmv-body-1 inline-block text-white transition-[opacity,color] duration-450 hover:opacity-80"
+        href="/#servicios">Servicios</a
+      >
+      <a
+        class="nav-link vmv-body-1 inline-block text-white transition-[opacity,color] duration-450 hover:opacity-80"
+        href="/projects">Proyectos</a
+      >
+    </nav>
+  </div>
 
   <div
     class="top-right absolute top-4 right-4 z-60 flex h-12 items-stretch sm:h-16 md:top-6 md:right-8"
@@ -127,10 +129,18 @@ import Button from '@/components/ui/Button.astro'
 </header>
 
 <script>
+  import gsap from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
   import { $, $$ } from '@/lib/dom-selector'
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let toolbarShowAnim: gsap.core.Tween | null = null
+  let toolbarTrigger: ScrollTrigger | null = null
 
   const setupHeader = () => {
     const header = $('#site-header')
+    const headerShell = $('.header-shell')
     const menuToggle = $('#menu-toggle')
     const menuClose = $('#menu-close')
     const mobileMenu = $('#mobile-menu')
@@ -196,7 +206,7 @@ import Button from '@/components/ui/Button.astro'
       mobileMenu.setAttribute('aria-hidden', 'false')
       mobileMenu.classList.add('is-open')
       header.classList.add('is-menu-open')
-      header.classList.remove('is-hidden')
+      toolbarShowAnim?.play()
     }
 
     const syncScrollState = () => {
@@ -218,6 +228,59 @@ import Button from '@/components/ui/Button.astro'
 
     syncScrollState()
     window.addEventListener('scroll', onScroll, { passive: true, signal })
+
+    // The headerReveal entrance animation fills forwards on `transform`, which
+    // outranks GSAP's inline transform in the cascade and would otherwise
+    // freeze the toolbar in place once the entrance finishes.
+    headerShell?.addEventListener(
+      'animationend',
+      () => {
+        headerShell.style.animation = 'none'
+      },
+      { once: true, signal },
+    )
+
+    toolbarTrigger?.kill()
+    toolbarShowAnim?.kill()
+
+    toolbarShowAnim = gsap
+      .from('.main-tool-bar', {
+        yPercent: -100,
+        paused: true,
+        duration: 0.2,
+      })
+      .progress(1)
+
+    toolbarTrigger = ScrollTrigger.create({
+      start: 'top top',
+      end: 'max',
+      onUpdate: (self) => {
+        // Skip the hide/show toggle while Lenis's scroll-snap is driving the
+        // scroll — only user-initiated scrolling should hide the toolbar.
+        // Lenis clears `userData` back to `{}` the instant a real user
+        // scroll interrupts a snap, so reading it live (rather than a flag
+        // toggled by onSnapStart/onSnapComplete) can't get stuck if a snap
+        // animation is interrupted before it completes.
+        if ((window.lenis?.userData as { initiator?: string })?.initiator === 'snap') {
+          return
+        }
+
+        if (self.direction === -1) {
+          toolbarShowAnim?.play()
+        } else {
+          toolbarShowAnim?.reverse()
+        }
+      },
+    })
+
+    signal.addEventListener(
+      'abort',
+      () => {
+        toolbarTrigger?.kill()
+        toolbarShowAnim?.kill()
+      },
+      { once: true },
+    )
 
     if (menuToggle && mobileMenu) {
       const links = $$('a', mobileMenu)
@@ -270,10 +333,6 @@ import Button from '@/components/ui/Button.astro'
 </script>
 
 <style>
-  .group.is-hidden {
-    transform: translateY(-125%);
-  }
-
   .group .header-cta {
     position: relative;
     overflow: hidden;
@@ -294,6 +353,17 @@ import Button from '@/components/ui/Button.astro'
 
   .group.is-scrolled .header-shell,
   .group.is-menu-open .header-shell {
+    background-color: var(--vmv-sand-1);
+    border-color: color-mix(in srgb, var(--vmv-gray-12) 8%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--vmv-gray-12) 6%, transparent);
+  }
+
+  .group.is-scrolled .nav-link {
+    color: var(--vmv-foreground);
+  }
+
+  .group.is-scrolled .header-shell .logo-link img {
+    filter: none;
   }
 
   .menu-toggle .line:first-of-type {
