@@ -92,8 +92,7 @@ const finalRobots = robots ?? 'index, follow'
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
           ? 'dark'
           : 'light'
-        // const resolvedTheme = storedTheme ?? systemTheme
-        const resolvedTheme = 'dark'
+        const resolvedTheme = storedTheme ?? systemTheme
 
         document.documentElement.classList.toggle('dark', resolvedTheme === 'dark')
         document.documentElement.setAttribute('data-theme', resolvedTheme)
