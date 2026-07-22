@@ -303,6 +303,22 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       }
 
       let currentIndex = 0
+      let activeCardIndex = -1
+
+      const setActiveCard = (index: number) => {
+        if (index === activeCardIndex) {
+          return
+        }
+        const previousCard = cards[activeCardIndex]
+        if (previousCard) {
+          delete previousCard.dataset.active
+        }
+        activeCardIndex = index
+        const nextCard = cards[index]
+        if (nextCard) {
+          nextCard.dataset.active = 'true'
+        }
+      }
 
       const updateNavButtons = () => {
         if (prevButton) {
@@ -329,6 +345,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
               counter.textContent = String(currentIndex + 1).padStart(2, '0')
             }
             setActiveWord(currentIndex)
+            setActiveCard(currentIndex)
             updateNavButtons()
           },
         },
@@ -372,6 +389,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         tl.to(wordsLayer, { xPercent: -5, ease: 'none', duration: 1 }, 0)
       }
       setActiveWord(0)
+      setActiveCard(0)
 
       // cards.forEach((card, index) => {
       //   const image = images[index]
@@ -411,6 +429,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       // SplitText altera el DOM: restaurar el markup original al revertir.
       return () => {
         navController.abort()
+        cards.forEach((card) => delete card.dataset.active)
         splits.forEach((split) => split.revert())
       }
     })
