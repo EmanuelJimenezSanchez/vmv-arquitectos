@@ -404,7 +404,13 @@ import Button from '@/components/ui/Button.astro'
 
   .logo-link img {
     filter: brightness(0) invert(1);
-    transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      filter 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .group.is-scrolled .header-shell .logo-link img {
+    transform: scale(0.82);
   }
 
   .mobile-panel {
