@@ -13,12 +13,11 @@ import Button from '@/components/ui/Button.astro'
     >
       <div class="flex min-h-12 items-center justify-start sm:justify-center md:min-h-14">
         <a href="/" class="logo-link shrink-0" aria-label="Inicio VMV Arquitectos">
-          <img
-            src={logoVmv.src}
-            alt="VMV Arquitectos"
-            class="h-16 w-auto md:h-20 lg:h-22"
-            loading="eager"
-          />
+          <span
+            class="logo-mark block h-16 w-auto aspect-1920/725 bg-white mask-(--logo-mask) mask-center mask-no-repeat mask-contain md:h-20 lg:h-22"
+            style={`--logo-mask:url(${logoVmv.src})`}
+            aria-hidden="true"
+          ></span>
         </a>
       </div>
     </div>
@@ -370,8 +369,15 @@ import Button from '@/components/ui/Button.astro'
     color: var(--vmv-foreground);
   }
 
-  .group.is-scrolled .header-shell .logo-link img {
-    filter: none;
+  .logo-mark {
+    transition:
+      background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .group.is-scrolled .header-shell .logo-mark {
+    background-color: var(--vmv-gray-12);
+    transform: scale(0.82);
   }
 
   .menu-toggle .line:first-of-type {
@@ -404,13 +410,7 @@ import Button from '@/components/ui/Button.astro'
 
   .logo-link img {
     filter: brightness(0) invert(1);
-    transition:
-      filter 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .group.is-scrolled .header-shell .logo-link img {
-    transform: scale(0.82);
+    transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .mobile-panel {
