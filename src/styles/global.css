@@ -151,7 +151,7 @@
 	--display-1-line: 1.02;
 	--display-1-tracking: -0.02em;
 
-	--title-1-size: clamp(2.25rem, 7vw, 5.5rem);
+	--title-1-size: clamp(1.85rem, 5.5vw, 4.25rem);
 	--title-1-weight: 200;
 	--title-1-line: 1.08;
 	--title-1-tracking: -0.015em;
