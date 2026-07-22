@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button.astro'
   <!-- ─── HERO: CORTINA + FRASE ICÓNICA ──────────────── -->
   <div
     data-nosotros="hero"
-    class="relative h-dvh overflow-hidden bg-vmv-gray-12 motion-reduce:hidden"
+    class="relative h-dvh overflow-hidden bg-vmv-gray-1 motion-reduce:hidden"
   >
     <div
       data-nosotros="panel-l"
@@ -40,11 +40,11 @@ import Button from '@/components/ui/Button.astro'
       class="pointer-events-none absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
     >
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
-      <span class="vmv-title-1 text-vmv-sand-1 uppercase"> NOSOTROS </span>
+      <span class="vmv-title-1 text-white uppercase"> NOSOTROS </span>
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
-      <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
+      <!-- <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
         <Button href="/#contacto" variant="white" size="lg">Contacta a un arquitecto</Button>
-      </div>
+      </div> -->
     </div>
 
     <div
@@ -97,7 +97,7 @@ import Button from '@/components/ui/Button.astro'
       data-nosotros="reveal"
       class="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-[clamp(2rem,9vw,7rem)]"
     >
-      <p data-nosotros="reveal-text" class="vmv-title-2 max-w-3xl text-center">
+      <p data-nosotros="reveal-text" class="vmv-title-2 max-w-3xl text-center text-vmv-gray-12">
         Más de diez años convirtiendo visiones en espacios de lujo.
       </p>
       <!-- <div data-nosotros="reveal-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
@@ -164,7 +164,7 @@ import Button from '@/components/ui/Button.astro'
     revealSplit = SplitText.create(revealText, { type: 'words', aria: 'auto' })
 
     gsap.set(revealEl, { opacity: 0 })
-    gsap.set(revealSplit.words, { color: 'rgba(255,255,255,0.15)' })
+    gsap.set(revealSplit.words, { opacity: 0.5 })
     // gsap.set(revealImgs, { opacity: 0, scale: 0.85 });
 
     const hasGaleriaCopy = galeriaCopy && galeriaCta
@@ -199,9 +199,10 @@ import Button from '@/components/ui/Button.astro'
     })
     .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 1.4 }, '<')
     .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1.4 }, '<')
-    .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1.2)
+    .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1)
     .to(revealSplit.words, {
-      color: 'rgba(255,255,255,0.92)',
+      // color: 'rgba(255,255,255,0.92)',
+      opacity: 1,
       stagger: { each: 0.08 },
       duration: 0.08,
       ease: 'none',
