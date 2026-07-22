@@ -20,7 +20,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       aria-hidden="true"
       data-servicios-words
     >
-      {
+      <!-- {
         servicios.map((servicio) => (
           <span
             class="vmv-display-1 invisible absolute top-0 left-0 whitespace-nowrap text-vmv-foreground/12 uppercase"
@@ -29,7 +29,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
             {servicio.footer}
           </span>
         ))
-      }
+      } -->
     </div>
     <div
       class="flex flex-col gap-10 py-[clamp(3.5rem,8vw,6rem)] min-[900px]:motion-safe:h-full min-[900px]:motion-safe:w-max min-[900px]:motion-safe:flex-row min-[900px]:motion-safe:items-center min-[900px]:motion-safe:gap-[clamp(2rem,4vw,4.5rem)] min-[900px]:motion-safe:py-0 min-[900px]:motion-safe:pr-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:pl-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:will-change-transform"
@@ -61,7 +61,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         {
           servicios.map((servicio, index) => (
             <article
-              class="group relative w-[min(82vw,21rem)] shrink-0 snap-start min-[900px]:motion-safe:w-auto min-[900px]:motion-safe:even:top-[clamp(0.5rem,2dvh,1.5rem)] sm:w-[clamp(18rem,46vw,22rem)]"
+              class="group relative w-[min(82vw,21rem)] shrink-0 snap-start min-[900px]:motion-safe:w-auto min-[900px]:motion-safe:even:top-[clamp(0.5rem,2dvh,1.5rem)] sm:w-[clamp(18rem,46vw,22rem)] hover:cursor-pointer"
               data-servicios-card
             >
               <figure class="relative aspect-[3.6/5.3] w-full rounded-sm overflow-hidden min-[900px]:motion-safe:h-[clamp(18rem,52dvh,29rem)] min-[900px]:motion-safe:w-auto">
@@ -96,16 +96,16 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                     {servicio.title}
                   </h3>
                   <div class="grid max-w-[32ch]">
-                    <p class="vmv-body-3 col-start-1 row-start-1 text-white/72 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:opacity-0 group-data-[active=true]:-translate-y-1 group-data-[active=true]:opacity-0">
+                    {/* <p class="vmv-body-3 col-start-1 row-start-1 text-white/72 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:opacity-0 group-data-[active=true]:-translate-y-1 group-data-[active=true]:opacity-0">
                       {servicio.description}
-                    </p>
-                    <p class="vmv-body-3 pointer-events-none col-start-1 row-start-1 translate-y-2 self-start text-white/72 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:translate-y-0 group-hover:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100">
+                    </p> */}
+                    {/* <p class="vmv-body-3 pointer-events-none col-start-1 row-start-1 translate-y-2 self-start text-white/72 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:translate-y-0 group-hover:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100">
                       {servicio.details}
-                    </p>
+                    </p> */}
                   </div>
                 </figcaption>
               </figure>
-              <div class="mt-4 h-px w-full bg-vmv-border">
+              {/* <div class="mt-4 h-px w-full bg-vmv-border">
                 <div
                   class="h-full origin-left scale-x-0 bg-vmv-foreground transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-data-[active=true]:scale-x-100"
                   aria-hidden="true"
@@ -121,7 +121,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                 <span class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
                   {servicio.footer}
                 </span>
-              </div>
+              </div> */}
             </article>
           ))
         }
