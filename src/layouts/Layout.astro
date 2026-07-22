@@ -75,7 +75,7 @@ const finalRobots = robots ?? 'index, follow'
     <link rel="canonical" href="https://www.vmv-arquitectos.com/" />
     <meta name="robots" content="index, follow" />
 
-    <!-- <script is:inline>
+    <script is:inline>
       (() => {
         const storageKey = 'vmv-theme'
 
@@ -92,12 +92,13 @@ const finalRobots = robots ?? 'index, follow'
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
           ? 'dark'
           : 'light'
-        const resolvedTheme = storedTheme ?? systemTheme
+        // const resolvedTheme = storedTheme ?? systemTheme
+        const resolvedTheme = 'dark'
 
         document.documentElement.classList.toggle('dark', resolvedTheme === 'dark')
         document.documentElement.setAttribute('data-theme', resolvedTheme)
       })()
-    </script> -->
+    </script>
 
     <slot name="head" />
     <ClientRouter />
