@@ -45,7 +45,7 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
   <div
     class="top-right absolute top-1/2 right-4 z-60 flex h-11 -translate-y-1/2 items-stretch sm:h-14 md:right-8"
   >
-    <div class="hidden items-center self-center md:flex mr-1">
+    <div class="header-theme-toggle mr-1 hidden items-center self-center md:flex">
       <ThemeToggle />
     </div>
 
@@ -259,12 +259,13 @@ import ThemeToggle from '@/components/ThemeToggle.astro'
     toolbarTrigger?.kill()
     toolbarShowAnim?.kill()
 
+    // El toggle de tema es un elemento pequeño y ya centrado verticalmente
+    // por su contenedor; un yPercent relativo a su propia altura no alcanza
+    // a sacarlo del todo de la vista, así que además se desvanece con opacity.
     toolbarShowAnim = gsap
-      .from('.main-tool-bar', {
-        yPercent: -100,
-        paused: true,
-        duration: 0.2,
-      })
+      .timeline({ paused: true })
+      .from('.main-tool-bar', { yPercent: -100, duration: 0.2 }, 0)
+      .from('.header-theme-toggle', { yPercent: -100, opacity: 0, duration: 0.2 }, 0)
       .progress(1)
 
     toolbarTrigger = ScrollTrigger.create({
