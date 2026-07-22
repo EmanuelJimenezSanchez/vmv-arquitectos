@@ -70,7 +70,7 @@ import Button from '@/components/ui/Button.astro'
               alt={item.description}
               class={`absolute inset-0 block h-full w-full object-cover ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
               data-nosotros="galeria-image"
-              loading="lazy"
+              loading="eager"
               decoding="async"
             />
           ))
@@ -275,10 +275,31 @@ import Button from '@/components/ui/Button.astro'
       }
     }
 
+    // Espera a que las imágenes de la galería estén cargadas y decodificadas
+    // antes de reproducir la animación, para evitar el parpadeo del swap.
+    const galeriaImagesReady =
+      galeriaImages.length === 0
+        ? Promise.resolve()
+        : Promise.all(
+            galeriaImages.map((img) => {
+              const image = img as HTMLImageElement
+              const decode = () => (image.decode ? image.decode().catch(() => {}) : Promise.resolve())
+              if (image.complete && image.naturalWidth > 0) {
+                return decode()
+              }
+              return new Promise<void>((resolve) => {
+                image.addEventListener('load', () => resolve(), { once: true })
+                image.addEventListener('error', () => resolve(), { once: true })
+              }).then(decode)
+            }),
+          ).then(() => undefined)
+
     const heroSt = ScrollTrigger.create({
       trigger: hero,
       start: 'top 05%',
-      onEnter: () => heroTl.play(),
+      onEnter: () => {
+        galeriaImagesReady.then(() => heroTl.play())
+      },
       // onEnter: async () => {
       //   lockScroll();
       //   await heroTl.play();
