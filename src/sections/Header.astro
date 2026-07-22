@@ -9,14 +9,14 @@ import Button from '@/components/ui/Button.astro'
 >
   <div class="main-tool-bar relative w-full">
     <div
-      class="header-shell w-full animate-[headerReveal_0.8s_cubic-bezier(0.19,1,0.22,1)_both] border border-transparent bg-transparent px-4 py-3 transition-[border-color,background-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-8 md:py-4"
+      class="header-shell w-full animate-[headerReveal_0.8s_cubic-bezier(0.19,1,0.22,1)_both] border border-transparent bg-transparent px-4 py-2 transition-[border-color,background-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-8 md:py-3"
     >
-      <div class="flex min-h-14 items-center justify-start sm:justify-center md:min-h-18">
+      <div class="flex min-h-12 items-center justify-start sm:justify-center md:min-h-14">
         <a href="/" class="logo-link shrink-0" aria-label="Inicio VMV Arquitectos">
           <img
             src={logoVmv.src}
             alt="VMV Arquitectos"
-            class="h-16 w-auto md:h-20 lg:h-24"
+            class="h-14 w-auto md:h-16 lg:h-18"
             loading="eager"
           />
         </a>
@@ -24,7 +24,7 @@ import Button from '@/components/ui/Button.astro'
     </div>
 
     <nav
-      class="top-left absolute top-4 left-4 z-60 hidden items-center gap-8 md:top-6 md:left-8 md:flex"
+      class="top-left absolute top-1/2 left-4 z-60 hidden -translate-y-1/2 items-center gap-8 md:left-8 md:flex"
       aria-label="Navegación principal"
     >
       <a
@@ -43,7 +43,7 @@ import Button from '@/components/ui/Button.astro'
   </div>
 
   <div
-    class="top-right absolute top-4 right-4 z-60 flex h-12 items-stretch sm:h-16 md:top-6 md:right-8"
+    class="top-right absolute top-1/2 right-4 z-60 flex h-11 -translate-y-1/2 items-stretch sm:h-14 md:right-8"
   >
     <Button href="/#contacto" variant="header" class="header-cta h-full px-10" size="xxl"
       >Contacto</Button
@@ -52,7 +52,7 @@ import Button from '@/components/ui/Button.astro'
     <button
       id="menu-toggle"
       type="button"
-      class="menu-toggle relative inline-flex h-12 w-12 items-center justify-center border border-vmv-sand-1/30 bg-vmv-gray-12/80 text-vmv-sand-1 transition-[color,border-color,background-color,transform] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] sm:h-16 sm:w-16 md:hidden"
+      class="menu-toggle relative inline-flex h-11 w-11 items-center justify-center border border-vmv-sand-1/30 bg-vmv-gray-12/80 text-vmv-sand-1 transition-[color,border-color,background-color,transform] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] sm:h-14 sm:w-14 md:hidden"
       aria-label="Abrir menú"
       aria-expanded="false"
       aria-controls="mobile-menu"
