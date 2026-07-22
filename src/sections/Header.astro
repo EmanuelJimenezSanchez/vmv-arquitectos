@@ -212,9 +212,17 @@ import Button from '@/components/ui/Button.astro'
     const syncScrollState = () => {
       const currentScrollY = window.scrollY
       const isScrolled = currentScrollY > 34
+      const isAtTop = currentScrollY <= 20
 
       header.classList.toggle('is-scrolled', isScrolled)
-      header.classList.toggle('is-top', currentScrollY <= 20)
+      header.classList.toggle('is-top', isAtTop)
+
+      // At the very top the toolbar must always be visible, even if a snap
+      // (or the scroll-down that triggered it) had just hidden it.
+      if (isAtTop) {
+        toolbarShowAnim?.play()
+      }
+
       ticking = false
     }
 
