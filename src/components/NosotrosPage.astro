@@ -112,11 +112,18 @@ import Button from '@/components/ui/Button.astro'
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
   import { SplitText } from 'gsap/SplitText'
   import { $, $$ } from '@/lib/dom-selector'
+  // import { Observer } from 'gsap/Observer'
 
   gsap.registerPlugin(ScrollTrigger, SplitText)
 
   const activeTriggers: ScrollTrigger[] = []
   let revealSplit: SplitText | null = null
+
+  // const observer = Observer.create({
+  //   preventDefault: true,
+  //   type: 'wheel,touch,pointer',
+  //   // enabled: false,
+  // })
 
   function killAll() {
     activeTriggers.forEach((t) => t.kill())
@@ -124,6 +131,14 @@ import Button from '@/components/ui/Button.astro'
     revealSplit?.revert()
     revealSplit = null
   }
+
+  // function lockScroll() {
+  //   observer.enable()
+  // }
+
+  // function unlockScroll() {
+  //   observer.disable()
+  // }
 
   function initNosotros() {
     killAll()
@@ -259,16 +274,21 @@ import Button from '@/components/ui/Button.astro'
       }
     }
 
-    ScrollTrigger.create({
+    const heroSt = ScrollTrigger.create({
       trigger: hero,
-      start: 'top top',
-      once: true,
+      start: 'top 05%',
       onEnter: () => heroTl.play(),
-      toggleActions: 'play none none restart',
+      // onEnter: async () => {
+      //   lockScroll();
+      //   await heroTl.play();
+      //   unlockScroll();
+      // },
+      onLeaveBack: () => {
+        heroTl.pause(0);
+      },
     })
 
-    const heroSt = heroTl.scrollTrigger
-    if (heroSt) activeTriggers.push(heroSt)
+    activeTriggers.push(heroSt)
 
     // ── ABOUT (solo en pantallas grandes) ────────────
     const isDesktop = window.matchMedia('(min-width: 768px)').matches
