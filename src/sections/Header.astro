@@ -1,6 +1,5 @@
 ---
 import logoVmv from '@/assets/svg/logo-vmv.svg'
-import Button from '@/components/ui/Button.astro'
 import ThemeToggle from '@/components/ThemeToggle.astro'
 import FontSwitcher from '@/components/FontSwitcher.astro'
 ---
@@ -50,10 +49,6 @@ import FontSwitcher from '@/components/FontSwitcher.astro'
       <FontSwitcher />
       <ThemeToggle />
     </div>
-
-    <Button href="/#contacto" variant="header" class="header-cta h-full px-10" size="xxl"
-      >Contacto</Button
-    >
 
     <button
       id="menu-toggle"
@@ -353,24 +348,6 @@ import FontSwitcher from '@/components/FontSwitcher.astro'
 </script>
 
 <style>
-  .group .header-cta {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    background-color: transparent;
-  }
-
-  .group .header-cta::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: var(--vmv-sand-9);
-    clip-path: inset(0 0 0 100%);
-    transition: clip-path 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: clip-path;
-  }
-
   .group.is-scrolled .header-shell,
   .group.is-menu-open .header-shell {
     background-color: var(--vmv-sand-1);
@@ -493,26 +470,6 @@ import FontSwitcher from '@/components/FontSwitcher.astro'
   .group.is-menu-open .logo-link img {
     /* filter: none; */
     /* background-color: var(--vmv-sand-9); */
-  }
-
-  .group.is-scrolled .header-cta,
-  .group.is-menu-open .header-cta {
-  }
-
-  .group.is-scrolled .header-cta::before,
-  .group.is-menu-open .header-cta::before {
-    clip-path: inset(0 0 0 0);
-  }
-
-  .group .header-cta,
-  .group.is-menu-open .header-cta,
-  .group .menu-contact-cta {
-    color: white;
-  }
-
-  .group.is-scrolled .header-cta,
-  .group.is-menu-open .header-cta {
-    /* color: color-mix(in srgb, var(--vmv-gray-12) 90%, transparent); */
   }
 
   @keyframes headerReveal {

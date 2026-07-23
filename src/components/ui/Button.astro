@@ -2,7 +2,7 @@
 interface Props {
   href?: string
   type?: 'button' | 'submit' | 'reset'
-  variant?: 'primary' | 'glass' | 'outline' | 'white' | 'header'
+  variant?: 'primary' | 'glass' | 'outline' | 'white' | 'gray' | 'header'
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
   class?: string
   shape?: 'rounded' | 'pill' | 'square'
@@ -30,6 +30,7 @@ const variantClasses = {
   outline:
     'border-vmv-border bg-transparent text-vmv-foreground hover:bg-vmv-muted hover:border-vmv-gray-6',
   white: 'border-white bg-white text-black hover:text-white hover:bg-vmv-sand-1 hover:border-vmv-sand-1',
+  gray: 'border-vmv-gray-9 bg-vmv-gray-9 text-white hover:bg-vmv-gray-10 hover:border-vmv-gray-10',
   header:
     'border-transparent bg-transparent text-vmv-sand-1 hover:text-vmv-sand-2 hover:bg-transparent tracking-[0.12em] px-0 py-0',
 }
