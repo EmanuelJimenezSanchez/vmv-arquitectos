@@ -2,6 +2,14 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@font-face {
+	font-family: 'Gruppo';
+	src: url('../assets/fonts/Gruppo/Gruppo-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
 @theme inline {
 	--text-display-1: var(--display-1-size);
 	--text-title-1: var(--title-1-size);
@@ -106,6 +114,10 @@
 	/* Opción 5: Sin fuente personalizada — la fuente del sistema (como antes de estas pruebas) */
 	--font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+	/* Opción 6: Gruppo + Inter — display art-deco geométrico + sans limpio */
+	/* --font-display: 'Gruppo', sans-serif; */
+	/* --font-body: 'Inter', sans-serif; */
 
 	--vmv-sand-1: #fcfaf6;
 	--vmv-sand-2: #f8f4ec;
