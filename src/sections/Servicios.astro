@@ -129,69 +129,53 @@ const totalLabel = String(servicios.length).padStart(2, '0')
     </div>
 
     <footer
-      class="pointer-events-none absolute inset-x-[clamp(2rem,6vw,6rem)] bottom-[clamp(1.25rem,3vw,2rem)] z-2 hidden flex-col gap-3 min-[900px]:motion-safe:flex"
+      class="pointer-events-none absolute inset-x-0 top-[calc(50dvh+clamp(9rem,26dvh,14.5rem)+clamp(0.5rem,2dvh,1.5rem)+1.5rem)] z-2 hidden justify-center min-[900px]:motion-safe:flex"
     >
-      <div class="flex items-center justify-between">
-        <!-- <span
-          class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase"
-          aria-hidden="true"
+      <!-- <span
+        class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase"
+        aria-hidden="true"
+      >
+        VMV — Servicios
+      </span> -->
+      <!-- <span
+        class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground tabular-nums"
+        aria-hidden="true"
+      >
+        <span data-servicios-counter>01</span> / {totalLabel}
+      </span> -->
+      <div class="pointer-events-auto flex items-center gap-2">
+        <button
+          type="button"
+          class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
+          data-servicios-prev
+          aria-label="Servicio anterior"
         >
-          VMV — Servicios
-        </span> -->
-        <div class="flex items-center gap-4">
-          <!-- <span
-            class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground tabular-nums"
-            aria-hidden="true"
-          >
-            <span data-servicios-counter>01</span> / {totalLabel}
-          </span> -->
-          <div class="pointer-events-auto flex items-center gap-2">
-            <button
-              type="button"
-              class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
-              data-servicios-prev
-              aria-label="Servicio anterior"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M10 3.5L5 8l5 4.5"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></path>
-              </svg>
-            </button>
-            <button
-              type="button"
-              class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
-              data-servicios-next
-              aria-label="Siguiente servicio"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M6 3.5l5 4.5-5 4.5"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></path>
-              </svg>
-            </button>
-          </div>
-        </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M10 3.5L5 8l5 4.5"
+              stroke="currentColor"
+              stroke-width="1.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
+          data-servicios-next
+          aria-label="Siguiente servicio"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M6 3.5l5 4.5-5 4.5"
+              stroke="currentColor"
+              stroke-width="1.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
       </div>
       <!-- <div class="h-px w-full bg-vmv-foreground/12">
         <div
