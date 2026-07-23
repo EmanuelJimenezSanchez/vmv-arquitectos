@@ -1,0 +1,118 @@
+{/* Componente TEMPORAL para probar tipografías en vivo. Eliminar cuando se elija la fuente final. */}
+<select
+  class="font-switcher vmv-caption-1 h-9 rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 px-3 text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)]"
+  data-font-switcher
+  aria-label="Probar tipografía"
+  title="Probar tipografía (temporal)"
+>
+  <option value="0">Inter</option>
+  <option value="1">Fraunces + Inter</option>
+  <option value="2">Space Grotesk</option>
+  <option value="3">Cormorant + Jost</option>
+  <option value="4">Manrope</option>
+  <option value="5">Sistema (default)</option>
+  <option value="6">Gruppo + Inter</option>
+</select>
+
+<script>
+  import { $$ } from '@/lib/dom-selector'
+
+  const FONT_STORAGE_KEY = 'vmv-font-option'
+
+  const FONT_OPTIONS: Record<string, { display: string; body: string }> = {
+    '0': { display: "'Inter', sans-serif", body: "'Inter', sans-serif" },
+    '1': { display: "'Fraunces', serif", body: "'Inter', sans-serif" },
+    '2': { display: "'Space Grotesk', sans-serif", body: "'Space Grotesk', sans-serif" },
+    '3': { display: "'Cormorant Garamond', serif", body: "'Jost', sans-serif" },
+    '4': { display: "'Manrope', sans-serif", body: "'Manrope', sans-serif" },
+    '5': {
+      display: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+      body: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    },
+    '6': { display: "'Gruppo', sans-serif", body: "'Inter', sans-serif" },
+  }
+
+  let cleanupFontSwitcher: (() => void) | null = null
+
+  const setupFontSwitcher = () => {
+    cleanupFontSwitcher?.()
+    cleanupFontSwitcher = null
+
+    const selects = $$<HTMLSelectElement>('[data-font-switcher]')
+    if (selects.length === 0) {
+      return
+    }
+
+    const controller = new AbortController()
+    const { signal } = controller
+    cleanupFontSwitcher = () => controller.abort()
+
+    const root = document.documentElement
+
+    const applyFontOption = (option: string, persist: boolean) => {
+      const fonts = FONT_OPTIONS[option]
+      if (!fonts) {
+        return
+      }
+
+      root.style.setProperty('--font-display', fonts.display)
+      root.style.setProperty('--font-body', fonts.body)
+
+      selects.forEach((select) => {
+        select.value = option
+      })
+
+      if (persist) {
+        try {
+          localStorage.setItem(FONT_STORAGE_KEY, option)
+        } catch {
+          // Ignore storage write errors (private mode, disabled storage).
+        }
+      }
+    }
+
+    const getStoredOption = (): string | null => {
+      try {
+        return localStorage.getItem(FONT_STORAGE_KEY)
+      } catch {
+        return null
+      }
+    }
+
+    const storedOption = getStoredOption()
+    if (storedOption && FONT_OPTIONS[storedOption]) {
+      applyFontOption(storedOption, false)
+    }
+
+    selects.forEach((select) => {
+      select.addEventListener(
+        'change',
+        () => {
+          applyFontOption(select.value, true)
+        },
+        { signal },
+      )
+    })
+  }
+
+  document.addEventListener('astro:before-swap', () => cleanupFontSwitcher?.())
+  document.addEventListener('astro:page-load', setupFontSwitcher)
+  setupFontSwitcher()
+</script>
+
+<style>
+  .font-switcher {
+    color: color-mix(in srgb, var(--vmv-gray-12) 86%, transparent);
+    border-color: color-mix(in srgb, var(--vmv-gray-9) 30%, transparent);
+    background: color-mix(in srgb, var(--vmv-gray-2) 55%, transparent);
+  }
+
+  .font-switcher:hover {
+    background: color-mix(in srgb, var(--vmv-gray-1) 95%, transparent);
+  }
+
+  .font-switcher:focus-visible {
+    outline: 2px solid var(--vmv-ring);
+    outline-offset: 2px;
+  }
+</style>
