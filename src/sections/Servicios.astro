@@ -132,19 +132,19 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       class="pointer-events-none absolute inset-x-[clamp(2rem,6vw,6rem)] bottom-[clamp(1.25rem,3vw,2rem)] z-2 hidden flex-col gap-3 min-[900px]:motion-safe:flex"
     >
       <div class="flex items-center justify-between">
-        <span
+        <!-- <span
           class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase"
           aria-hidden="true"
         >
           VMV — Servicios
-        </span>
+        </span> -->
         <div class="flex items-center gap-4">
-          <span
+          <!-- <span
             class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground tabular-nums"
             aria-hidden="true"
           >
             <span data-servicios-counter>01</span> / {totalLabel}
-          </span>
+          </span> -->
           <div class="pointer-events-auto flex items-center gap-2">
             <button
               type="button"
@@ -193,13 +193,13 @@ const totalLabel = String(servicios.length).padStart(2, '0')
           </div>
         </div>
       </div>
-      <div class="h-px w-full bg-vmv-foreground/12">
+      <!-- <div class="h-px w-full bg-vmv-foreground/12">
         <div
           class="h-full origin-left transform-[scaleX(0)] bg-vmv-foreground"
           data-servicios-progress
         >
         </div>
-      </div>
+      </div> -->
     </footer>
   </div>
 </section>
