@@ -206,7 +206,15 @@ import Button from '@/components/ui/Button.astro'
       gsap.set(galeriaCta, { opacity: 0, y: 20 })
     }
 
-    if (galeriaMedia) {
+    // Solo la última imagen queda visible al terminar el ciclo de swap, y
+    // las demás se ocultan con `.set()` (instantáneo) en vez de un tween: un
+    // `.set()` no es reversible al rebobinar el timeline, así que
+    // `heroTl.restart()` por sí solo NO devuelve las imágenes a su estado
+    // inicial (la primera en opacity 1, el resto en 0). Sin este reset
+    // manual, un reinicio deja la última imagen del ciclo anterior visible
+    // mientras las siguientes vuelven a aparecer encima, y se ven encimadas.
+    const resetGaleriaMedia = () => {
+      if (!galeriaMedia) return
       gsap.set(galeriaMedia, {
         width: '16rem',
         height: '16rem',
@@ -216,6 +224,8 @@ import Button from '@/components/ui/Button.astro'
       gsap.set(galeriaImages, { opacity: 0 })
       if (galeriaImages[0]) gsap.set(galeriaImages[0], { opacity: 1 })
     }
+
+    resetGaleriaMedia()
 
     const heroTl = gsap.timeline({
       paused: true,
@@ -349,6 +359,8 @@ import Button from '@/components/ui/Button.astro'
 
     const restartButton = $<HTMLButtonElement>('[data-nosotros="restart"]')
     restartButton?.addEventListener('click', () => {
+      // heroTl.pause(0)
+      // resetGaleriaMedia()
       heroTl.restart()
     })
 
