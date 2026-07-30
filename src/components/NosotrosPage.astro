@@ -79,7 +79,7 @@ import Button from '@/components/ui/Button.astro'
 
     <div
       data-nosotros="galeria-copy"
-      class="pointer-events-none absolute inset-0 z-7 flex flex-col items-center justify-center gap-[0.08em] px-[clamp(1rem,4vw,3rem)] text-center opacity-0"
+      class="pointer-events-none absolute inset-0 z-7 flex flex-col items-center justify-center gap-[0.08em] px-[clamp(1rem,4vw,3rem)] text-center"
     >
       <!-- <p
         data-nosotros="galeria-main"
@@ -90,7 +90,7 @@ import Button from '@/components/ui/Button.astro'
       <div data-nosotros="galeria-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
         <Button href="/#contacto" variant="white" size="xxl">Contacta a un arquitecto</Button>
       </div>
-      <div data-nosotros="restart-cta" class="pointer-events-auto mt-[clamp(0.9rem,2.2vw,1.4rem)]">
+      <!-- <div data-nosotros="restart-cta" class="pointer-events-auto mt-[clamp(0.9rem,2.2vw,1.4rem)]">
         <button
           type="button"
           data-nosotros="restart"
@@ -120,7 +120,7 @@ import Button from '@/components/ui/Button.astro'
               stroke-linejoin="round"></path>
           </svg>
         </button>
-      </div>
+      </div> -->
     </div>
 
     <div
@@ -208,7 +208,7 @@ import Button from '@/components/ui/Button.astro'
     const hasGaleriaCopy = galeriaCopy && galeriaCta
 
     if (hasGaleriaCopy) {
-      gsap.set(galeriaCopy, { opacity: 0 })
+      // gsap.set(galeriaCopy, { opacity: 0 })
       // gsap.set(galeriaMain, { opacity: 0, y: 10 })
       gsap.set(galeriaCta, { opacity: 0, y: 20 })
     }
@@ -329,7 +329,11 @@ import Button from '@/components/ui/Button.astro'
         heroScrollTl.addLabel('galeriaCopyReveal', `galeriaReveal+=${imageCycleEnd + 0.2}`)
 
         heroScrollTl
-          .to(galeriaCopy, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 'galeriaCopyReveal')
+          // .to(
+          //   [galeriaCopy, galeriaCta],
+          //   { opacity: 1, duration: 0.4, ease: 'power2.out' },
+          //   'galeriaCopyReveal',
+          // )
           // .to(
           //   galeriaMain,
           //   { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
