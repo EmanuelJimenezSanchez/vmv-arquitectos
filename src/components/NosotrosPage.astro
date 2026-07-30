@@ -250,15 +250,28 @@ import Button from '@/components/ui/Button.astro'
     })
     .to(galeriaMedia, { opacity: 1, duration: 1, ease: 'none', delay: 0.3 }, '<')
 
+    // ── GALERIA REVEAL (controlada por scroll) ────────
+    // A partir de aquí la animación ya no se reproduce sola: queda en un
+    // timeline aparte que se liga al scroll (pin + scrub). El
+    // ScrollTrigger se crea aquí mismo (síncrono, antes que el de
+    // "about" más abajo) para que el resto de las secciones calculen su
+    // posición ya contando con el espacio extra que reserva este pin;
+    // crearlo más tarde (p. ej. en un callback tras la intro) desplaza el
+    // documento a mitad de sesión y provoca que "Servicios" se sobreponga
+    // con el hero todavía pineado.
+    const heroScrollTl = gsap.timeline({ paused: true })
+    let galeriaScrollTrigger: ScrollTrigger | null = null
+    let introDone = false
+
     if (galeriaMedia && galeriaImages.length > 0) {
-      heroTl.addLabel('galeriaReveal')
+      heroScrollTl.addLabel('galeriaReveal', 0)
 
       const scaleStartOffset = 0.5
       const scaleDuration = 2
       const imageSwapStart = scaleStartOffset + 0.1
       const imageSwapDuration = 0.03
 
-      heroTl.to(
+      heroScrollTl.to(
           revealEl,
           { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' },
           'galeriaReveal',
@@ -275,7 +288,7 @@ import Button from '@/components/ui/Button.astro'
           `galeriaReveal+=${scaleStartOffset}`,
         )
 
-      let imageCycleEnd = scaleStartOffset + scaleDuration
+      const imageCycleEnd = scaleStartOffset + scaleDuration
       const swapCount = galeriaImages.length - 1
       if (swapCount > 0) {
         const swapSpacing =
@@ -289,7 +302,7 @@ import Button from '@/components/ui/Button.astro'
           const previousImage = galeriaImages[i]
           const swapTime = imageSwapStart + i * swapSpacing
 
-          heroTl
+          heroScrollTl
             .to(
               image,
               { opacity: 1, duration: imageSwapDuration, ease: 'none' },
@@ -303,9 +316,9 @@ import Button from '@/components/ui/Button.astro'
       // Galeria.astro al final de su animación, ahora aparece cuando el
       // ciclo de imágenes de la galería termina.
       if (hasGaleriaCopy) {
-        heroTl.addLabel('galeriaCopyReveal', `galeriaReveal+=${imageCycleEnd + 0.2}`)
+        heroScrollTl.addLabel('galeriaCopyReveal', `galeriaReveal+=${imageCycleEnd + 0.2}`)
 
-        heroTl
+        heroScrollTl
           .to(galeriaCopy, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 'galeriaCopyReveal')
           // .to(
           //   galeriaMain,
@@ -318,6 +331,30 @@ import Button from '@/components/ui/Button.astro'
             'galeriaCopyReveal+=0.4',
           )
       }
+
+      // El hero queda pineado desde que entra, pero el scroll del usuario
+      // no puede avanzar la revelación de la galería hasta que la intro
+      // (heroTl) termina de reproducirse: mientras `introDone` sea falso,
+      // cualquier intento de scroll se devuelve al punto de inicio del
+      // pin, así la sección queda "congelada" durante la intro.
+      galeriaScrollTrigger = ScrollTrigger.create({
+        trigger: hero,
+        start: 'top top',
+        end: '+=250%',
+        pin: true,
+        scrub: 1,
+        animation: heroScrollTl,
+        onUpdate: (self) => {
+          if (!introDone && self.progress > 0) {
+            self.scroll(self.start)
+          }
+        },
+      })
+      activeTriggers.push(galeriaScrollTrigger)
+
+      heroTl.eventCallback('onComplete', () => {
+        introDone = true
+      })
     }
 
     // Espera a que las imágenes de la galería estén cargadas y decodificadas
@@ -359,8 +396,13 @@ import Button from '@/components/ui/Button.astro'
 
     const restartButton = $<HTMLButtonElement>('[data-nosotros="restart"]')
     restartButton?.addEventListener('click', () => {
-      // heroTl.pause(0)
-      // resetGaleriaMedia()
+      introDone = false
+      heroScrollTl.pause(0)
+      resetGaleriaMedia()
+      // Devuelve el scroll al inicio del pin para que el scrub (ligado a
+      // la posición de scroll) no vuelva a arrastrar el timeline a donde
+      // estaba antes de reiniciar.
+      if (galeriaScrollTrigger) galeriaScrollTrigger.scroll(galeriaScrollTrigger.start)
       heroTl.restart()
     })
 
