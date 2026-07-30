@@ -1,7 +1,6 @@
 ---
 import { galeria } from '@/data/galeria'
 import Button from '@/components/ui/Button.astro'
-
 ---
 
 <section id="nosotros" class="relative">
@@ -95,7 +94,7 @@ import Button from '@/components/ui/Button.astro'
         <button
           type="button"
           data-nosotros="restart"
-          class="group inline-flex items-center gap-2 border-none bg-transparent vmv-button-1 uppercase tracking-[0.16em] text-white opacity-90 [text-shadow:0_2px_10px_rgba(0,0,0,0.45)] transition-opacity duration-300 hover:opacity-100 cursor-pointer"
+          class="group vmv-button-1 inline-flex cursor-pointer items-center gap-2 border-none bg-transparent tracking-[0.16em] text-white uppercase opacity-90 transition-opacity duration-300 [text-shadow:0_2px_10px_rgba(0,0,0,0.45)] hover:opacity-100"
         >
           Reiniciar animación
           <svg
@@ -239,24 +238,25 @@ import Button from '@/components/ui/Button.astro'
       paused: true,
     })
 
-    heroTl.to([label, scrollHint], {
-      opacity: 0,
-      y: -50,
-      duration: 0.6,
-      ease: 'power2.in',
-      delay: 0.1,
-    })
-    .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 1.4 }, '<')
-    .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1.4 }, '<')
-    .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1)
-    .to(revealSplit.words, {
-      // color: 'rgba(255,255,255,0.92)',
-      opacity: 1,
-      stagger: { each: 0.08 },
-      duration: 0.08,
-      ease: 'none',
-    })
-    .to(galeriaMedia, { opacity: 1, duration: 1, ease: 'none', delay: 0.3 }, '<')
+    heroTl
+      .to([label, scrollHint], {
+        opacity: 0,
+        y: -50,
+        duration: 0.6,
+        ease: 'power2.in',
+        delay: 0.1,
+      })
+      .to(panelL, { xPercent: -100, ease: 'power2.inOut', duration: 1.4 }, '<')
+      .to(panelR, { xPercent: 100, ease: 'power2.inOut', duration: 1.4 }, '<')
+      .to(revealEl, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 1)
+      .to(revealSplit.words, {
+        // color: 'rgba(255,255,255,0.92)',
+        opacity: 1,
+        stagger: { each: 0.08 },
+        duration: 0.08,
+        ease: 'none',
+      })
+      .to(galeriaMedia, { opacity: 1, duration: 1, ease: 'none', delay: 0.3 }, '<')
 
     // ── GALERIA REVEAL (controlada por scroll) ────────
     // A partir de aquí la animación ya no se reproduce sola: queda en un
@@ -279,7 +279,8 @@ import Button from '@/components/ui/Button.astro'
       const imageSwapStart = scaleStartOffset + 0.1
       const imageSwapDuration = 0.03
 
-      heroScrollTl.fromTo(
+      heroScrollTl
+        .fromTo(
           revealEl,
           { opacity: 1, scale: 1 },
           { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' },
@@ -383,7 +384,8 @@ import Button from '@/components/ui/Button.astro'
         : Promise.all(
             galeriaImages.map((img) => {
               const image = img as HTMLImageElement
-              const decode = () => (image.decode ? image.decode().catch(() => {}) : Promise.resolve())
+              const decode = () =>
+                image.decode ? image.decode().catch(() => {}) : Promise.resolve()
               if (image.complete && image.naturalWidth > 0) {
                 return decode()
               }
