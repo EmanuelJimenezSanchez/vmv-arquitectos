@@ -354,6 +354,16 @@ import Button from '@/components/ui/Button.astro'
             self.scroll(self.start)
           }
         },
+        // Al volver a cruzar el borde superior de la sección hacia arriba
+        // (scroll hacia atrás más allá del pin), la revelación de la
+        // galería ya se revierte sola por el scrub; pero la intro
+        // (heroTl) no está atada al scroll, así que hay que revertirla
+        // a mano para volver al hero tal como se ve al cargar la página.
+        onLeaveBack: () => {
+          introDone = false
+          heroTl.eventCallback('onReverseComplete', null)
+          heroTl.reverse()
+        },
       })
       activeTriggers.push(galeriaScrollTrigger)
 
