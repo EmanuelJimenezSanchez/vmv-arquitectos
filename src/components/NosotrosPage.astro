@@ -11,7 +11,7 @@ import Button from '@/components/ui/Button.astro'
   >
     <div
       data-nosotros="panel-l"
-      class="absolute top-0 left-0 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-r after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
+      class="absolute top-0 left-0 z-10 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-r after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
     >
       <img
         src="/images/nosotros/nosotros-1.webp"
@@ -23,7 +23,7 @@ import Button from '@/components/ui/Button.astro'
     </div>
     <div
       data-nosotros="panel-r"
-      class="absolute top-0 right-0 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-l after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
+      class="absolute top-0 right-0 z-10 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-l after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
     >
       <img
         src="/images/nosotros/nosotros-2.webp"
@@ -36,7 +36,7 @@ import Button from '@/components/ui/Button.astro'
 
     <div
       data-nosotros="label"
-      class="pointer-events-none absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
+      class="pointer-events-none absolute top-1/2 left-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
     >
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
       <span class="vmv-title-1 text-white"> NOSOTROS </span>
@@ -48,7 +48,7 @@ import Button from '@/components/ui/Button.astro'
 
     <div
       data-nosotros="scroll-hint"
-      class="absolute bottom-9 left-1/2 z-10 -translate-x-1/2"
+      class="absolute bottom-9 left-1/2 z-20 -translate-x-1/2"
       aria-hidden="true"
     >
       <span
@@ -125,7 +125,7 @@ import Button from '@/components/ui/Button.astro'
 
     <div
       data-nosotros="reveal"
-      class="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-[clamp(2rem,9vw,7rem)]"
+      class="pointer-events-none absolute inset-0 z-8 flex flex-col items-center justify-center px-[clamp(2rem,9vw,7rem)]"
     >
       <p data-nosotros="reveal-text" class="vmv-title-2 max-w-3xl text-center text-vmv-gray-12">
         Más de diez años convirtiendo visiones en espacios de lujo.
