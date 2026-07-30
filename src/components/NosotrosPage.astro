@@ -142,34 +142,42 @@ import Button from '@/components/ui/Button.astro'
   import { gsap } from 'gsap'
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
   import { SplitText } from 'gsap/SplitText'
+  import { Observer } from 'gsap/Observer'
   import { $, $$ } from '@/lib/dom-selector'
-  // import { Observer } from 'gsap/Observer'
 
-  gsap.registerPlugin(ScrollTrigger, SplitText)
+  gsap.registerPlugin(ScrollTrigger, SplitText, Observer)
 
   const activeTriggers: ScrollTrigger[] = []
   let revealSplit: SplitText | null = null
 
-  // const observer = Observer.create({
-  //   preventDefault: true,
-  //   type: 'wheel,touch,pointer',
-  //   // enabled: false,
-  // })
+  // Bloquea el scroll (wheel/touch) mientras la intro del hero se
+  // reproduce sola: antes se intentaba "corregir" el scroll ya ocurrido
+  // devolviéndolo al inicio del pin en cada tick, pero eso saltaba la
+  // posición hasta el top de la página en cada intento de scroll y
+  // disparaba el estado "scrolled: false" del header (parecía que la
+  // página se scrolleaba sola hacia arriba). Prevenir el scroll de raíz
+  // evita ese efecto.
+  const observer = Observer.create({
+    preventDefault: true,
+    type: 'wheel,touch,pointer',
+    enabled: false,
+  })
 
   function killAll() {
     activeTriggers.forEach((t) => t.kill())
     activeTriggers.length = 0
     revealSplit?.revert()
     revealSplit = null
+    observer.disable()
   }
 
-  // function lockScroll() {
-  //   observer.enable()
-  // }
+  function lockScroll() {
+    observer.enable()
+  }
 
-  // function unlockScroll() {
-  //   observer.disable()
-  // }
+  function unlockScroll() {
+    observer.disable()
+  }
 
   function initNosotros() {
     killAll()
@@ -337,11 +345,10 @@ import Button from '@/components/ui/Button.astro'
           .to({}, { duration: 0.8 })
       }
 
-      // El hero queda pineado desde que entra, pero el scroll del usuario
-      // no puede avanzar la revelación de la galería hasta que la intro
-      // (heroTl) termina de reproducirse: mientras `introDone` sea falso,
-      // cualquier intento de scroll se devuelve al punto de inicio del
-      // pin, así la sección queda "congelada" durante la intro.
+      // El hero queda pineado desde que entra, y mientras la intro
+      // (heroTl) se reproduce el scroll está bloqueado (ver lockScroll),
+      // así que la revelación de la galería no puede avanzar hasta que
+      // termine.
       galeriaScrollTrigger = ScrollTrigger.create({
         trigger: hero,
         start: 'top top',
@@ -349,11 +356,6 @@ import Button from '@/components/ui/Button.astro'
         pin: true,
         scrub: 1,
         animation: heroScrollTl,
-        onUpdate: (self) => {
-          if (!introDone && self.progress > 0) {
-            self.scroll(self.start)
-          }
-        },
         // Al volver a cruzar el borde superior de la sección hacia arriba
         // (scroll hacia atrás más allá del pin), la revelación de la
         // galería ya se revierte sola por el scrub; pero la intro
@@ -369,6 +371,7 @@ import Button from '@/components/ui/Button.astro'
 
       heroTl.eventCallback('onComplete', () => {
         introDone = true
+        unlockScroll()
       })
     }
 
@@ -395,22 +398,16 @@ import Button from '@/components/ui/Button.astro'
       trigger: hero,
       start: 'top 05%',
       onEnter: () => {
+        lockScroll()
         galeriaImagesReady.then(() => heroTl.play())
       },
-      // onEnter: async () => {
-      //   lockScroll();
-      //   await heroTl.play();
-      //   unlockScroll();
-      // },
-      // onLeaveBack: () => {
-      //   heroTl.pause(0);
-      // },
     })
 
     activeTriggers.push(heroSt)
 
     const restartButton = $<HTMLButtonElement>('[data-nosotros="restart"]')
     restartButton?.addEventListener('click', () => {
+      lockScroll()
       introDone = false
       heroScrollTl.pause(0)
       resetGaleriaMedia()
