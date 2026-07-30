@@ -256,7 +256,6 @@ import Button from '@/components/ui/Button.astro'
         duration: 0.08,
         ease: 'none',
       })
-      .to(galeriaMedia, { opacity: 1, duration: 1, ease: 'none', delay: 0.3 }, '<')
 
     // ── GALERIA REVEAL (controlada por scroll) ────────
     // A partir de aquí la animación ya no se reproduce sola: queda en un
@@ -280,6 +279,8 @@ import Button from '@/components/ui/Button.astro'
       const imageSwapDuration = 0.03
 
       heroScrollTl
+        // .to({}, { duration: 0.8 })}
+        .to(galeriaMedia, { opacity: 1, duration: 1, ease: 'none' })
         .fromTo(
           revealEl,
           { opacity: 1, scale: 1 },
