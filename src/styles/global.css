@@ -80,6 +80,8 @@
 	--color-vmv-ring: var(--vmv-ring);
 	--color-vmv-destructive: var(--vmv-destructive);
 	--color-vmv-destructive-foreground: var(--vmv-destructive-foreground);
+
+	--ease-vmv: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root {
