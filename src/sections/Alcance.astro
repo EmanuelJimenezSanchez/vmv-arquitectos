@@ -1,7 +1,250 @@
 ---
-
+import { ubicaciones } from '@/data/alcance'
 ---
 
-<section class="h-screen flex items-center justify-center">
-    Alcance
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
+<script
+  is:inline
+  src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"
+  data-alcance-cdn></script>
+
+<section
+  id="alcance"
+  class="relative bg-vmv-background py-[clamp(4rem,9vw,7.5rem)]"
+  data-alcance
+  aria-labelledby="alcance-title"
+>
+  <div
+    class="mx-auto flex w-full max-w-[110rem] flex-col gap-[clamp(2.5rem,5vw,4rem)] px-[clamp(1.25rem,5vw,3rem)] lg:flex-row lg:items-center lg:gap-[clamp(2rem,4vw,4.5rem)]"
+  >
+    <div
+      class="relative h-[clamp(20rem,58vw,32rem)] w-full overflow-hidden rounded-sm border border-vmv-border bg-vmv-muted lg:h-[min(74vh,42rem)] lg:flex-1"
+    >
+      <div class="h-full w-full" data-alcance-map></div>
+      <div
+        class="pointer-events-none absolute inset-0 rounded-sm ring-1 ring-vmv-foreground/8 ring-inset"
+        aria-hidden="true"
+      >
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col gap-[clamp(1.5rem,3vw,2.25rem)] lg:w-[clamp(20rem,36vw,34rem)] lg:shrink-0"
+    >
+      <header class="flex flex-col gap-4 lg:items-end lg:text-right">
+        <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9 lg:flex-row-reverse">
+          <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+          Dónde construimos
+        </p>
+        <h2 id="alcance-title" class="vmv-title-1 text-vmv-foreground">Alcance</h2>
+        <p class="vmv-body-2 max-w-[42ch] text-vmv-muted-foreground">
+          Ejecutamos obra y supervisión en toda la República. Pasa el cursor sobre una ciudad para
+          ubicarla en el mapa.
+        </p>
+      </header>
+
+      <ul class="flex flex-col items-start gap-1 lg:items-end">
+        {
+          ubicaciones.map((ubicacion) => (
+            <li>
+              <button
+                type="button"
+                class="group/item vmv-title-2 flex cursor-pointer items-center gap-3 text-vmv-muted-foreground/60 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-vmv-ring data-[active=true]:text-vmv-foreground lg:flex-row-reverse"
+                data-alcance-item
+                data-id={ubicacion.id}
+              >
+                <span
+                  class="h-px w-0 bg-vmv-foreground/45 transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/item:w-9"
+                  aria-hidden="true"
+                />
+                {ubicacion.name}
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="hidden">
+    {
+      ubicaciones.map((ubicacion) => (
+        <div
+          class="group/marker relative flex h-3 w-3 items-center justify-center"
+          data-alcance-marker
+          data-id={ubicacion.id}
+          aria-hidden="true"
+        >
+          <span
+            class="absolute h-9 w-9 scale-50 rounded-full border border-vmv-foreground/0 bg-vmv-foreground/0 transition-[transform,border-color,background-color] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/marker:scale-100 group-data-[active=true]/marker:border-vmv-foreground/30 group-data-[active=true]/marker:bg-vmv-foreground/8"
+            aria-hidden="true"
+          />
+          <span
+            class="relative h-2 w-2 rounded-full bg-vmv-foreground/45 transition-[background-color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/marker:scale-140 group-data-[active=true]/marker:bg-vmv-foreground"
+            aria-hidden="true"
+          />
+          <span class="vmv-caption-1 pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 rounded-xs border border-vmv-border bg-vmv-popover px-2 py-1 whitespace-nowrap text-vmv-popover-foreground opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/marker:translate-y-0 group-data-[active=true]/marker:opacity-100">
+            {ubicacion.name}
+          </span>
+        </div>
+      ))
+    }
+  </div>
 </section>
+
+<script>
+  import type { Map as MapLibreMap } from 'maplibre-gl'
+  import { $, $$ } from '@/lib/dom-selector'
+  import { mapFit, mapStyles, ubicaciones } from '@/data/alcance'
+
+  let cleanupAlcance: (() => void) | null = null
+
+  const setupAlcance = () => {
+    cleanupAlcance?.()
+    cleanupAlcance = null
+
+    const section = $<HTMLElement>('[data-alcance]')
+    if (!section) {
+      return
+    }
+
+    const mapContainer = $<HTMLElement>('[data-alcance-map]', section)
+    const items = $$<HTMLElement>('[data-alcance-item]', section)
+    const markers = $$<HTMLElement>('[data-alcance-marker]', section)
+
+    if (!mapContainer || items.length === 0) {
+      return
+    }
+
+    const controller = new AbortController()
+    const { signal } = controller
+
+    // El id enlaza cada texto de la lista con su punto en el mapa.
+    const setActive = (id: string | null) => {
+      const apply = (element: HTMLElement) => {
+        element.dataset.active = String(element.dataset.id === id)
+      }
+      items.forEach(apply)
+      markers.forEach(apply)
+    }
+
+    const bindHighlight = (element: HTMLElement) => {
+      const id = element.dataset.id ?? null
+      element.addEventListener('pointerenter', () => setActive(id), { signal })
+      element.addEventListener('pointerleave', () => setActive(null), { signal })
+      element.addEventListener('focus', () => setActive(id), { signal })
+      element.addEventListener('blur', () => setActive(null), { signal })
+      element.addEventListener('click', () => setActive(id), { signal })
+    }
+
+    items.forEach(bindHighlight)
+    markers.forEach(bindHighlight)
+
+    let map: MapLibreMap | null = null
+
+    const getTheme = () => (document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+    let currentTheme = getTheme()
+
+    const initMap = () => {
+      if (map) {
+        return
+      }
+
+      const maplibregl = window.maplibregl
+      if (!maplibregl) {
+        $<HTMLScriptElement>('[data-alcance-cdn]')?.addEventListener('load', initMap, {
+          once: true,
+          signal,
+        })
+        return
+      }
+
+      map = new maplibregl.Map({
+        container: mapContainer,
+        style: mapStyles[currentTheme],
+        interactive: false,
+        attributionControl: { compact: true },
+        center: [-102.5, 23.6],
+        zoom: 3.4,
+      })
+
+      markers.forEach((element) => {
+        const ubicacion = ubicaciones.find((item) => item.id === element.dataset.id)
+        if (!ubicacion || !map) {
+          return
+        }
+        new maplibregl.Marker({ element }).setLngLat(ubicacion.coordinates).addTo(map)
+      })
+
+      const fitToUbicaciones = () => {
+        if (!map) {
+          return
+        }
+        const bounds = new maplibregl.LngLatBounds()
+        ubicaciones.forEach((ubicacion) => bounds.extend(ubicacion.coordinates))
+        map.fitBounds(bounds, { padding: mapFit.padding, maxZoom: mapFit.maxZoom, duration: 0 })
+      }
+
+      fitToUbicaciones()
+      window.addEventListener('resize', fitToUbicaciones, { signal })
+    }
+
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          visibilityObserver.disconnect()
+          initMap()
+        }
+      },
+      { rootMargin: '300px' },
+    )
+    visibilityObserver.observe(section)
+
+    // Theme - Map
+    const themeObserver = new MutationObserver(() => {
+      const nextTheme = getTheme()
+      if (nextTheme === currentTheme) {
+        return
+      }
+      currentTheme = nextTheme
+      map?.setStyle(mapStyles[nextTheme])
+    })
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+
+    setActive(null)
+
+    cleanupAlcance = () => {
+      controller.abort()
+      visibilityObserver.disconnect()
+      themeObserver.disconnect()
+      map?.remove()
+      map = null
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    cleanupAlcance?.()
+    cleanupAlcance = null
+  })
+
+  document.addEventListener('astro:page-load', setupAlcance)
+  setupAlcance()
+</script>
+
+<style>
+  [data-alcance-map] :global(.maplibregl-canvas) {
+    filter: saturate(0.12) contrast(1.02);
+  }
+
+  [data-alcance-map] :global(.maplibregl-ctrl-attrib) {
+    background: color-mix(in srgb, var(--vmv-background) 78%, transparent);
+    font-size: 0.65rem;
+  }
+
+  [data-alcance-map] :global(.maplibregl-ctrl-attrib a) {
+    color: var(--vmv-muted-foreground);
+  }
+</style>
