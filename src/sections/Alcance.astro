@@ -49,12 +49,12 @@ import { ubicaciones } from '@/data/alcance'
             <li>
               <button
                 type="button"
-                class="group/item vmv-title-2 flex cursor-pointer items-center gap-3 text-vmv-muted-foreground/60 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-vmv-ring data-[active=true]:text-vmv-foreground lg:flex-row-reverse"
+                class="group/item vmv-title-2 flex cursor-pointer items-center gap-3 text-vmv-muted-foreground/60 transition-colors duration-500 ease-vmv focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-vmv-ring data-[active=true]:text-vmv-foreground lg:flex-row-reverse"
                 data-alcance-item
                 data-id={ubicacion.id}
               >
                 <span
-                  class="h-px w-0 bg-vmv-foreground/45 transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/item:w-9"
+                  class="h-px w-0 bg-vmv-foreground/45 transition-[width] duration-500 ease-vmv group-data-[active=true]/item:w-9"
                   aria-hidden="true"
                 />
                 {ubicacion.name}
@@ -75,15 +75,9 @@ import { ubicaciones } from '@/data/alcance'
           data-id={ubicacion.id}
           aria-hidden="true"
         >
-          <span
-            class="absolute h-9 w-9 scale-50 rounded-full border border-vmv-foreground/0 bg-vmv-foreground/0 transition-[transform,border-color,background-color] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/marker:scale-100 group-data-[active=true]/marker:border-vmv-foreground/30 group-data-[active=true]/marker:bg-vmv-foreground/8"
-            aria-hidden="true"
-          />
-          <span
-            class="relative h-2 w-2 rounded-full bg-vmv-foreground/45 transition-[background-color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/marker:scale-140 group-data-[active=true]/marker:bg-vmv-foreground"
-            aria-hidden="true"
-          />
-          <span class="vmv-caption-1 pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 rounded-xs border border-vmv-border bg-vmv-popover px-2 py-1 whitespace-nowrap text-vmv-popover-foreground opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]/marker:translate-y-0 group-data-[active=true]/marker:opacity-100">
+          <span class="absolute h-9 w-9 scale-50 rounded-full border border-vmv-foreground/0 bg-vmv-foreground/0 transition-[transform,border-color,background-color] duration-500 ease-vmv group-data-[active=true]/marker:scale-100 group-data-[active=true]/marker:border-vmv-foreground/30 group-data-[active=true]/marker:bg-vmv-foreground/8" />
+          <span class="relative h-2 w-2 rounded-full bg-vmv-foreground/45 transition-[background-color,transform] duration-500 ease-vmv group-data-[active=true]/marker:scale-140 group-data-[active=true]/marker:bg-vmv-foreground" />
+          <span class="vmv-caption-1 pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 rounded-xs border border-vmv-border bg-vmv-popover px-2 py-1 whitespace-nowrap text-vmv-popover-foreground opacity-0 transition-[opacity,transform] duration-500 ease-vmv group-data-[active=true]/marker:translate-y-0 group-data-[active=true]/marker:opacity-100">
             {ubicacion.name}
           </span>
         </div>
@@ -109,10 +103,9 @@ import { ubicaciones } from '@/data/alcance'
     }
 
     const mapContainer = $<HTMLElement>('[data-alcance-map]', section)
-    const items = $$<HTMLElement>('[data-alcance-item]', section)
     const markers = $$<HTMLElement>('[data-alcance-marker]', section)
 
-    if (!mapContainer || items.length === 0) {
+    if (!mapContainer) {
       return
     }
 
@@ -120,29 +113,26 @@ import { ubicaciones } from '@/data/alcance'
     const { signal } = controller
 
     // El id enlaza cada texto de la lista con su punto en el mapa.
+    const targets = [...$$<HTMLElement>('[data-alcance-item]', section), ...markers]
+
     const setActive = (id: string | null) => {
-      const apply = (element: HTMLElement) => {
+      targets.forEach((element) => {
         element.dataset.active = String(element.dataset.id === id)
-      }
-      items.forEach(apply)
-      markers.forEach(apply)
+      })
     }
 
-    const bindHighlight = (element: HTMLElement) => {
+    targets.forEach((element) => {
       const id = element.dataset.id ?? null
       element.addEventListener('pointerenter', () => setActive(id), { signal })
       element.addEventListener('pointerleave', () => setActive(null), { signal })
       element.addEventListener('focus', () => setActive(id), { signal })
       element.addEventListener('blur', () => setActive(null), { signal })
       element.addEventListener('click', () => setActive(id), { signal })
-    }
-
-    items.forEach(bindHighlight)
-    markers.forEach(bindHighlight)
+    })
 
     let map: MapLibreMap | null = null
 
-    const getTheme = () => (document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+    const getTheme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
     let currentTheme = getTheme()
 
     const initMap = () => {
@@ -159,31 +149,23 @@ import { ubicaciones } from '@/data/alcance'
         return
       }
 
-      map = new maplibregl.Map({
+      const instance = new maplibregl.Map({
         container: mapContainer,
         style: mapStyles[currentTheme],
         interactive: false,
         attributionControl: { compact: true },
-        center: [-102.5, 23.6],
-        zoom: 3.4,
+      })
+      map = instance
+
+      // El encuadre se deriva de las coordenadas: agregar una ubicación lo reajusta.
+      const bounds = new maplibregl.LngLatBounds()
+      markers.forEach((element, index) => {
+        const { coordinates } = ubicaciones[index]
+        bounds.extend(coordinates)
+        new maplibregl.Marker({ element }).setLngLat(coordinates).addTo(instance)
       })
 
-      markers.forEach((element) => {
-        const ubicacion = ubicaciones.find((item) => item.id === element.dataset.id)
-        if (!ubicacion || !map) {
-          return
-        }
-        new maplibregl.Marker({ element }).setLngLat(ubicacion.coordinates).addTo(map)
-      })
-
-      const fitToUbicaciones = () => {
-        if (!map) {
-          return
-        }
-        const bounds = new maplibregl.LngLatBounds()
-        ubicaciones.forEach((ubicacion) => bounds.extend(ubicacion.coordinates))
-        map.fitBounds(bounds, { padding: mapFit.padding, maxZoom: mapFit.maxZoom, duration: 0 })
-      }
+      const fitToUbicaciones = () => instance.fitBounds(bounds, { ...mapFit, duration: 0 })
 
       fitToUbicaciones()
       window.addEventListener('resize', fitToUbicaciones, { signal })
@@ -209,12 +191,7 @@ import { ubicaciones } from '@/data/alcance'
       currentTheme = nextTheme
       map?.setStyle(mapStyles[nextTheme])
     })
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    })
-
-    setActive(null)
+    themeObserver.observe(document.documentElement, { attributeFilter: ['data-theme'] })
 
     cleanupAlcance = () => {
       controller.abort()
