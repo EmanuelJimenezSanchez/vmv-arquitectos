@@ -46,7 +46,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         <h2 class="vmv-title-1 max-w-[12ch] text-center text-vmv-foreground">
           Construimos cada etapa
         </h2>
-        <p class="vmv-body-2 max-w-[42ch] text-vmv-muted-foreground text-center">
+        <p class="vmv-body-2 max-w-[42ch] text-center text-vmv-muted-foreground">
           Acompañamos tu proyecto del concepto a la obra terminada, con un equipo que cuida el
           diseño, los tiempos y cada acabado.
         </p>
@@ -61,15 +61,15 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         {
           servicios.map((servicio, index) => (
             <article
-              class="group relative w-[min(82vw,21rem)] shrink-0 snap-start min-[900px]:motion-safe:w-auto min-[900px]:motion-safe:even:top-[clamp(0.5rem,2dvh,1.5rem)] sm:w-[clamp(18rem,46vw,22rem)] hover:cursor-pointer"
+              class="group relative w-[min(82vw,21rem)] shrink-0 snap-start hover:cursor-pointer min-[900px]:motion-safe:w-auto sm:w-[clamp(18rem,46vw,22rem)]"
               data-servicios-card
             >
-              <figure class="relative aspect-[3.6/5.3] w-full rounded-sm overflow-hidden min-[900px]:motion-safe:h-[clamp(18rem,52dvh,29rem)] min-[900px]:motion-safe:w-auto">
+              <figure class="relative aspect-[3.6/5.3] w-full overflow-hidden rounded-sm min-[900px]:motion-safe:h-[clamp(18rem,52dvh,29rem)] min-[900px]:motion-safe:w-auto">
                 <div class="absolute inset-0 transition-transform duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05] group-data-[active=true]:scale-[1.05]">
                   <img
                     src={servicio.image}
                     alt={servicio.imageAlt}
-                    class="absolute top-0 h-full w-[110%] object-cover translate-x-1 grayscale transition-[filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grayscale-0 group-data-[active=true]:grayscale-0"
+                    class="absolute top-0 h-full w-[110%] translate-x-1 object-cover grayscale transition-[filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grayscale-0 group-data-[active=true]:grayscale-0"
                     data-servicios-image
                     loading="lazy"
                     decoding="async"
@@ -146,7 +146,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       <div class="pointer-events-auto flex items-center gap-2">
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30 cursor-pointer"
+          class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
           data-servicios-prev
           aria-label="Servicio anterior"
         >
@@ -156,13 +156,12 @@ const totalLabel = String(servicios.length).padStart(2, '0')
               stroke="currentColor"
               stroke-width="1.4"
               stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
+              stroke-linejoin="round"></path>
           </svg>
         </button>
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30 cursor-pointer"
+          class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
           data-servicios-next
           aria-label="Siguiente servicio"
         >
@@ -172,8 +171,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
               stroke="currentColor"
               stroke-width="1.4"
               stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
+              stroke-linejoin="round"></path>
           </svg>
         </button>
       </div>
