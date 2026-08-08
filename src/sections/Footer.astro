@@ -1,7 +1,192 @@
 ---
+import logoVmv from '@/assets/svg/logo-vmv.svg'
 
+const year = new Date().getFullYear()
+
+const navLinks = [
+  { label: 'Nosotros', href: '/#nosotros' },
+  { label: 'Servicios', href: '/#servicios' },
+  { label: 'Proceso', href: '/#proceso' },
+  { label: 'Proyectos', href: '/projects' },
+]
+
+const contactLinks = [
+  { label: 'hola@vmv-arquitectos.com', href: 'mailto:hola@vmv-arquitectos.com' },
+  { label: '+51 999 999 999', href: 'tel:+51999999999' },
+]
+
+const socialLinks = [
+  { label: 'Instagram', href: 'https://instagram.com/vmvarquitectos' },
+  { label: 'LinkedIn', href: 'https://linkedin.com/company/vmv-arquitectos' },
+]
 ---
 
-<section class="h-screen flex items-center justify-center">
-    Footer
-</section>
+<footer
+  id="site-footer"
+  class="relative overflow-hidden bg-vmv-gray-12 text-vmv-sand-1"
+  data-footer
+  aria-label="Pie de página"
+>
+  <div class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] pt-[clamp(4rem,9vw,7rem)] pb-[clamp(2rem,4vw,3rem)]">
+    <div class="flex flex-col gap-[clamp(3rem,6vw,4.5rem)]" data-footer-top>
+      <div class="flex flex-col justify-between gap-10 border-b border-vmv-sand-1/12 pb-[clamp(2.5rem,5vw,3.5rem)] md:flex-row md:items-end">
+        <div class="flex flex-col gap-6">
+          <span
+            class="block h-14 w-auto aspect-1920/725 bg-vmv-sand-1 mask-(--logo-mask) mask-center mask-no-repeat mask-contain md:h-16"
+            style={`--logo-mask:url(${logoVmv.src})`}
+            aria-hidden="true"
+          ></span>
+          <p class="vmv-body-2 max-w-[34ch] text-vmv-sand-1/60">
+            Diseñamos y construimos espacios funcionales y estéticos, cuidando cada detalle del
+            proyecto hasta la entrega final.
+          </p>
+        </div>
+
+        <a
+          href="#site-header"
+          class="footer-top-link group inline-flex w-fit items-center gap-3 text-vmv-sand-1/70 transition-colors duration-450 hover:text-vmv-sand-1"
+          data-footer-top-link
+        >
+          <span class="vmv-overline-1">Volver arriba</span>
+          <span
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-vmv-sand-1/25 transition-[border-color,transform] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:border-vmv-sand-1/60"
+            aria-hidden="true"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M7 11V3M3 6.5L7 3l4 3.5"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      <div class="grid gap-10 sm:grid-cols-3 sm:gap-8">
+        <nav aria-label="Navegación del pie de página">
+          <p class="vmv-overline-1 mb-5 text-vmv-sand-1/45">Navegación</p>
+          <ul class="flex flex-col gap-3">
+            {
+              navLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="vmv-body-2 inline-block text-vmv-sand-1/75 transition-colors duration-450 hover:text-vmv-sand-1"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <div>
+          <p class="vmv-overline-1 mb-5 text-vmv-sand-1/45">Contacto</p>
+          <ul class="flex flex-col gap-3">
+            {
+              contactLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="vmv-body-2 inline-block text-vmv-sand-1/75 transition-colors duration-450 hover:text-vmv-sand-1"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div>
+          <p class="vmv-overline-1 mb-5 text-vmv-sand-1/45">Síguenos</p>
+          <ul class="flex flex-col gap-3">
+            {
+              socialLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="vmv-body-2 inline-block text-vmv-sand-1/75 transition-colors duration-450 hover:text-vmv-sand-1"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mt-[clamp(2.5rem,5vw,3.5rem)] flex flex-col items-center gap-4 border-t border-vmv-sand-1/12 pt-6 text-center sm:flex-row sm:justify-between sm:text-left"
+      data-footer-bottom
+    >
+      <p class="vmv-caption-1 text-vmv-sand-1/45">
+        © {year} VMV Arquitectos. Todos los derechos reservados.
+      </p>
+      <p class="vmv-caption-1 text-vmv-sand-1/45">Diseño y construcción</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  import gsap from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { $ } from '@/lib/dom-selector'
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let cleanupFooter: (() => void) | null = null
+
+  const setupFooter = () => {
+    if (cleanupFooter) {
+      cleanupFooter()
+      cleanupFooter = null
+    }
+
+    const footer = $<HTMLElement>('[data-footer]')
+    if (!footer) {
+      return
+    }
+
+    const top = $<HTMLElement>('[data-footer-top]', footer)
+    const bottom = $<HTMLElement>('[data-footer-bottom]', footer)
+    const entrance = [top, bottom].filter(Boolean) as HTMLElement[]
+
+    const mm = gsap.matchMedia()
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.from(entrance, {
+        autoAlpha: 0,
+        y: 32,
+        duration: 1,
+        ease: 'power3.out',
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: footer,
+          start: 'top 85%',
+        },
+      })
+    })
+
+    cleanupFooter = () => {
+      mm.revert()
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    if (cleanupFooter) {
+      cleanupFooter()
+      cleanupFooter = null
+    }
+  })
+
+  document.addEventListener('astro:page-load', setupFooter)
+  setupFooter()
+</script>
