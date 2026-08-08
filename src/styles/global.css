@@ -262,7 +262,7 @@
 	--vmv-accent: var(--vmv-sand-4);
 	--vmv-accent-foreground: var(--vmv-sand-12);
 	--vmv-primary: var(--vmv-sand-12);
-	--vmv-primary-foreground: var(--vmv-gray-12);
+	--vmv-primary-foreground: var(--vmv-gray-1);
 	--vmv-secondary: var(--vmv-gray-4);
 	--vmv-secondary-foreground: var(--vmv-sand-12);
 	--vmv-border: #2c2a27;
