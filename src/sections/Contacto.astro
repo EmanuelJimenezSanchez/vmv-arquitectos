@@ -1,7 +1,210 @@
 ---
-
+import Button from '@/components/ui/Button.astro'
 ---
 
-<section id="contacto" class="h-screen flex items-center justify-center">
-    Contacto
+<section
+  id="contacto"
+  class="relative bg-vmv-background"
+  data-contacto
+  aria-label="Formulario de contacto"
+>
+  <div class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] py-[clamp(4rem,9vw,7rem)]">
+    <div class="grid gap-12 min-[900px]:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] min-[900px]:gap-[clamp(2rem,5vw,5rem)]">
+      <header class="flex flex-col gap-6" data-contacto-intro>
+        <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+          <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+          Contacto
+        </p>
+        <h2 class="vmv-title-1 max-w-[14ch] text-vmv-foreground">Conversemos tu proyecto</h2>
+        <p class="vmv-body-2 max-w-[42ch] text-vmv-muted-foreground">
+          Cuéntanos un poco sobre lo que tienes en mente. Nos pondremos en contacto contigo por
+          WhatsApp o e-mail para conversar los siguientes pasos.
+        </p>
+      </header>
+
+      <form class="flex flex-col gap-6" data-contacto-form novalidate>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <div class="flex flex-col gap-2">
+            <label for="contacto-nombres" class="vmv-caption-1 text-vmv-muted-foreground">
+              Nombre(s)
+            </label>
+            <input
+              id="contacto-nombres"
+              name="nombres"
+              type="text"
+              autocomplete="given-name"
+              required
+              class="vmv-body-2 w-full border-0 border-b border-vmv-border bg-transparent py-2.5 text-vmv-foreground outline-none transition-colors duration-300 placeholder:text-vmv-muted-foreground/50 focus:border-vmv-foreground"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="contacto-apellidos" class="vmv-caption-1 text-vmv-muted-foreground">
+              Apellido(s)
+            </label>
+            <input
+              id="contacto-apellidos"
+              name="apellidos"
+              type="text"
+              autocomplete="family-name"
+              required
+              class="vmv-body-2 w-full border-0 border-b border-vmv-border bg-transparent py-2.5 text-vmv-foreground outline-none transition-colors duration-300 placeholder:text-vmv-muted-foreground/50 focus:border-vmv-foreground"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="contacto-email" class="vmv-caption-1 text-vmv-muted-foreground">
+              E-mail
+            </label>
+            <input
+              id="contacto-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              class="vmv-body-2 w-full border-0 border-b border-vmv-border bg-transparent py-2.5 text-vmv-foreground outline-none transition-colors duration-300 placeholder:text-vmv-muted-foreground/50 focus:border-vmv-foreground"
+            />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="contacto-telefono" class="vmv-caption-1 text-vmv-muted-foreground">
+              Teléfono
+            </label>
+            <input
+              id="contacto-telefono"
+              name="telefono"
+              type="tel"
+              autocomplete="tel"
+              required
+              class="vmv-body-2 w-full border-0 border-b border-vmv-border bg-transparent py-2.5 text-vmv-foreground outline-none transition-colors duration-300 placeholder:text-vmv-muted-foreground/50 focus:border-vmv-foreground"
+            />
+          </div>
+        </div>
+
+        <fieldset class="flex flex-col gap-3">
+          <legend class="vmv-caption-1 text-vmv-muted-foreground">
+            ¿Estás considerando construir?
+          </legend>
+          <div class="flex flex-wrap gap-3">
+            {
+              ['Sí', 'No'].map((option) => (
+                <label class="vmv-body-3 has-checked:border-vmv-foreground has-checked:bg-vmv-foreground has-checked:text-vmv-primary-foreground inline-flex cursor-pointer items-center gap-2 rounded-full border border-vmv-border px-5 py-2 text-vmv-foreground transition-colors duration-300">
+                  <input
+                    type="radio"
+                    name="considerando-construir"
+                    value={option}
+                    required
+                    class="sr-only"
+                  />
+                  {option}
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="flex flex-col gap-3">
+          <legend class="vmv-caption-1 text-vmv-muted-foreground">
+            ¿Ya cuentas con un terreno?
+          </legend>
+          <div class="flex flex-wrap gap-3">
+            {
+              ['Sí', 'No'].map((option) => (
+                <label class="vmv-body-3 has-checked:border-vmv-foreground has-checked:bg-vmv-foreground has-checked:text-vmv-primary-foreground inline-flex cursor-pointer items-center gap-2 rounded-full border border-vmv-border px-5 py-2 text-vmv-foreground transition-colors duration-300">
+                  <input type="radio" name="tiene-terreno" value={option} required class="sr-only" />
+                  {option}
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <p class="vmv-caption-1 text-vmv-muted-foreground">
+          Te contactaremos por WhatsApp o e-mail en las próximas horas.
+        </p>
+
+        <Button type="submit" variant="primary" size="lg" class="mt-2 w-fit">Enviar</Button>
+
+        <p
+          class="vmv-caption-1 hidden text-vmv-foreground"
+          data-contacto-success
+          role="status"
+        >
+          ¡Gracias! Hemos recibido tu mensaje y te contactaremos pronto.
+        </p>
+      </form>
+    </div>
+  </div>
 </section>
+
+<script>
+  import gsap from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { $ } from '@/lib/dom-selector'
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let cleanupContacto: (() => void) | null = null
+
+  const setupContacto = () => {
+    if (cleanupContacto) {
+      cleanupContacto()
+      cleanupContacto = null
+    }
+
+    const section = $<HTMLElement>('[data-contacto]')
+    if (!section) {
+      return
+    }
+
+    const intro = $<HTMLElement>('[data-contacto-intro]', section)
+    const form = $<HTMLFormElement>('[data-contacto-form]', section)
+    const success = $<HTMLElement>('[data-contacto-success]', section)
+    const entrance = [intro, form].filter(Boolean) as HTMLElement[]
+
+    const mm = gsap.matchMedia()
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.from(entrance, {
+        autoAlpha: 0,
+        y: 32,
+        duration: 1,
+        ease: 'power3.out',
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+        },
+      })
+    })
+
+    const formController = new AbortController()
+    form?.addEventListener(
+      'submit',
+      (event) => {
+        event.preventDefault()
+        if (!form.reportValidity()) {
+          return
+        }
+        success?.classList.remove('hidden')
+        form.reset()
+      },
+      { signal: formController.signal },
+    )
+
+    cleanupContacto = () => {
+      formController.abort()
+      mm.revert()
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    if (cleanupContacto) {
+      cleanupContacto()
+      cleanupContacto = null
+    }
+  })
+
+  document.addEventListener('astro:page-load', setupContacto)
+  setupContacto()
+</script>

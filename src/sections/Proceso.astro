@@ -1,7 +1,228 @@
 ---
+import { proceso } from '@/data/proceso'
 
+const totalLabel = String(proceso.length).padStart(2, '0')
 ---
 
-<section class="h-screen flex items-center justify-center">
-    Proceso
+<section
+  id="proceso"
+  class="relative bg-vmv-background py-[clamp(4.5rem,10vw,8rem)]"
+  data-proceso
+  aria-label="Nuestro proceso de trabajo"
+>
+  <div class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
+    <header
+      class="mx-auto flex max-w-[42ch] flex-col items-center gap-6 text-center"
+      data-proceso-intro
+    >
+      <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+        <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+        Nuestro proceso
+        <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+      </p>
+      <h2 class="vmv-title-1 text-vmv-foreground">De la idea a la obra terminada</h2>
+      <p class="vmv-body-2 text-vmv-muted-foreground">
+        Cinco etapas claras que acompañan tu proyecto desde la primera conversación hasta la
+        última entrega. Pasa el cursor sobre cada paso para conocer los detalles.
+      </p>
+    </header>
+
+    <ol
+      class="mt-[clamp(3rem,7vw,5rem)] flex flex-col"
+      data-proceso-list
+      aria-label={`Proceso en ${totalLabel} pasos`}
+    >
+      {
+        proceso.map((paso, index) => (
+          <li
+            class="group relative grid grid-cols-[2.25rem_1fr] gap-x-4 border-t border-vmv-border last:border-b sm:grid-cols-[3rem_1fr] sm:gap-x-6"
+            data-proceso-step
+          >
+            <div class="relative flex justify-center" aria-hidden="true">
+              <span class="absolute top-0 bottom-0 w-px bg-vmv-border" />
+              <span
+                class="absolute top-0 w-px origin-top scale-y-0 bg-vmv-foreground"
+                data-proceso-fill
+                style="bottom: 0;"
+              />
+              <span
+                class="relative z-1 mt-[clamp(1.85rem,3.4vw,2.6rem)] h-2.5 w-2.5 shrink-0 rounded-full border border-vmv-border bg-vmv-background transition-[background-color,border-color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-125 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-data-[active=true]:scale-125 group-data-[active=true]:border-vmv-foreground group-data-[active=true]:bg-vmv-foreground data-[passed=true]:border-vmv-foreground data-[passed=true]:bg-vmv-foreground"
+                data-proceso-dot
+              />
+            </div>
+
+            <div data-proceso-row>
+              <button
+                type="button"
+                class="flex w-full cursor-pointer items-center gap-4 py-[clamp(1.5rem,3.2vw,2.3rem)] text-left sm:gap-8"
+                data-proceso-trigger
+                aria-expanded="false"
+              >
+                <span class="vmv-subtitle-1 w-7 shrink-0 tabular-nums text-vmv-sand-9/50 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9 sm:w-9">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3 class="vmv-title-2 flex-1 text-vmv-foreground">{paso.title}</h3>
+                <span
+                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-[transform,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45 group-hover:border-vmv-gray-6 group-data-[active=true]:rotate-45 group-data-[active=true]:border-vmv-gray-6"
+                  aria-hidden="true"
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path
+                      d="M7 1v12M1 7h12"
+                      stroke="currentColor"
+                      stroke-width="1.3"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+              </button>
+
+              <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
+                <div class="overflow-hidden">
+                  <div class="grid gap-6 pb-[clamp(2rem,4vw,3rem)] md:grid-cols-[1.1fr_0.9fr] md:items-center md:gap-10">
+                    <p class="vmv-body-2 max-w-[46ch] -translate-y-1 text-vmv-muted-foreground opacity-0 transition-[opacity,transform] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-hover:delay-150 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100 group-data-[active=true]:delay-150">
+                      {paso.description}
+                    </p>
+                    <figure class="relative aspect-[16/10] w-full scale-[0.97] overflow-hidden rounded-sm opacity-0 transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-hover:opacity-100 group-data-[active=true]:scale-100 group-data-[active=true]:opacity-100">
+                      <img
+                        src={paso.image}
+                        alt={paso.imageAlt}
+                        class="h-full w-full object-cover grayscale-[0.25]"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div
+                        class="pointer-events-none absolute inset-0 rounded-sm ring-1 ring-vmv-sand-1/12 ring-inset"
+                        aria-hidden="true"
+                      />
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
 </section>
+
+<script>
+  import gsap from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { $, $$ } from '@/lib/dom-selector'
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let cleanupProceso: (() => void) | null = null
+
+  const setupProceso = () => {
+    if (cleanupProceso) {
+      cleanupProceso()
+      cleanupProceso = null
+    }
+
+    const section = $<HTMLElement>('[data-proceso]')
+    if (!section) {
+      return
+    }
+
+    const intro = $<HTMLElement>('[data-proceso-intro]', section)
+    const steps = $$<HTMLElement>('[data-proceso-step]', section)
+    if (steps.length === 0) {
+      return
+    }
+
+    // Tap para fijar el efecto "hover" en pantallas táctiles.
+    const tapController = new AbortController()
+    steps.forEach((step) => {
+      const trigger = $<HTMLButtonElement>('[data-proceso-trigger]', step)
+      trigger?.addEventListener(
+        'click',
+        () => {
+          const isActive = step.dataset.active === 'true'
+          if (isActive) {
+            delete step.dataset.active
+            trigger.setAttribute('aria-expanded', 'false')
+          } else {
+            step.dataset.active = 'true'
+            trigger.setAttribute('aria-expanded', 'true')
+          }
+        },
+        { signal: tapController.signal },
+      )
+    })
+
+    const mm = gsap.matchMedia()
+    const triggers: ScrollTrigger[] = []
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      if (intro) {
+        gsap.from(intro, {
+          autoAlpha: 0,
+          y: 30,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: intro,
+            start: 'top 82%',
+          },
+        })
+      }
+
+      steps.forEach((step) => {
+        const row = $<HTMLElement>('[data-proceso-row]', step)
+        const fill = $<HTMLElement>('[data-proceso-fill]', step)
+        const dot = $<HTMLElement>('[data-proceso-dot]', step)
+
+        if (row) {
+          gsap.from(row, {
+            autoAlpha: 0,
+            y: 26,
+            duration: 0.9,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: step,
+              start: 'top 85%',
+            },
+          })
+        }
+
+        if (fill) {
+          const st = ScrollTrigger.create({
+            trigger: step,
+            start: 'top 65%',
+            end: 'bottom 65%',
+            scrub: 0.6,
+            onUpdate: (self) => {
+              gsap.set(fill, { scaleY: self.progress })
+            },
+            onToggle: (self) => {
+              if (dot) {
+                dot.dataset.passed = self.progress > 0.5 || self.isActive ? 'true' : dot.dataset.passed
+              }
+            },
+          })
+          triggers.push(st)
+        }
+      })
+    })
+
+    cleanupProceso = () => {
+      tapController.abort()
+      triggers.forEach((st) => st.kill())
+      mm.revert()
+      steps.forEach((step) => delete step.dataset.active)
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    if (cleanupProceso) {
+      cleanupProceso()
+      cleanupProceso = null
+    }
+  })
+
+  document.addEventListener('astro:page-load', setupProceso)
+  setupProceso()
+</script>

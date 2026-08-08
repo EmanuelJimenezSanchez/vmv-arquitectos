@@ -1,0 +1,356 @@
+---
+import { proceso } from '@/data/proceso'
+
+// Posiciones a lo largo del recorrido (porcentaje del contenedor).
+const xs = [10, 30, 50, 70, 90]
+const ys = proceso.map((_, index) => (index % 2 === 0 ? 30 : 70))
+
+const points = xs.map((x, index) => ({ x, y: ys[index] }))
+const tip = { x: 97, y: 50 }
+
+const smoothPath = (pts: { x: number; y: number }[]) => {
+  let d = `M ${pts[0].x},${pts[0].y}`
+  for (let i = 1; i < pts.length; i += 1) {
+    const prev = pts[i - 1]
+    const curr = pts[i]
+    const midX = (prev.x + curr.x) / 2
+    d += ` C ${midX},${prev.y} ${midX},${curr.y} ${curr.x},${curr.y}`
+  }
+  return d
+}
+
+const wavePath = smoothPath([...points, tip])
+
+const steps = proceso.map((paso, index) => ({
+  ...paso,
+  index,
+  x: xs[index],
+  y: ys[index],
+  up: index % 2 === 0,
+  align: index === 0 ? 'start' : index === proceso.length - 1 ? 'end' : 'center',
+}))
+---
+
+<section
+  id="proceso-2"
+  class="relative bg-vmv-background py-[clamp(4.5rem,10vw,8rem)]"
+  data-proceso2
+  aria-label="Nuestro proceso de trabajo (versión curva)"
+>
+  <div class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
+    <header
+      class="mx-auto flex max-w-[42ch] flex-col items-center gap-6 text-center"
+      data-proceso2-intro
+    >
+      <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+        <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+        Nuestro proceso
+        <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+      </p>
+      <h2 class="vmv-title-1 text-vmv-foreground">De la idea a la obra terminada</h2>
+      <p class="vmv-body-2 text-vmv-muted-foreground">
+        Cinco etapas claras que acompañan tu proyecto desde la primera conversación hasta la
+        última entrega. Pasa el cursor sobre cada paso para conocer los detalles.
+      </p>
+    </header>
+
+    <!-- Recorrido curvo (desktop) -->
+    <div
+      class="relative mt-[clamp(4rem,9vw,6.5rem)] hidden h-[19rem] md:block lg:h-[21rem]"
+      data-proceso2-track
+    >
+      <svg
+        class="absolute inset-0 h-full w-full overflow-visible"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          d={wavePath}
+          fill="none"
+          stroke="var(--vmv-border)"
+          stroke-width="0.15"
+          vector-effect="non-scaling-stroke"
+        />
+        <path
+          d={wavePath}
+          fill="none"
+          stroke="var(--vmv-foreground)"
+          stroke-width="0.15"
+          stroke-linecap="round"
+          vector-effect="non-scaling-stroke"
+          pathLength="1"
+          stroke-dasharray="1"
+          stroke-dashoffset="1"
+          data-proceso2-path
+        />
+      </svg>
+
+      <span
+        class="pointer-events-none absolute h-0 w-0 -translate-y-1/2 border-y-[0.4rem] border-l-[0.65rem] border-y-transparent border-l-vmv-foreground opacity-0 transition-opacity duration-500"
+        style={`left:${tip.x}%; top:${tip.y}%`}
+        data-proceso2-arrow
+        aria-hidden="true"
+      ></span>
+
+      {
+        steps.map((paso) => (
+          <div
+            class="group absolute"
+            style={`left:${paso.x}%; top:${paso.y}%`}
+            data-proceso2-node
+          >
+            <span
+              class="absolute top-0 left-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full border border-vmv-border bg-vmv-background opacity-0 transition-[transform,opacity,background-color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-125 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-data-[active=true]:scale-125 group-data-[active=true]:border-vmv-foreground group-data-[active=true]:bg-vmv-foreground data-[in=true]:scale-100 data-[in=true]:opacity-100"
+              data-proceso2-dot
+            />
+
+            {paso.up ? (
+              <>
+                <span class="absolute left-0 h-7 w-px -translate-x-1/2 bg-vmv-border" style="top:-1.75rem;" aria-hidden="true" />
+                <button
+                  type="button"
+                  class={`absolute left-0 w-[clamp(11rem,16vw,14rem)] cursor-pointer ${
+                    paso.align === 'center'
+                      ? '-translate-x-1/2 text-center'
+                      : paso.align === 'end'
+                        ? '-translate-x-full text-right'
+                        : 'translate-x-0 text-left'
+                  }`}
+                  style="bottom:2.25rem;"
+                  data-proceso2-trigger
+                  aria-expanded="false"
+                >
+                  <h3 class="vmv-title-3 text-vmv-foreground">
+                    <span class="text-vmv-sand-9/60">{paso.index + 1}.</span> {paso.title}
+                  </h3>
+                  <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
+                    <div class="overflow-hidden">
+                      <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-hover:opacity-100 group-data-[active=true]:opacity-100">
+                        {paso.description}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              </>
+            ) : (
+              <>
+                <span class="absolute left-0 top-0 h-7 w-px -translate-x-1/2 bg-vmv-border" aria-hidden="true" />
+                <button
+                  type="button"
+                  class={`absolute left-0 w-[clamp(11rem,16vw,14rem)] cursor-pointer ${
+                    paso.align === 'center'
+                      ? '-translate-x-1/2 text-center'
+                      : paso.align === 'end'
+                        ? '-translate-x-full text-right'
+                        : 'translate-x-0 text-left'
+                  }`}
+                  style="top:2.25rem;"
+                  data-proceso2-trigger
+                  aria-expanded="false"
+                >
+                  <h3 class="vmv-title-3 text-vmv-foreground">
+                    <span class="text-vmv-sand-9/60">{paso.index + 1}.</span> {paso.title}
+                  </h3>
+                  <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
+                    <div class="overflow-hidden">
+                      <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-hover:opacity-100 group-data-[active=true]:opacity-100">
+                        {paso.description}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              </>
+            )}
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Alternativa apilada (mobile) -->
+    <ol class="mt-[clamp(3rem,7vw,5rem)] flex flex-col md:hidden" data-proceso2-list-mobile>
+      {
+        steps.map((paso) => (
+          <li class="group border-t border-vmv-border last:border-b" data-proceso2-step-mobile>
+            <button
+              type="button"
+              class="flex w-full cursor-pointer items-start gap-3 py-[clamp(1.25rem,4vw,1.75rem)] text-left"
+              data-proceso2-trigger-mobile
+              aria-expanded="false"
+            >
+              <span class="vmv-subtitle-1 mt-0.5 shrink-0 tabular-nums text-vmv-sand-9/50">
+                {String(paso.index + 1).padStart(2, '0')}
+              </span>
+              <span class="flex-1">
+                <h3 class="vmv-title-3 text-vmv-foreground">{paso.title}</h3>
+                <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]:grid-rows-[1fr]">
+                  <div class="overflow-hidden">
+                    <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-data-[active=true]:opacity-100">
+                      {paso.description}
+                    </p>
+                  </div>
+                </div>
+              </span>
+            </button>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { $, $$ } from '@/lib/dom-selector'
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let cleanupProceso2: (() => void) | null = null
+
+  const setupProceso2 = () => {
+    if (cleanupProceso2) {
+      cleanupProceso2()
+      cleanupProceso2 = null
+    }
+
+    const section = $<HTMLElement>('[data-proceso2]')
+    if (!section) {
+      return
+    }
+
+    const intro = $<HTMLElement>('[data-proceso2-intro]', section)
+    const track = $<HTMLElement>('[data-proceso2-track]', section)
+    const path = $<SVGPathElement>('[data-proceso2-path]', section)
+    const arrow = $<HTMLElement>('[data-proceso2-arrow]', section)
+    const nodes = $$<HTMLElement>('[data-proceso2-node]', section)
+    const mobileSteps = $$<HTMLElement>('[data-proceso2-step-mobile]', section)
+
+    const tapController = new AbortController()
+
+    nodes.forEach((node) => {
+      const trigger = $<HTMLButtonElement>('[data-proceso2-trigger]', node)
+      trigger?.addEventListener(
+        'click',
+        () => {
+          const isActive = node.dataset.active === 'true'
+          if (isActive) {
+            delete node.dataset.active
+            trigger.setAttribute('aria-expanded', 'false')
+          } else {
+            node.dataset.active = 'true'
+            trigger.setAttribute('aria-expanded', 'true')
+          }
+        },
+        { signal: tapController.signal },
+      )
+    })
+
+    mobileSteps.forEach((step) => {
+      const trigger = $<HTMLButtonElement>('[data-proceso2-trigger-mobile]', step)
+      trigger?.addEventListener(
+        'click',
+        () => {
+          const isActive = step.dataset.active === 'true'
+          if (isActive) {
+            delete step.dataset.active
+            trigger.setAttribute('aria-expanded', 'false')
+          } else {
+            step.dataset.active = 'true'
+            trigger.setAttribute('aria-expanded', 'true')
+          }
+        },
+        { signal: tapController.signal },
+      )
+    })
+
+    const mm = gsap.matchMedia()
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      if (intro) {
+        gsap.from(intro, {
+          autoAlpha: 0,
+          y: 30,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: intro,
+            start: 'top 82%',
+          },
+        })
+      }
+
+      if (track && path) {
+        const dots = nodes
+          .map((node) => $<HTMLElement>('[data-proceso2-dot]', node))
+          .filter((dot): dot is HTMLElement => Boolean(dot))
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: track,
+            start: 'top 75%',
+            end: 'bottom 60%',
+            scrub: 0.8,
+          },
+        })
+
+        tl.fromTo(path, { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: 'none' }, 0)
+
+        dots.forEach((dot, index) => {
+          const at = (index / Math.max(dots.length - 1, 1)) * 0.85
+          tl.call(
+            () => {
+              dot.dataset.in = 'true'
+            },
+            undefined,
+            at,
+          )
+        })
+
+        if (arrow) {
+          tl.to(arrow, { opacity: 1, duration: 0.1, ease: 'none' }, 0.9)
+        }
+
+        return () => {
+          tl.scrollTrigger?.kill()
+          tl.kill()
+        }
+      }
+
+      return undefined
+    })
+
+    mm.add('(max-width: 899px)', () => {
+      mobileSteps.forEach((step) => {
+        gsap.from(step, {
+          autoAlpha: 0,
+          y: 24,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: step,
+            start: 'top 88%',
+          },
+        })
+      })
+      return undefined
+    })
+
+    cleanupProceso2 = () => {
+      tapController.abort()
+      mm.revert()
+      nodes.forEach((node) => delete node.dataset.active)
+      mobileSteps.forEach((step) => delete step.dataset.active)
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    if (cleanupProceso2) {
+      cleanupProceso2()
+      cleanupProceso2 = null
+    }
+  })
+
+  document.addEventListener('astro:page-load', setupProceso2)
+  setupProceso2()
+</script>
