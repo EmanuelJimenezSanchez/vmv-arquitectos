@@ -11,40 +11,38 @@ export interface Servicio {
 export const servicios: Servicio[] = [
     {
         id: 'servicio-01',
-        title: 'Construcción y remodelación residencial',
-        description: 'Viviendas construidas y renovadas con calidad en cada etapa.',
-        details:
-            'Gestionamos permisos, materiales y cuadrillas propias para que tu casa avance sin sorpresas, del levantamiento inicial hasta el último acabado.',
+        title: 'Casas y residencias',
+        description: 'Diseñamos y construimos hogares a la medida de quien los va a vivir.',
+        details: 'Cuéntanos tu idea.',
         footer: 'Residencial',
         image: '/images/services/service-1.webp',
-        imageAlt: 'Vivienda construida por VMV Arquitectos',
+        imageAlt: 'Casa construida por VMV Arquitectos',
     },
     {
         id: 'servicio-02',
-        title: 'Construcción y remodelación comercial',
-        description: 'Locales y oficinas ejecutados con precisión, sin frenar tu operación.',
-        details:
-            'Planificamos por etapas y horarios para minimizar el impacto en tu negocio, cuidando normativa, plazos y presupuesto acordado.',
+        title: 'Espacios comerciales',
+        description: 'Locales y oficinas pensados para funcionar bien y sentirse bien.',
+        details: 'Espacios que acompañan a tu actividad y hablan por sí solos.',
         footer: 'Comercial',
         image: '/images/services/service-2.webp',
         imageAlt: 'Espacio comercial construido por VMV Arquitectos',
     },
     {
         id: 'servicio-03',
-        title: 'Diseño y construcción de desarrollos verticales',
-        description: 'Desarrollos en altura que integran ingeniería, normativa y diseño.',
+        title: 'Desarrollos verticales',
+        description: 'Acompañamos a quienes imaginan proyectos de mayor escala.',
         details:
-            'Acompañamos desde el anteproyecto y la factibilidad hasta la entrega, coordinando estructura, instalaciones y control de calidad en cada nivel.',
+            'Cuidamos cada metro con la misma atención al detalle y a la experiencia de quien habitará el lugar.',
         footer: 'Desarrollos verticales',
         image: '/images/services/service-3.webp',
         imageAlt: 'Desarrollo vertical diseñado por VMV Arquitectos',
     },
     {
         id: 'servicio-04',
-        title: 'Diseño de interiores',
-        description: 'Ambientes donde la funcionalidad y la estética conviven en equilibrio.',
+        title: 'Interiorismo',
+        description: 'El detalle que termina de dar carácter a un espacio.',
         details:
-            'Definimos paleta, materiales y mobiliario a la medida de cómo vives o trabajas, con visualizaciones previas antes de construir.',
+            'Integramos luz, materiales y proporción para que cada lugar se sienta, simplemente, tuyo.',
         footer: 'Interiores',
         image: '/images/services/service-4.webp',
         imageAlt: 'Interior diseñado por VMV Arquitectos',
