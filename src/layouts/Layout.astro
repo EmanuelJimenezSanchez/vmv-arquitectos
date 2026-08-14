@@ -10,7 +10,7 @@ import Button from '@/components/ui/Button.astro'
 
 const SITE_URL = 'https://www.vmv-arquitectos.com'
 const DEFAULT_OG_IMAGE = `https://cdn.vmv-arquitectos.com/og.jpg`
-const DEFAULT_OG_ALT = 'VMV Arquitectos — Diseño y Construcción de Espacios Funcionales y Estéticos'
+const DEFAULT_OG_ALT = 'VMV Arquitectos — Diseño y construcción de espacios para habitar'
 
 interface Props {
   title: string
@@ -27,7 +27,7 @@ interface Props {
 
 const {
   title,
-  description = 'VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos',
+  description = 'Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse. Con base en Guadalajara y proyectos en todo México.',
   canonical,
   robots,
   ogImage = DEFAULT_OG_IMAGE,
@@ -48,7 +48,7 @@ const finalRobots = robots ?? 'index, follow'
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos</title>
+    <title>VMV Arquitectos | Diseño y construcción de espacios para habitar</title>
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -70,7 +70,11 @@ const finalRobots = robots ?? 'index, follow'
 
     <meta
       name="description"
-      content="VMV Arquitectos - Diseño y Construcción de Espacios Funcionales y Estéticos"
+      content="Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse. Con base en Guadalajara y proyectos en todo México."
+    />
+    <meta
+      name="keywords"
+      content="despacho de arquitectura, diseño y construcción, interiorismo, arquitectos en Guadalajara, construcción de casas, espacios comerciales, remodelación de espacios, arquitectura residencial y comercial, diseño de interiores, construcción en México"
     />
     <meta name="author" content="VMV Arquitectos" />
     <link rel="canonical" href="https://www.vmv-arquitectos.com/" />
@@ -119,7 +123,7 @@ const finalRobots = robots ?? 'index, follow'
           size="lg"
           class="fixed right-4 bottom-4 z-60 shadow-lg md:right-8 md:bottom-8"
         >
-          Contacto
+          Escríbenos
         </Button>
       )
     }
