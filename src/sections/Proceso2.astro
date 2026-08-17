@@ -3,7 +3,7 @@ import { proceso } from '@/data/proceso'
 
 // Posiciones a lo largo del recorrido (porcentaje del contenedor).
 const xs = [10, 30, 50, 70, 90]
-const ys = proceso.map((_, index) => (index % 2 === 0 ? 30 : 70))
+const ys = proceso.map((_, index) => (index % 2 === 0 ? 20 : 80))
 
 const points = xs.map((x, index) => ({ x, y: ys[index] }))
 const tip = { x: 97, y: 50 }
@@ -19,7 +19,11 @@ const smoothPath = (pts: { x: number; y: number }[]) => {
   return d
 }
 
-const wavePath = smoothPath([...points, tip])
+const anchors = [...points, tip]
+const wavePath = smoothPath(anchors)
+
+// Tramo de curva que le corresponde a cada paso: del nodo al siguiente.
+const segmentPaths = points.map((_, index) => smoothPath([anchors[index], anchors[index + 1]]))
 
 const steps = proceso.map((paso, index) => ({
   ...paso,
@@ -33,11 +37,13 @@ const steps = proceso.map((paso, index) => ({
 
 <section
   id="proceso-2"
-  class="relative bg-vmv-background py-[clamp(4.5rem,10vw,8rem)]"
+  class="relative bg-vmv-background py-[clamp(4.5rem,10vw,8rem)] md:flex md:h-screen md:min-h-176 md:items-center md:py-[clamp(3rem,6vh,5rem)]"
   data-proceso2
   aria-label="Nuestro proceso de trabajo (versión curva)"
 >
-  <div class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
+  <div
+    class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] md:flex md:h-full md:flex-col"
+  >
     <header
       class="mx-auto flex max-w-[42ch] flex-col items-center gap-6 text-center"
       data-proceso2-intro
@@ -56,7 +62,7 @@ const steps = proceso.map((paso, index) => ({
 
     <!-- Recorrido curvo (desktop) -->
     <div
-      class="relative mt-[clamp(4rem,9vw,6.5rem)] hidden h-[19rem] md:block lg:h-[21rem]"
+      class="relative mt-[clamp(3rem,6vh,5rem)] hidden min-h-76 md:block md:flex-1"
       data-proceso2-track
     >
       <svg
@@ -68,26 +74,30 @@ const steps = proceso.map((paso, index) => ({
         <path
           d={wavePath}
           fill="none"
-          stroke="var(--vmv-border)"
-          stroke-width="0.15"
-          vector-effect="non-scaling-stroke"
-        />
-        <path
-          d={wavePath}
-          fill="none"
-          stroke="var(--vmv-foreground)"
-          stroke-width="0.15"
+          stroke="var(--vmv-muted-foreground)"
+          stroke-width="2"
           stroke-linecap="round"
           vector-effect="non-scaling-stroke"
-          pathLength="1"
-          stroke-dasharray="1"
-          stroke-dashoffset="1"
           data-proceso2-path
         />
+        {
+          segmentPaths.map((segment, index) => (
+            <path
+              class="opacity-0 transition-opacity duration-500 data-[active=true]:opacity-100"
+              d={segment}
+              fill="none"
+              stroke="var(--vmv-foreground)"
+              stroke-width="2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+              data-proceso2-segment={index}
+            />
+          ))
+        }
       </svg>
 
       <span
-        class="pointer-events-none absolute h-0 w-0 -translate-y-1/2 border-y-[0.4rem] border-l-[0.65rem] border-y-transparent border-l-vmv-foreground opacity-0 transition-opacity duration-500"
+        class="pointer-events-none absolute h-0 w-0 -translate-y-1/2 border-y-[0.4rem] border-l-[0.65rem] border-y-transparent border-l-vmv-muted-foreground opacity-0 transition-opacity duration-500"
         style={`left:${tip.x}%; top:${tip.y}%`}
         data-proceso2-arrow
         aria-hidden="true"
@@ -101,13 +111,17 @@ const steps = proceso.map((paso, index) => ({
             data-proceso2-node
           >
             <span
-              class="absolute top-0 left-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full border border-vmv-border bg-vmv-background opacity-0 transition-[transform,opacity,background-color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-125 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-data-[active=true]:scale-125 group-data-[active=true]:border-vmv-foreground group-data-[active=true]:bg-vmv-foreground data-[in=true]:scale-100 data-[in=true]:opacity-100"
+              class="absolute top-0 left-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full border border-vmv-muted-foreground bg-vmv-background opacity-0 transition-[transform,opacity,background-color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-125 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-data-[active=true]:scale-125 group-data-[active=true]:border-vmv-foreground group-data-[active=true]:bg-vmv-foreground data-[in=true]:scale-100 data-[in=true]:opacity-100"
               data-proceso2-dot
             />
 
             {paso.up ? (
               <>
-                <span class="absolute left-0 h-7 w-px -translate-x-1/2 bg-vmv-border" style="top:-1.75rem;" aria-hidden="true" />
+                <span
+                  class="absolute left-0 h-7 w-px -translate-x-1/2 bg-vmv-border transition-colors duration-500 group-hover:bg-vmv-foreground group-data-[active=true]:bg-vmv-foreground"
+                  style="top:-1.75rem;"
+                  aria-hidden="true"
+                />
                 <button
                   type="button"
                   class={`absolute left-0 w-[clamp(11rem,16vw,14rem)] cursor-pointer ${
@@ -121,8 +135,11 @@ const steps = proceso.map((paso, index) => ({
                   data-proceso2-trigger
                   aria-expanded="false"
                 >
-                  <h3 class="vmv-title-3 text-vmv-foreground">
-                    <span class="text-vmv-sand-9/60">{paso.index + 1}.</span> {paso.title}
+                  <h3 class="vmv-title-3 text-vmv-muted-foreground transition-colors duration-500 group-hover:text-vmv-foreground group-data-[active=true]:text-vmv-foreground">
+                    <span class="text-vmv-sand-9/40 transition-colors duration-500 group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9">
+                      {paso.index + 1}.
+                    </span>{' '}
+                    {paso.title}
                   </h3>
                   <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
                     <div class="overflow-hidden">
@@ -135,7 +152,10 @@ const steps = proceso.map((paso, index) => ({
               </>
             ) : (
               <>
-                <span class="absolute left-0 top-0 h-7 w-px -translate-x-1/2 bg-vmv-border" aria-hidden="true" />
+                <span
+                  class="absolute top-0 left-0 h-7 w-px -translate-x-1/2 bg-vmv-border transition-colors duration-500 group-hover:bg-vmv-foreground group-data-[active=true]:bg-vmv-foreground"
+                  aria-hidden="true"
+                />
                 <button
                   type="button"
                   class={`absolute left-0 w-[clamp(11rem,16vw,14rem)] cursor-pointer ${
@@ -149,8 +169,11 @@ const steps = proceso.map((paso, index) => ({
                   data-proceso2-trigger
                   aria-expanded="false"
                 >
-                  <h3 class="vmv-title-3 text-vmv-foreground">
-                    <span class="text-vmv-sand-9/60">{paso.index + 1}.</span> {paso.title}
+                  <h3 class="vmv-title-3 text-vmv-muted-foreground transition-colors duration-500 group-hover:text-vmv-foreground group-data-[active=true]:text-vmv-foreground">
+                    <span class="text-vmv-sand-9/40 transition-colors duration-500 group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9">
+                      {paso.index + 1}.
+                    </span>{' '}
+                    {paso.title}
                   </h3>
                   <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
                     <div class="overflow-hidden">
@@ -182,7 +205,9 @@ const steps = proceso.map((paso, index) => ({
                 {String(paso.index + 1).padStart(2, '0')}
               </span>
               <span class="flex-1">
-                <h3 class="vmv-title-3 text-vmv-foreground">{paso.title}</h3>
+                <h3 class="vmv-title-3 text-vmv-muted-foreground transition-colors duration-500 group-data-[active=true]:text-vmv-foreground">
+                  {paso.title}
+                </h3>
                 <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[active=true]:grid-rows-[1fr]">
                   <div class="overflow-hidden">
                     <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-data-[active=true]:opacity-100">
@@ -228,8 +253,39 @@ const steps = proceso.map((paso, index) => ({
 
     const tapController = new AbortController()
 
-    nodes.forEach((node) => {
+    nodes.forEach((node, index) => {
       const trigger = $<HTMLButtonElement>('[data-proceso2-trigger]', node)
+      const segment = $<SVGPathElement>(`[data-proceso2-segment="${index}"]`, section)
+
+      const syncSegment = () => {
+        if (!segment) {
+          return
+        }
+        if (node.dataset.active === 'true' || node.dataset.hover === 'true') {
+          segment.dataset.active = 'true'
+        } else {
+          delete segment.dataset.active
+        }
+      }
+
+      node.addEventListener(
+        'pointerenter',
+        () => {
+          node.dataset.hover = 'true'
+          syncSegment()
+        },
+        { signal: tapController.signal },
+      )
+
+      node.addEventListener(
+        'pointerleave',
+        () => {
+          delete node.dataset.hover
+          syncSegment()
+        },
+        { signal: tapController.signal },
+      )
+
       trigger?.addEventListener(
         'click',
         () => {
@@ -241,6 +297,7 @@ const steps = proceso.map((paso, index) => ({
             node.dataset.active = 'true'
             trigger.setAttribute('aria-expanded', 'true')
           }
+          syncSegment()
         },
         { signal: tapController.signal },
       )
@@ -294,7 +351,7 @@ const steps = proceso.map((paso, index) => ({
           },
         })
 
-        tl.fromTo(path, { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: 'none' }, 0)
+        tl.fromTo(path, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1, ease: 'none' }, 0)
 
         dots.forEach((dot, index) => {
           const at = (index / Math.max(dots.length - 1, 1)) * 0.85
@@ -339,7 +396,13 @@ const steps = proceso.map((paso, index) => ({
     cleanupProceso2 = () => {
       tapController.abort()
       mm.revert()
-      nodes.forEach((node) => delete node.dataset.active)
+      nodes.forEach((node) => {
+        delete node.dataset.active
+        delete node.dataset.hover
+      })
+      $$<SVGPathElement>('[data-proceso2-segment]', section).forEach((segment) => {
+        delete segment.dataset.active
+      })
       mobileSteps.forEach((step) => delete step.dataset.active)
     }
   }
