@@ -1,4 +1,4 @@
----
+﻿---
 import { proceso } from '@/data/proceso'
 
 // Posiciones a lo largo del recorrido (porcentaje del contenedor).
@@ -61,133 +61,135 @@ const steps = proceso.map((paso, index) => ({
     </header>
 
     <!-- Recorrido curvo (desktop) -->
+    <!-- El padding reserva el espacio que necesitan los textos por fuera de la onda. -->
     <div
-      class="relative mt-[clamp(3rem,6vh,5rem)] hidden min-h-76 md:block md:flex-1"
-      data-proceso2-track
+      class="mt-[clamp(2rem,4vh,3.5rem)] hidden md:block md:flex-1 md:py-[clamp(5rem,11vh,8rem)]"
     >
-      <svg
-        class="absolute inset-0 h-full w-full overflow-visible"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <path
-          d={wavePath}
-          fill="none"
-          stroke="var(--vmv-muted-foreground)"
-          stroke-width="2"
-          stroke-linecap="round"
-          vector-effect="non-scaling-stroke"
-          data-proceso2-path
-        />
+      <div class="relative h-full min-h-48" data-proceso2-track>
+        <svg
+          class="absolute inset-0 h-full w-full overflow-visible"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d={wavePath}
+            fill="none"
+            stroke="var(--vmv-muted-foreground)"
+            stroke-width="2"
+            stroke-linecap="round"
+            vector-effect="non-scaling-stroke"
+            data-proceso2-path
+          />
+          {
+            segmentPaths.map((segment, index) => (
+              <path
+                class="opacity-0 transition-opacity duration-500 data-[active=true]:opacity-100"
+                d={segment}
+                fill="none"
+                stroke="var(--vmv-foreground)"
+                stroke-width="2"
+                stroke-linecap="round"
+                vector-effect="non-scaling-stroke"
+                data-proceso2-segment={index}
+              />
+            ))
+          }
+        </svg>
+
+        <span
+          class="pointer-events-none absolute h-0 w-0 -translate-y-1/2 border-y-[0.4rem] border-l-[0.65rem] border-y-transparent border-l-vmv-muted-foreground opacity-0 transition-opacity duration-500"
+          style={`left:${tip.x}%; top:${tip.y}%`}
+          data-proceso2-arrow
+          aria-hidden="true"
+        ></span>
+
         {
-          segmentPaths.map((segment, index) => (
-            <path
-              class="opacity-0 transition-opacity duration-500 data-[active=true]:opacity-100"
-              d={segment}
-              fill="none"
-              stroke="var(--vmv-foreground)"
-              stroke-width="2"
-              stroke-linecap="round"
-              vector-effect="non-scaling-stroke"
-              data-proceso2-segment={index}
-            />
+          steps.map((paso) => (
+            <div
+              class="group absolute"
+              style={`left:${paso.x}%; top:${paso.y}%`}
+              data-proceso2-node
+            >
+              <span
+                class="absolute top-0 left-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full border border-vmv-muted-foreground bg-vmv-background opacity-0 transition-[transform,opacity,background-color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-125 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-data-[active=true]:scale-125 group-data-[active=true]:border-vmv-foreground group-data-[active=true]:bg-vmv-foreground data-[in=true]:scale-100 data-[in=true]:opacity-100"
+                data-proceso2-dot
+              />
+
+              {paso.up ? (
+                <>
+                  <span
+                    class="absolute left-0 h-7 w-px -translate-x-1/2 bg-vmv-border transition-colors duration-500 group-hover:bg-vmv-foreground group-data-[active=true]:bg-vmv-foreground"
+                    style="top:-1.75rem;"
+                    aria-hidden="true"
+                  />
+                  <button
+                    type="button"
+                    class={`absolute left-0 w-[clamp(13rem,19vw,17rem)] cursor-pointer ${
+                      paso.align === 'center'
+                        ? '-translate-x-1/2 text-center'
+                        : paso.align === 'end'
+                          ? '-translate-x-full text-right'
+                          : 'translate-x-0 text-left'
+                    }`}
+                    style="bottom:2.25rem;"
+                    data-proceso2-trigger
+                    aria-expanded="false"
+                  >
+                    <h3 class="vmv-title-3 text-vmv-muted-foreground transition-colors duration-500 group-hover:text-vmv-foreground group-data-[active=true]:text-vmv-foreground">
+                      <span class="text-vmv-sand-9/40 transition-colors duration-500 group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9">
+                        {paso.index + 1}.
+                      </span>{' '}
+                      {paso.title}
+                    </h3>
+                    <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
+                      <div class="overflow-hidden">
+                        <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-hover:opacity-100 group-data-[active=true]:opacity-100">
+                          {paso.description}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span
+                    class="absolute top-0 left-0 h-7 w-px -translate-x-1/2 bg-vmv-border transition-colors duration-500 group-hover:bg-vmv-foreground group-data-[active=true]:bg-vmv-foreground"
+                    aria-hidden="true"
+                  />
+                  <button
+                    type="button"
+                    class={`absolute left-0 w-[clamp(13rem,19vw,17rem)] cursor-pointer ${
+                      paso.align === 'center'
+                        ? '-translate-x-1/2 text-center'
+                        : paso.align === 'end'
+                          ? '-translate-x-full text-right'
+                          : 'translate-x-0 text-left'
+                    }`}
+                    style="top:2.25rem;"
+                    data-proceso2-trigger
+                    aria-expanded="false"
+                  >
+                    <h3 class="vmv-title-3 text-vmv-muted-foreground transition-colors duration-500 group-hover:text-vmv-foreground group-data-[active=true]:text-vmv-foreground">
+                      <span class="text-vmv-sand-9/40 transition-colors duration-500 group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9">
+                        {paso.index + 1}.
+                      </span>{' '}
+                      {paso.title}
+                    </h3>
+                    <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
+                      <div class="overflow-hidden">
+                        <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-hover:opacity-100 group-data-[active=true]:opacity-100">
+                          {paso.description}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </>
+              )}
+            </div>
           ))
         }
-      </svg>
-
-      <span
-        class="pointer-events-none absolute h-0 w-0 -translate-y-1/2 border-y-[0.4rem] border-l-[0.65rem] border-y-transparent border-l-vmv-muted-foreground opacity-0 transition-opacity duration-500"
-        style={`left:${tip.x}%; top:${tip.y}%`}
-        data-proceso2-arrow
-        aria-hidden="true"
-      ></span>
-
-      {
-        steps.map((paso) => (
-          <div
-            class="group absolute"
-            style={`left:${paso.x}%; top:${paso.y}%`}
-            data-proceso2-node
-          >
-            <span
-              class="absolute top-0 left-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full border border-vmv-muted-foreground bg-vmv-background opacity-0 transition-[transform,opacity,background-color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-125 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-data-[active=true]:scale-125 group-data-[active=true]:border-vmv-foreground group-data-[active=true]:bg-vmv-foreground data-[in=true]:scale-100 data-[in=true]:opacity-100"
-              data-proceso2-dot
-            />
-
-            {paso.up ? (
-              <>
-                <span
-                  class="absolute left-0 h-7 w-px -translate-x-1/2 bg-vmv-border transition-colors duration-500 group-hover:bg-vmv-foreground group-data-[active=true]:bg-vmv-foreground"
-                  style="top:-1.75rem;"
-                  aria-hidden="true"
-                />
-                <button
-                  type="button"
-                  class={`absolute left-0 w-[clamp(11rem,16vw,14rem)] cursor-pointer ${
-                    paso.align === 'center'
-                      ? '-translate-x-1/2 text-center'
-                      : paso.align === 'end'
-                        ? '-translate-x-full text-right'
-                        : 'translate-x-0 text-left'
-                  }`}
-                  style="bottom:2.25rem;"
-                  data-proceso2-trigger
-                  aria-expanded="false"
-                >
-                  <h3 class="vmv-title-3 text-vmv-muted-foreground transition-colors duration-500 group-hover:text-vmv-foreground group-data-[active=true]:text-vmv-foreground">
-                    <span class="text-vmv-sand-9/40 transition-colors duration-500 group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9">
-                      {paso.index + 1}.
-                    </span>{' '}
-                    {paso.title}
-                  </h3>
-                  <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
-                    <div class="overflow-hidden">
-                      <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-hover:opacity-100 group-data-[active=true]:opacity-100">
-                        {paso.description}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              </>
-            ) : (
-              <>
-                <span
-                  class="absolute top-0 left-0 h-7 w-px -translate-x-1/2 bg-vmv-border transition-colors duration-500 group-hover:bg-vmv-foreground group-data-[active=true]:bg-vmv-foreground"
-                  aria-hidden="true"
-                />
-                <button
-                  type="button"
-                  class={`absolute left-0 w-[clamp(11rem,16vw,14rem)] cursor-pointer ${
-                    paso.align === 'center'
-                      ? '-translate-x-1/2 text-center'
-                      : paso.align === 'end'
-                        ? '-translate-x-full text-right'
-                        : 'translate-x-0 text-left'
-                  }`}
-                  style="top:2.25rem;"
-                  data-proceso2-trigger
-                  aria-expanded="false"
-                >
-                  <h3 class="vmv-title-3 text-vmv-muted-foreground transition-colors duration-500 group-hover:text-vmv-foreground group-data-[active=true]:text-vmv-foreground">
-                    <span class="text-vmv-sand-9/40 transition-colors duration-500 group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9">
-                      {paso.index + 1}.
-                    </span>{' '}
-                    {paso.title}
-                  </h3>
-                  <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-data-[active=true]:grid-rows-[1fr]">
-                    <div class="overflow-hidden">
-                      <p class="vmv-body-3 pt-2 text-vmv-muted-foreground opacity-0 transition-opacity delay-100 duration-500 group-hover:opacity-100 group-data-[active=true]:opacity-100">
-                        {paso.description}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              </>
-            )}
-          </div>
-        ))
-      }
+      </div>
     </div>
 
     <!-- Alternativa apilada (mobile) -->
