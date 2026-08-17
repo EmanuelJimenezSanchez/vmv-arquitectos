@@ -1,6 +1,8 @@
 ---
 import { galeria } from '@/data/galeria'
 import Button from '@/components/ui/Button.astro'
+
+const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`;
 ---
 
 <section id="nosotros" class="relative">
@@ -14,7 +16,7 @@ import Button from '@/components/ui/Button.astro'
       class="absolute top-0 left-0 z-10 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-r after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
     >
       <img
-        src="/images/nosotros/nosotros-1.webp"
+        src={`${BUCKET_URL}/nosotros-1.webp`}
         alt="Diseño arquitectónico VMV Arquitectos"
         class="block h-full w-full object-cover object-[40%_center]"
         loading="lazy"
@@ -26,7 +28,7 @@ import Button from '@/components/ui/Button.astro'
       class="absolute top-0 right-0 z-10 h-full w-1/2 overflow-hidden after:pointer-events-none after:absolute after:inset-0 after:bg-linear-to-l after:from-[#0f0e0c]/10 after:to-[#0f0e0c]/55"
     >
       <img
-        src="/images/nosotros/nosotros-2.webp"
+        src={`${BUCKET_URL}/nosotros-2.webp`}
         alt="Construcción de lujo VMV Arquitectos"
         class="block h-full w-full object-cover object-[60%_center]"
         loading="lazy"
@@ -42,7 +44,7 @@ import Button from '@/components/ui/Button.astro'
       <span class="vmv-title-1 text-white"> NOSOTROS </span>
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
       <!-- <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
-        <Button href="/#contacto" variant="white" size="lg">Conócenos</Button>
+        <Button href="/#contacto" variant="white" size="lg" data-contacto-trigger>Conócenos</Button>
       </div> -->
     </div>
 
@@ -89,7 +91,7 @@ import Button from '@/components/ui/Button.astro'
         última llave.
       </p> -->
       <div data-nosotros="galeria-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
-        <Button href="/#contacto" variant="white" size="xxl">Conócenos</Button>
+        <Button href="/#contacto" variant="white" size="xxl" data-contacto-trigger>Conócenos</Button>
       </div>
       <!-- <div data-nosotros="restart-cta" class="pointer-events-auto mt-[clamp(0.9rem,2.2vw,1.4rem)]">
         <button
@@ -132,7 +134,9 @@ import Button from '@/components/ui/Button.astro'
         El lujo está en el detalle. Nosotros lo cuidamos por ti.
       </p>
       <!-- <div data-nosotros="reveal-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
-        <Button href="/#contacto" variant="white" size="xl">Ponte en contacto</Button>
+        <Button href="/#contacto" variant="white" size="xl" data-contacto-trigger
+          >Ponte en contacto</Button
+        >
       </div> -->
     </div>
   </div>
@@ -149,6 +153,7 @@ import Button from '@/components/ui/Button.astro'
 
   const activeTriggers: ScrollTrigger[] = []
   let revealSplit: SplitText | null = null
+  let scrollLocked = false
 
   // Bloquea el scroll (wheel/touch) mientras la intro del hero se
   // reproduce sola: antes se intentaba "corregir" el scroll ya ocurrido
@@ -168,15 +173,35 @@ import Button from '@/components/ui/Button.astro'
     activeTriggers.length = 0
     revealSplit?.revert()
     revealSplit = null
-    observer.disable()
+    unlockScroll()
   }
 
-  function lockScroll() {
+  // El bloqueo va en tres capas porque ninguna cubre todas las formas de
+  // scrollear:
+  //  1. Observer: frena wheel/touch/pointer antes de que lleguen a nadie.
+  //  2. Lenis: es quien realmente mueve la página (y su plugin de snap
+  //     puede lanzar scrolls por su cuenta); `stop()` también hace que sus
+  //     `scrollTo` internos se ignoren.
+  //  3. `overflow: clip` en el root: lo único que impide el scroll nativo
+  //     por teclado, barra de scroll o Home/End. No altera la posición
+  //     actual (es el mismo mecanismo que usa Lenis con `autoToggle`).
+  // `alignTo` reubica el scroll justo antes de cerrar el candado: hay que
+  // hacerlo con Lenis ya detenido (si no, su inercia lo deshace en el
+  // siguiente frame) pero antes del `overflow: clip`, que también bloquea
+  // el scroll programático.
+  function lockScroll(alignTo?: number) {
+    scrollLocked = true
     observer.enable()
+    window.lenis?.stop()
+    if (alignTo != null) window.scrollTo(0, alignTo)
+    document.documentElement.style.setProperty('overflow', 'clip')
   }
 
   function unlockScroll() {
+    scrollLocked = false
     observer.disable()
+    document.documentElement.style.removeProperty('overflow')
+    window.lenis?.start()
   }
 
   function initNosotros() {
@@ -271,6 +296,26 @@ import Button from '@/components/ui/Button.astro'
     let galeriaScrollTrigger: ScrollTrigger | null = null
     let introDone = false
 
+    // Red de seguridad para cuando el scrub ya avanzó sin que la intro se
+    // haya reproducido (p. ej. al recargar la página con el scroll
+    // restaurado dentro del pin). Si `heroTl` siguiera reproduciéndose en
+    // ese estado, ambos timelines animarían la opacidad de `revealEl` a la
+    // vez y ganaría el último en renderizar: el texto se quedaba visible
+    // encima de la galería ya expandida. Durante el flujo normal esto no
+    // se dispara, porque el scroll está bloqueado hasta que la intro
+    // termina (ver lockScroll).
+    const completeIntro = () => {
+      if (introDone) return
+      introDone = true
+      // `suppressEvents` evita que se dispare el onComplete y se llame
+      // a esta misma función en bucle.
+      heroTl.progress(1, true).pause()
+      // La intro deja `revealEl` en su valor final, así que hay que volver
+      // a pintar el timeline del scroll para que mande su estado actual.
+      heroScrollTl.render(heroScrollTl.time(), false, true)
+      unlockScroll()
+    }
+
     if (galeriaMedia && galeriaImages.length > 0) {
       heroScrollTl.addLabel('galeriaReveal', 0)
 
@@ -285,7 +330,7 @@ import Button from '@/components/ui/Button.astro'
         .fromTo(
           revealEl,
           { opacity: 1, scale: 1 },
-          { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' },
+          { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in', immediateRender: false },
           'galeriaReveal',
         )
         .to(
@@ -363,6 +408,19 @@ import Button from '@/components/ui/Button.astro'
         pin: true,
         scrub: 1,
         animation: heroScrollTl,
+        // Si el scrub avanza con la intro sin terminar y sin el candado
+        // puesto, la intro ya no puede seguir animando por su cuenta (ver
+        // completeIntro). Se difiere un frame porque este `onUpdate` y el
+        // `onEnter` que arranca la intro pueden caer en el mismo update:
+        // para entonces el candado ya está puesto y no hace falta.
+        onUpdate: (self) => {
+          if (introDone || scrollLocked || self.progress === 0) return
+          requestAnimationFrame(() => {
+            if (!introDone && !scrollLocked && (galeriaScrollTrigger?.progress ?? 0) > 0) {
+              completeIntro()
+            }
+          })
+        },
         // Al volver a cruzar el borde superior de la sección hacia arriba
         // (scroll hacia atrás más allá del pin), la revelación de la
         // galería ya se revierte sola por el scrub; pero la intro
@@ -376,10 +434,7 @@ import Button from '@/components/ui/Button.astro'
       })
       activeTriggers.push(galeriaScrollTrigger)
 
-      heroTl.eventCallback('onComplete', () => {
-        introDone = true
-        unlockScroll()
-      })
+      heroTl.eventCallback('onComplete', completeIntro)
     }
 
     // Espera a que las imágenes de la galería estén cargadas y decodificadas
@@ -404,10 +459,32 @@ import Button from '@/components/ui/Button.astro'
 
     const heroSt = ScrollTrigger.create({
       trigger: hero,
-      start: 'top 05%',
+      // Prácticamente el mismo punto que el pin de la galería: el candado
+      // se cierra cuando la sección ya está encuadrada contra el borde
+      // superior, no antes (con `top 05%` se bloqueaba con la sección
+      // anterior todavía asomada). Los 4px de adelanto no se notan, pero
+      // son necesarios: con un `start` idéntico al del pin, este trigger
+      // se mide sobre el hero ya pineado y su punto de inicio se corre
+      // hasta el final del pin, así que la intro nunca arrancaba.
+      start: 'top top+=4',
       onEnter: () => {
-        lockScroll()
-        galeriaImagesReady.then(() => heroTl.play())
+        if (introDone) return
+        // En un scroll rápido, ScrollTrigger detecta el cruce con el punto
+        // de inicio ya pasado, así que el scrub habría avanzado unos
+        // píxeles. El hero ya está pineado, por lo que devolver el scroll
+        // al inicio del pin no mueve nada en pantalla: solo deja el
+        // timeline de la galería en cero para que la intro arranque limpia.
+        const pinStart = galeriaScrollTrigger?.start
+        const overshot = pinStart != null && window.scrollY > pinStart
+        lockScroll(overshot ? pinStart : undefined)
+        if (overshot) heroScrollTl.progress(0)
+        galeriaImagesReady.then(() => {
+          // `introDone` puede haberse resuelto mientras se esperaban las
+          // imágenes (ver completeIntro): en ese caso reproducir la intro
+          // la pondría encima de la galería ya revelada.
+          if (introDone) return
+          heroTl.play()
+        })
       },
     })
 
