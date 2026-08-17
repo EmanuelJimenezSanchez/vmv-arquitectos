@@ -255,7 +255,7 @@ const steps = proceso.map((paso, index) => ({
 
     const tapController = new AbortController()
 
-    nodes.forEach((node, index) => {
+    const steps = nodes.map((node, index) => {
       const trigger = $<HTMLButtonElement>('[data-proceso2-trigger]', node)
       const segment = $<SVGPathElement>(`[data-proceso2-segment="${index}"]`, section)
 
@@ -268,6 +268,16 @@ const steps = proceso.map((paso, index) => ({
         } else {
           delete segment.dataset.active
         }
+      }
+
+      const setActive = (active: boolean) => {
+        if (active) {
+          node.dataset.active = 'true'
+        } else {
+          delete node.dataset.active
+        }
+        trigger?.setAttribute('aria-expanded', String(active))
+        syncSegment()
       }
 
       node.addEventListener(
@@ -291,18 +301,12 @@ const steps = proceso.map((paso, index) => ({
       trigger?.addEventListener(
         'click',
         () => {
-          const isActive = node.dataset.active === 'true'
-          if (isActive) {
-            delete node.dataset.active
-            trigger.setAttribute('aria-expanded', 'false')
-          } else {
-            node.dataset.active = 'true'
-            trigger.setAttribute('aria-expanded', 'true')
-          }
-          syncSegment()
+          setActive(node.dataset.active !== 'true')
         },
         { signal: tapController.signal },
       )
+
+      return { node, setActive }
     })
 
     mobileSteps.forEach((step) => {
@@ -377,6 +381,79 @@ const steps = proceso.map((paso, index) => ({
       }
 
       return undefined
+    })
+
+    // Recorrido automático de los pasos mientras la sección está a la vista.
+    mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+      if (!track || steps.length === 0) {
+        return undefined
+      }
+
+      const HOLD = 2.4
+      const clearSteps = () => steps.forEach((step) => step.setActive(false))
+
+      const autoplay = gsap.timeline({ repeat: -1, paused: true })
+      autoplay.to({}, { duration: steps.length * HOLD, ease: 'none' }, 0)
+      steps.forEach((step, index) => {
+        autoplay.call(
+          () => {
+            steps.forEach((other, otherIndex) => other.setActive(otherIndex === index))
+          },
+          undefined,
+          index * HOLD,
+        )
+      })
+
+      let hovering = false
+      const hoverController = new AbortController()
+
+      const autoplayTrigger = ScrollTrigger.create({
+        trigger: track,
+        start: 'top 70%',
+        end: 'bottom 30%',
+        onToggle: (self) => {
+          if (self.isActive && !hovering) {
+            autoplay.play()
+          } else {
+            autoplay.pause()
+            if (!self.isActive) {
+              clearSteps()
+            }
+          }
+        },
+      })
+
+      if (autoplayTrigger.isActive) {
+        autoplay.play()
+      }
+
+      track.addEventListener(
+        'pointerenter',
+        () => {
+          hovering = true
+          autoplay.pause()
+          clearSteps()
+        },
+        { signal: hoverController.signal },
+      )
+
+      track.addEventListener(
+        'pointerleave',
+        () => {
+          hovering = false
+          if (autoplayTrigger.isActive) {
+            autoplay.restart()
+          }
+        },
+        { signal: hoverController.signal },
+      )
+
+      return () => {
+        hoverController.abort()
+        autoplayTrigger.kill()
+        autoplay.kill()
+        clearSteps()
+      }
     })
 
     mm.add('(max-width: 899px)', () => {
