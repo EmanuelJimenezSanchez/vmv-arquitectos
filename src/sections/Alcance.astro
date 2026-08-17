@@ -224,6 +224,17 @@ import { estados } from '@/data/alcance'
       })
       map = instance
 
+      // El control compacto se monta abierto; cerrarlo una vez basta porque MapLibre
+      // solo lo reabre si le falta la clase maplibregl-compact.
+      const collapseAttribution = () => {
+        const attribution = $<HTMLElement>('.maplibregl-ctrl-attrib', mapContainer)
+        attribution?.classList.remove('maplibregl-compact-show')
+        attribution?.removeAttribute('open')
+      }
+
+      collapseAttribution()
+      instance.once('load', collapseAttribution)
+
       applyStyle(instance, currentTheme)
 
       // El encuadre se deriva de los polígonos: agregar un estado lo reajusta.
