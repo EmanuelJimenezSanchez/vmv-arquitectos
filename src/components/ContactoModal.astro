@@ -1,0 +1,202 @@
+---
+import ContactoForm from '@/components/ContactoForm.astro'
+---
+
+<dialog
+  id="contacto-modal"
+  class="contacto-modal m-auto w-[min(46rem,calc(100vw-2rem))] max-w-none overflow-visible bg-transparent p-0 text-vmv-foreground backdrop:bg-black/70"
+  aria-labelledby="contacto-modal-title"
+  data-contacto-modal
+>
+  <div
+    class="contacto-modal-panel relative max-h-[calc(100svh-4rem)] overflow-y-auto border border-vmv-border bg-vmv-background px-[clamp(1.25rem,4vw,2.75rem)] py-[clamp(2rem,5vw,3rem)]"
+  >
+    <button
+      type="button"
+      class="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-300 hover:bg-vmv-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vmv-ring"
+      aria-label="Cerrar formulario de contacto"
+      data-contacto-modal-close
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+          d="M4 4l8 8M12 4l-8 8"
+          stroke="currentColor"
+          stroke-width="1.3"
+          stroke-linecap="round"></path>
+      </svg>
+    </button>
+
+    <header class="mb-8 flex flex-col gap-4 pr-12">
+      <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+        <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+        Contacto
+      </p>
+      <h2 id="contacto-modal-title" class="vmv-title-2 text-vmv-foreground">
+        Conversemos tu proyecto
+      </h2>
+      <p class="vmv-body-2 max-w-[46ch] text-vmv-muted-foreground">
+        Cuéntanos un poco sobre lo que tienes en mente. Nos pondremos en contacto contigo por
+        WhatsApp o e-mail para conversar los siguientes pasos.
+      </p>
+    </header>
+
+    <ContactoForm idPrefix="contacto-modal" />
+  </div>
+</dialog>
+
+<script>
+  import { $, $$ } from '@/lib/dom-selector'
+
+  const CLOSE_DURATION = 320
+
+  let cleanupModal: (() => void) | null = null
+
+  const setupContactoModal = () => {
+    cleanupModal?.()
+    cleanupModal = null
+
+    const modal = $<HTMLDialogElement>('[data-contacto-modal]')
+    if (!modal) {
+      return
+    }
+
+    const controller = new AbortController()
+    const { signal } = controller
+
+    let closeTimer: number | undefined
+    let previousBodyPaddingRight = ''
+    let lastFocused: HTMLElement | null = null
+
+    const lockScroll = () => {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+      previousBodyPaddingRight = document.body.style.paddingRight
+      document.body.style.overflow = 'hidden'
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`
+      }
+      window.lenis?.stop()
+    }
+
+    const unlockScroll = () => {
+      document.body.style.overflow = ''
+      document.body.style.paddingRight = previousBodyPaddingRight
+      window.lenis?.start()
+    }
+
+    const openModal = (trigger?: HTMLElement) => {
+      if (modal.open) {
+        return
+      }
+
+      window.clearTimeout(closeTimer)
+      lastFocused = trigger ?? (document.activeElement as HTMLElement | null)
+      modal.classList.remove('is-closing')
+      modal.showModal()
+      lockScroll()
+      requestAnimationFrame(() => {
+        modal.classList.add('is-open')
+      })
+    }
+
+    const closeModal = () => {
+      if (!modal.open) {
+        return
+      }
+
+      modal.classList.remove('is-open')
+      modal.classList.add('is-closing')
+
+      closeTimer = window.setTimeout(() => {
+        modal.classList.remove('is-closing')
+        modal.close()
+        unlockScroll()
+        lastFocused?.focus()
+      }, CLOSE_DURATION)
+    }
+
+    $$<HTMLElement>('[data-contacto-trigger]').forEach((trigger) => {
+      trigger.addEventListener(
+        'click',
+        (event) => {
+          event.preventDefault()
+          openModal(trigger)
+        },
+        { signal },
+      )
+    })
+
+    $$<HTMLElement>('[data-contacto-modal-close]', modal).forEach((button) => {
+      button.addEventListener('click', closeModal, { signal })
+    })
+
+    // Cierre al hacer clic en el backdrop: el propio `dialog` ocupa solo el
+    // área del panel, así que el target es el dialog únicamente fuera de él.
+    modal.addEventListener(
+      'click',
+      (event) => {
+        if (event.target === modal) {
+          closeModal()
+        }
+      },
+      { signal },
+    )
+
+    // `cancel` (Esc) cerraría de golpe; se intercepta para animar la salida.
+    modal.addEventListener(
+      'cancel',
+      (event) => {
+        event.preventDefault()
+        closeModal()
+      },
+      { signal },
+    )
+
+    cleanupModal = () => {
+      window.clearTimeout(closeTimer)
+      controller.abort()
+      if (modal.open) {
+        modal.close()
+        unlockScroll()
+      }
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    cleanupModal?.()
+    cleanupModal = null
+  })
+
+  document.addEventListener('astro:page-load', setupContactoModal)
+  setupContactoModal()
+</script>
+
+<style>
+  .contacto-modal::backdrop {
+    opacity: 0;
+    transition: opacity 0.32s ease;
+  }
+
+  .contacto-modal.is-open::backdrop {
+    opacity: 1;
+  }
+
+  .contacto-modal-panel {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.32s ease,
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .contacto-modal.is-open .contacto-modal-panel {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contacto-modal::backdrop,
+    .contacto-modal-panel {
+      transition: none;
+    }
+  }
+</style>
