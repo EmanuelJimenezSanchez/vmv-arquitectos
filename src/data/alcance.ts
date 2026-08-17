@@ -28,19 +28,71 @@ export const mapColors = {
 // El id debe coincidir con properties.id de alcance-estados.json.
 export const estados: Estado[] = [
   {
+    id: 'baja-california',
+    name: 'Baja California',
+  },
+  {
+    id: 'chihuahua',
+    name: 'Chihuahua',
+  },
+  {
     id: 'ciudad-de-mexico',
     name: 'Ciudad de México',
+  },
+  {
+    id: 'coahuila',
+    name: 'Coahuila',
+  },
+  {
+    id: 'estado-de-mexico',
+    name: 'Estado de México',
+  },
+  {
+    id: 'guanajuato',
+    name: 'Guanajuato',
+  },
+  {
+    id: 'hidalgo',
+    name: 'Hidalgo',
   },
   {
     id: 'jalisco',
     name: 'Jalisco',
   },
   {
+    id: 'michoacan',
+    name: 'Michoacán',
+  },
+  {
+    id: 'morelos',
+    name: 'Morelos',
+  },
+  {
     id: 'nuevo-leon',
     name: 'Nuevo León',
   },
   {
+    id: 'oaxaca',
+    name: 'Oaxaca',
+  },
+  {
+    id: 'puebla',
+    name: 'Puebla',
+  },
+  {
+    id: 'queretaro',
+    name: 'Querétaro',
+  },
+  {
     id: 'quintana-roo',
     name: 'Quintana Roo',
+  },
+  {
+    id: 'san-luis-potosi',
+    name: 'San Luis Potosí',
+  },
+  {
+    id: 'tamaulipas',
+    name: 'Tamaulipas',
   },
 ]

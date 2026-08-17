@@ -43,18 +43,20 @@ import { estados } from '@/data/alcance'
         </p>
       </header>
 
-      <ul class="flex flex-col items-start gap-1 lg:items-end">
+      <ul
+        class="grid grid-cols-2 gap-x-[clamp(1rem,2vw,2rem)] gap-y-1 justify-items-start lg:justify-items-end"
+      >
         {
           estados.map((estado) => (
             <li>
               <button
                 type="button"
-                class="group/item vmv-title-2 flex cursor-pointer items-center gap-3 text-vmv-muted-foreground/60 transition-colors duration-500 ease-vmv focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-vmv-ring data-[active=true]:text-vmv-foreground lg:flex-row-reverse"
+                class="group/item vmv-title-3 flex cursor-pointer items-center gap-2 text-vmv-muted-foreground/60 transition-colors duration-500 ease-vmv focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-vmv-ring data-[active=true]:text-vmv-foreground lg:flex-row-reverse"
                 data-alcance-item
                 data-id={estado.id}
               >
                 <span
-                  class="h-px w-0 bg-vmv-foreground/45 transition-[width] duration-500 ease-vmv group-data-[active=true]/item:w-9"
+                  class="h-px w-0 bg-vmv-foreground/45 transition-[width] duration-500 ease-vmv group-data-[active=true]/item:w-6"
                   aria-hidden="true"
                 />
                 {estado.name}
