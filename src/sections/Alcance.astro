@@ -92,12 +92,21 @@ import { ubicaciones } from '@/data/alcance'
   import { mapFit, mapStyles, ubicaciones } from '@/data/alcance'
 
   let cleanupAlcance: (() => void) | null = null
+  let activeSection: HTMLElement | null = null
 
   const setupAlcance = () => {
+    const section = $<HTMLElement>('[data-alcance]')
+
+    // MapLibre mueve los marcadores dentro del contenedor y map.remove() los borra:
+    // reinicializar la misma sección dejaría el mapa sin puntos ni encuadre.
+    if (section && section === activeSection) {
+      return
+    }
+
     cleanupAlcance?.()
     cleanupAlcance = null
+    activeSection = section
 
-    const section = $<HTMLElement>('[data-alcance]')
     if (!section) {
       return
     }
@@ -135,6 +144,16 @@ import { ubicaciones } from '@/data/alcance'
     const getTheme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
     let currentTheme = getTheme()
 
+    // Las capas symbol son todas las etiquetas del estilo base (países, estados, ciudades,
+    // calles): se descartan al cargar el estilo para que solo se lean nuestras ubicaciones.
+    const applyStyle = (instance: MapLibreMap, theme: 'light' | 'dark') =>
+      instance.setStyle(mapStyles[theme], {
+        transformStyle: (_previous, next) => ({
+          ...next,
+          layers: next.layers.filter((layer) => layer.type !== 'symbol'),
+        }),
+      })
+
     const initMap = () => {
       if (map) {
         return
@@ -151,11 +170,12 @@ import { ubicaciones } from '@/data/alcance'
 
       const instance = new maplibregl.Map({
         container: mapContainer,
-        style: mapStyles[currentTheme],
         interactive: false,
         attributionControl: { compact: true },
       })
       map = instance
+
+      applyStyle(instance, currentTheme)
 
       // El encuadre se deriva de las coordenadas: agregar una ubicación lo reajusta.
       const bounds = new maplibregl.LngLatBounds()
@@ -189,7 +209,9 @@ import { ubicaciones } from '@/data/alcance'
         return
       }
       currentTheme = nextTheme
-      map?.setStyle(mapStyles[nextTheme])
+      if (map) {
+        applyStyle(map, nextTheme)
+      }
     })
     themeObserver.observe(document.documentElement, { attributeFilter: ['data-theme'] })
 
@@ -205,6 +227,7 @@ import { ubicaciones } from '@/data/alcance'
   document.addEventListener('astro:before-swap', () => {
     cleanupAlcance?.()
     cleanupAlcance = null
+    activeSection = null
   })
 
   document.addEventListener('astro:page-load', setupAlcance)

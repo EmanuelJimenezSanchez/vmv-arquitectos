@@ -14,6 +14,7 @@ export const mapFit = {
   maxZoom: 4.8,
 }
 
+
 export const ubicaciones: Ubicacion[] = [
   {
     id: 'ciudad-de-mexico',
