@@ -1,5 +1,5 @@
 ---
-import { ubicaciones } from '@/data/alcance'
+import { estados } from '@/data/alcance'
 ---
 
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -38,26 +38,26 @@ import { ubicaciones } from '@/data/alcance'
         </p>
         <h2 id="alcance-title" class="vmv-title-1 text-vmv-foreground">Alcance</h2>
         <p class="vmv-body-2 max-w-[42ch] text-vmv-muted-foreground">
-          Ejecutamos obra y supervisión en toda la República. Pasa el cursor sobre una ciudad para
-          ubicarla en el mapa.
+          Ejecutamos obra y supervisión en toda la República. Pasa el cursor sobre un estado para
+          ubicarlo en el mapa.
         </p>
       </header>
 
       <ul class="flex flex-col items-start gap-1 lg:items-end">
         {
-          ubicaciones.map((ubicacion) => (
+          estados.map((estado) => (
             <li>
               <button
                 type="button"
                 class="group/item vmv-title-2 flex cursor-pointer items-center gap-3 text-vmv-muted-foreground/60 transition-colors duration-500 ease-vmv focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-vmv-ring data-[active=true]:text-vmv-foreground lg:flex-row-reverse"
                 data-alcance-item
-                data-id={ubicacion.id}
+                data-id={estado.id}
               >
                 <span
                   class="h-px w-0 bg-vmv-foreground/45 transition-[width] duration-500 ease-vmv group-data-[active=true]/item:w-9"
                   aria-hidden="true"
                 />
-                {ubicacion.name}
+                {estado.name}
               </button>
             </li>
           ))
@@ -65,40 +65,39 @@ import { ubicaciones } from '@/data/alcance'
       </ul>
     </div>
   </div>
-
-  <div class="hidden">
-    {
-      ubicaciones.map((ubicacion) => (
-        <div
-          class="group/marker relative flex h-3 w-3 items-center justify-center"
-          data-alcance-marker
-          data-id={ubicacion.id}
-          aria-hidden="true"
-        >
-          <span class="absolute h-9 w-9 scale-50 rounded-full border border-vmv-foreground/0 bg-vmv-foreground/0 transition-[transform,border-color,background-color] duration-500 ease-vmv group-data-[active=true]/marker:scale-100 group-data-[active=true]/marker:border-vmv-foreground/30 group-data-[active=true]/marker:bg-vmv-foreground/8" />
-          <span class="relative h-2 w-2 rounded-full bg-vmv-foreground/45 transition-[background-color,transform] duration-500 ease-vmv group-data-[active=true]/marker:scale-140 group-data-[active=true]/marker:bg-vmv-foreground" />
-          <span class="vmv-caption-1 pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 rounded-xs border border-vmv-border bg-vmv-popover px-2 py-1 whitespace-nowrap text-vmv-popover-foreground opacity-0 transition-[opacity,transform] duration-500 ease-vmv group-data-[active=true]/marker:translate-y-0 group-data-[active=true]/marker:opacity-100">
-            {ubicacion.name}
-          </span>
-        </div>
-      ))
-    }
-  </div>
 </section>
 
 <script>
-  import type { Map as MapLibreMap } from 'maplibre-gl'
+  import type { LngLatBounds, Map as MapLibreMap } from 'maplibre-gl'
   import { $, $$ } from '@/lib/dom-selector'
-  import { mapFit, mapStyles, ubicaciones } from '@/data/alcance'
+  import { mapColors, mapFit, mapStyles } from '@/data/alcance'
+  import estadosGeoJson from '@/data/alcance-estados.json'
+
+  const SOURCE_ID = 'alcance-estados'
+  const FILL_LAYER = 'alcance-estados-fill'
+  const LINE_LAYER = 'alcance-estados-line'
 
   let cleanupAlcance: (() => void) | null = null
   let activeSection: HTMLElement | null = null
 
+  // Polygon y MultiPolygon anidan las posiciones a distinta profundidad.
+  const extendBounds = (bounds: LngLatBounds, coordinates: unknown): void => {
+    if (!Array.isArray(coordinates)) {
+      return
+    }
+
+    if (typeof coordinates[0] === 'number') {
+      bounds.extend(coordinates as [number, number])
+      return
+    }
+
+    coordinates.forEach((child) => extendBounds(bounds, child))
+  }
+
   const setupAlcance = () => {
     const section = $<HTMLElement>('[data-alcance]')
 
-    // MapLibre mueve los marcadores dentro del contenedor y map.remove() los borra:
-    // reinicializar la misma sección dejaría el mapa sin puntos ni encuadre.
+    // Reinicializar la misma sección tiraría el mapa ya montado sin ganar nada.
     if (section && section === activeSection) {
       return
     }
@@ -112,7 +111,6 @@ import { ubicaciones } from '@/data/alcance'
     }
 
     const mapContainer = $<HTMLElement>('[data-alcance-map]', section)
-    const markers = $$<HTMLElement>('[data-alcance-marker]', section)
 
     if (!mapContainer) {
       return
@@ -121,13 +119,38 @@ import { ubicaciones } from '@/data/alcance'
     const controller = new AbortController()
     const { signal } = controller
 
-    // El id enlaza cada texto de la lista con su punto en el mapa.
-    const targets = [...$$<HTMLElement>('[data-alcance-item]', section), ...markers]
+    let map: MapLibreMap | null = null
+    let activeId: string | null = null
+
+    const getTheme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
+    let currentTheme = getTheme()
+
+    // El id enlaza cada texto de la lista con el polígono de su estado en el GeoJSON.
+    const whenActive = <T,>(active: T, idle: T): T =>
+      ['case', ['==', ['get', 'id'], activeId ?? ''], active, idle] as unknown as T
+
+    const paintEstados = () => {
+      if (!map?.getLayer(FILL_LAYER)) {
+        return
+      }
+
+      const { fill, active } = mapColors[currentTheme]
+
+      map.setPaintProperty(FILL_LAYER, 'fill-color', whenActive(active, fill))
+      map.setPaintProperty(FILL_LAYER, 'fill-opacity', whenActive(0.3, 0.08))
+      map.setPaintProperty(LINE_LAYER, 'line-color', whenActive(active, fill))
+      map.setPaintProperty(LINE_LAYER, 'line-opacity', whenActive(0.85, 0.3))
+      map.setPaintProperty(LINE_LAYER, 'line-width', whenActive(1.4, 0.8))
+    }
+
+    const targets = $$<HTMLElement>('[data-alcance-item]', section)
 
     const setActive = (id: string | null) => {
+      activeId = id
       targets.forEach((element) => {
         element.dataset.active = String(element.dataset.id === id)
       })
+      paintEstados()
     }
 
     targets.forEach((element) => {
@@ -139,20 +162,44 @@ import { ubicaciones } from '@/data/alcance'
       element.addEventListener('click', () => setActive(id), { signal })
     })
 
-    let map: MapLibreMap | null = null
-
-    const getTheme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
-    let currentTheme = getTheme()
-
     // Las capas symbol son todas las etiquetas del estilo base (países, estados, ciudades,
-    // calles): se descartan al cargar el estilo para que solo se lean nuestras ubicaciones.
-    const applyStyle = (instance: MapLibreMap, theme: 'light' | 'dark') =>
+    // calles): se descartan al cargar el estilo para que solo se lean nuestros estados.
+    // transformStyle también reinyecta el GeoJSON, que setStyle borraría al cambiar de tema.
+    const applyStyle = (instance: MapLibreMap, theme: 'light' | 'dark') => {
+      const { fill, active } = mapColors[theme]
+
       instance.setStyle(mapStyles[theme], {
         transformStyle: (_previous, next) => ({
           ...next,
-          layers: next.layers.filter((layer) => layer.type !== 'symbol'),
+          sources: {
+            ...next.sources,
+            [SOURCE_ID]: { type: 'geojson', data: estadosGeoJson as never },
+          },
+          layers: [
+            ...next.layers.filter((layer) => layer.type !== 'symbol'),
+            {
+              id: FILL_LAYER,
+              type: 'fill',
+              source: SOURCE_ID,
+              paint: {
+                'fill-color': whenActive(active, fill),
+                'fill-opacity': whenActive(0.3, 0.08),
+              },
+            },
+            {
+              id: LINE_LAYER,
+              type: 'line',
+              source: SOURCE_ID,
+              paint: {
+                'line-color': whenActive(active, fill),
+                'line-opacity': whenActive(0.85, 0.3),
+                'line-width': whenActive(1.4, 0.8),
+              },
+            },
+          ],
         }),
       })
+    }
 
     const initMap = () => {
       if (map) {
@@ -177,18 +224,16 @@ import { ubicaciones } from '@/data/alcance'
 
       applyStyle(instance, currentTheme)
 
-      // El encuadre se deriva de las coordenadas: agregar una ubicación lo reajusta.
+      // El encuadre se deriva de los polígonos: agregar un estado lo reajusta.
       const bounds = new maplibregl.LngLatBounds()
-      markers.forEach((element, index) => {
-        const { coordinates } = ubicaciones[index]
-        bounds.extend(coordinates)
-        new maplibregl.Marker({ element }).setLngLat(coordinates).addTo(instance)
-      })
+      estadosGeoJson.features.forEach((feature) =>
+        extendBounds(bounds, feature.geometry.coordinates),
+      )
 
-      const fitToUbicaciones = () => instance.fitBounds(bounds, { ...mapFit, duration: 0 })
+      const fitToEstados = () => instance.fitBounds(bounds, { ...mapFit, duration: 0 })
 
-      fitToUbicaciones()
-      window.addEventListener('resize', fitToUbicaciones, { signal })
+      fitToEstados()
+      window.addEventListener('resize', fitToEstados, { signal })
     }
 
     const visibilityObserver = new IntersectionObserver(
@@ -235,8 +280,9 @@ import { ubicaciones } from '@/data/alcance'
 </script>
 
 <style>
+  /* Sin saturate: desaturaría también el estado resaltado, que va en color de marca. */
   [data-alcance-map] :global(.maplibregl-canvas) {
-    filter: saturate(0.12) contrast(1.02);
+    filter: contrast(1.02);
   }
 
   [data-alcance-map] :global(.maplibregl-ctrl-attrib) {

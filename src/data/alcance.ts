@@ -1,7 +1,6 @@
-export interface Ubicacion {
+export interface Estado {
   id: string
   name: string
-  coordinates: [number, number]
 }
 
 export const mapStyles = {
@@ -14,31 +13,34 @@ export const mapFit = {
   maxZoom: 4.8,
 }
 
+// El mapa se dibuja en WebGL: los tokens CSS no aplican, por eso se replican aquí.
+export const mapColors = {
+  light: {
+    fill: '#1d1b18',
+    active: '#8a745b',
+  },
+  dark: {
+    fill: '#e9dfd2',
+    active: '#7f6d5d',
+  },
+} as const
 
-export const ubicaciones: Ubicacion[] = [
+// El id debe coincidir con properties.id de alcance-estados.json.
+export const estados: Estado[] = [
   {
     id: 'ciudad-de-mexico',
     name: 'Ciudad de México',
-    coordinates: [-99.1332, 19.4326],
   },
   {
-    id: 'puerto-vallarta',
-    name: 'Puerto Vallarta',
-    coordinates: [-105.2426, 20.6171],
+    id: 'jalisco',
+    name: 'Jalisco',
   },
   {
-    id: 'guadalajara',
-    name: 'Guadalajara',
-    coordinates: [-103.3496, 20.6597],
+    id: 'nuevo-leon',
+    name: 'Nuevo León',
   },
   {
-    id: 'monterrey',
-    name: 'Monterrey',
-    coordinates: [-100.3161, 25.6866],
-  },
-  {
-    id: 'riviera-maya',
-    name: 'Riviera Maya',
-    coordinates: [-87.0739, 20.6296],
+    id: 'quintana-roo',
+    name: 'Quintana Roo',
   },
 ]
