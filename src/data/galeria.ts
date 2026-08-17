@@ -2,8 +2,13 @@ export interface Galeria {
   id: string
   title: string
   description: string
-  image: string
+  images: {
+    desktop: string
+    mobile: string
+  }
 }
+
+const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/galeria`;
 
 export const galeria: Galeria[] = [
   {
@@ -11,28 +16,40 @@ export const galeria: Galeria[] = [
     title: 'Galeria de Proyectos',
     description:
       'Explora nuestra galeria de proyectos arquitectonicos y descubre la creatividad y el diseno que nos distingue.',
-    image: '/images/galeria/galeria-1.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-1.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-1.webp`,
+    },
   },
   {
     id: 'galeria-02',
     title: 'Innovacion y Sostenibilidad',
     description:
       'Cada proyecto refleja nuestro compromiso con la innovacion y la sostenibilidad, creando espacios que inspiran y perduran.',
-    image: '/images/galeria/galeria-2.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-2.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-2.webp`,
+    },
   },
   {
     id: 'galeria-03',
     title: 'Diseño Interior',
     description:
       'Nuestros diseños interiores combinan funcionalidad y estetica, creando ambientes acogedores y sofisticados.',
-    image: '/images/galeria/galeria-3.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-3.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-3.webp`,
+    },
   },
   {
     id: 'galeria-04',
     title: 'Espacios Comerciales',
     description:
       'Transformamos espacios comerciales en experiencias unicas que atraen y retienen a los clientes.',
-    image: '/images/galeria/galeria-4.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-4.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-4.webp`,
+    },
   },
   // {
   //   id: 'galeria-05',
@@ -49,32 +66,44 @@ export const galeria: Galeria[] = [
   //   image: '/images/galeria/galeria-6.webp',
   // },
   {
-    id: 'galeria-07',
+    id: 'galeria-05',
     title: 'Proyectos Urbanos',
     description:
       'Participamos en el desarrollo de proyectos urbanos que mejoran la calidad de vida y fomentan la comunidad.',
-    image: '/images/galeria/galeria-7.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-5.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-5.webp`,
+    },
   },
   {
-    id: 'galeria-08',
+    id: 'galeria-06',
     title: 'Restauración y Conservación',
     description:
       'Nos especializamos en la restauración y conservación de edificios históricos, preservando su valor cultural.',
-    image: '/images/galeria/galeria-8.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-6.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-6.webp`,
+    },
   },
   {
-    id: 'galeria-09',
+    id: 'galeria-07',
     title: 'Diseño de Interiores Comerciales',
     description:
       'Creamos interiores comerciales que reflejan la identidad de la marca y mejoran la experiencia del cliente.',
-    image: '/images/galeria/galeria-9.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-7.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-7.webp`,
+    },
   },
   {
-    id: 'galeria-10',
+    id: 'galeria-08',
     title: 'Arquitectura Sostenible',
     description:
       'Implementamos principios de arquitectura sostenible en todos nuestros proyectos, promoviendo un futuro más verde.',
-    image: '/images/galeria/galeria-10.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-8.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-8.webp`,
+    },
   },
   // {
   //   id: 'galeria-11',
@@ -84,17 +113,23 @@ export const galeria: Galeria[] = [
   //   image: '/images/galeria/galeria-11.webp',
   // },
   {
-    id: 'galeria-12',
+    id: 'galeria-09',
     title: 'Viviendas Multifamiliares',
     description:
       'Diseñamos viviendas multifamiliares con soluciones eficientes que equilibran privacidad, confort y comunidad.',
-    image: '/images/galeria/galeria-12.webp',
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-9.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-9.webp`,
+    },
   },
   {
-    id: 'galeria-13',
+    id: 'galeria-10',
     title: 'Espacios Corporativos',
     description: 'Creamos espacios corporativos modernos que potencian la productividad, el bienestar y la identidad empresarial.',
-    image: '/images/galeria/galeria-13.webp'
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-10.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-10.webp`,
+    },
   },
   // {
   //   id: 'galeria-14',
@@ -103,16 +138,22 @@ export const galeria: Galeria[] = [
   //   image: '/images/galeria/galeria-14.webp'
   // },
   {
-    id: 'galeria-15',
+    id: 'galeria-11',
     title: 'Hospitalidad y Turismo',
     description: 'Diseñamos espacios de hospitalidad y turismo que ofrecen experiencias memorables con alto valor estético y operativo.',
-    image: '/images/galeria/galeria-15.webp'
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-11.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-11.webp`,
+    },
   },
   {
-    id: 'galeria-16',
+    id: 'galeria-12',
     title: 'Remodelación Integral',
     description: 'Ejecutamos remodelaciones integrales que actualizan espacios existentes con propuestas contemporáneas y eficientes.',
-    image: '/images/galeria/galeria-16.webp'
+    images: {
+      desktop: `${BUCKET_URL}/galeria-desk-12.webp`,
+      mobile: `${BUCKET_URL}/galeria-mobile-12.webp`,
+    },
   },
   // {
   //   id: 'galeria-17',

@@ -66,14 +66,17 @@ const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`;
       <div class="relative h-full w-full">
         {
           galeria.map((item, index) => (
-            <img
-              src={item.image}
-              alt={item.description}
-              class={`absolute inset-0 block h-full w-full object-cover ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
-              data-nosotros="galeria-image"
-              loading="eager"
-              decoding="async"
-            />
+            <picture>
+              <source media="(max-width: 767px)" srcset={item.images.mobile} />
+              <img
+                src={item.images.desktop}
+                alt={item.description}
+                class={`absolute inset-0 block h-full w-full object-cover ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+                data-nosotros="galeria-image"
+                loading="eager"
+                decoding="async"
+              />
+            </picture>
           ))
         }
       </div>
@@ -447,6 +450,12 @@ const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`;
               const image = img as HTMLImageElement
               const decode = () =>
                 image.decode ? image.decode().catch(() => {}) : Promise.resolve()
+              // Sin `src` el navegador no dispara ni `load` ni `error`: la
+              // promesa quedaría pendiente para siempre y, con ella, la intro
+              // sin arrancar y el scroll bloqueado.
+              if (!image.currentSrc && !image.getAttribute('src')) {
+                return Promise.resolve()
+              }
               if (image.complete && image.naturalWidth > 0) {
                 return decode()
               }
