@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro'
-import { getProjectById } from '@/data/projects'
+import Button from '@/components/ui/Button.astro'
+import { getProjectById, projects } from '@/data/projects'
 
 const id = Astro.params.id ?? ''
 const project = getProjectById(id)
@@ -12,68 +13,343 @@ if (!project) {
 const canonical = project
   ? `https://www.vmv-arquitectos.com/projects/${project.id}`
   : 'https://www.vmv-arquitectos.com/projects'
-const title = project ? `${project.title} | Proyecto | VMV Arquitectos` : 'Proyecto no encontrado | VMV Arquitectos'
+const title = project
+  ? `${project.title} | Proyecto | VMV Arquitectos`
+  : 'Proyecto no encontrado | VMV Arquitectos'
+
+const currentIndex = project ? projects.findIndex((item) => item.id === project.id) : -1
+const indexLabel = currentIndex >= 0 ? String(currentIndex + 1).padStart(2, '0') : ''
+const totalLabel = String(projects.length).padStart(2, '0')
+const previousProject = currentIndex > 0 ? projects[currentIndex - 1] : null
+const nextProject =
+  currentIndex >= 0 && currentIndex < projects.length - 1 ? projects[currentIndex + 1] : null
+
+const [leadParagraph, ...restParagraphs] = project?.content ?? []
 ---
 
-<Layout title={title} description={project?.summary ?? 'Proyecto no encontrado.'} canonical={canonical}>
-  {project ? (
-  <section class="mx-auto w-full max-w-5xl px-6 py-24 md:px-10">
-    <a href="/projects" class="vmv-caption-1 inline-flex items-center text-vmv-muted-foreground underline underline-offset-4">
-      Ver todos los proyectos
-    </a>
+<Layout
+  title={title}
+  description={project?.summary ?? 'Proyecto no encontrado.'}
+  canonical={canonical}
+  ogImage={project?.coverImage}
+  ogType="article"
+  robots={project ? undefined : 'noindex, follow'}
+>
+  {
+    project ? (
+      <>
+        {/* ─── HERO ────────────────────────────────────── */}
+        <section
+          class="relative flex h-[92svh] min-h-[32rem] items-end overflow-hidden bg-[#0f0e0c]"
+          aria-labelledby="proyecto-title"
+          data-proyecto-hero
+        >
+          <img
+            src={project.coverImage}
+            alt={`Imagen principal del proyecto ${project.title}`}
+            class="absolute inset-0 h-full w-full scale-105 object-cover"
+            data-proyecto-hero-image
+            loading="eager"
+            decoding="async"
+          />
+          <div
+            class="absolute inset-0 bg-linear-to-b from-[#0f0e0c]/72 via-[#0f0e0c]/20 via-42% to-[#0f0e0c]/92"
+            aria-hidden="true"
+          />
 
-    <header class="mt-8 grid gap-6 md:grid-cols-[1.1fr_1fr] md:items-end">
-      <div>
-        <p class="vmv-overline-1 text-vmv-sand-9">Proyecto</p>
-        <h1 class="vmv-title-1 mt-2 text-vmv-foreground">{project.title}</h1>
-        <p class="vmv-body-1 mt-5 text-vmv-muted-foreground">{project.summary}</p>
-      </div>
+          <div class="relative z-2 w-full px-[clamp(1.25rem,5vw,3rem)] pb-[clamp(2.5rem,6vw,4.5rem)]">
+            <div
+              class="mx-auto flex w-full max-w-[1200px] flex-col gap-5"
+              data-proyecto-hero-copy
+            >
+              <p class="vmv-overline-1 flex items-center gap-3 text-white/70">
+                <span class="h-px w-9 bg-white/45" aria-hidden="true" />
+                Proyecto {indexLabel} / {totalLabel}
+              </p>
 
-      <dl class="vmv-body-3 grid grid-cols-2 gap-4 rounded-2xl border border-vmv-border bg-vmv-muted p-5">
-        <div>
-          <dt class="text-vmv-muted-foreground">Ubicacion</dt>
-          <dd class="mt-1 font-medium text-vmv-foreground">{project.location}</dd>
+              <h1
+                id="proyecto-title"
+                class="vmv-display-1 max-w-[16ch] text-balance text-white"
+              >
+                {project.title}
+              </h1>
+
+              <p class="vmv-subtitle-1 max-w-[52ch] text-balance text-white/78">
+                {project.summary}
+              </p>
+
+              <dl class="mt-2 flex flex-wrap items-center gap-x-[clamp(1.5rem,4vw,3.5rem)] gap-y-3 border-t border-white/20 pt-5">
+                <div class="flex flex-col gap-1">
+                  <dt class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">
+                    Ubicación
+                  </dt>
+                  <dd class="vmv-title-3 text-white">{project.location}</dd>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <dt class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">Año</dt>
+                  <dd class="vmv-title-3 text-white tabular-nums">{project.year}</dd>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <dt class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">
+                    Alcance
+                  </dt>
+                  <dd class="vmv-title-3 text-white">{project.services.length} servicios</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── CONTENIDO ───────────────────────────────── */}
+        <section class="relative bg-vmv-background py-[clamp(3.5rem,8vw,7rem)]" data-proyecto>
+          <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
+            <nav aria-label="Migas de pan" class="mb-[clamp(2rem,4vw,3rem)]">
+              <a
+                href="/projects"
+                class="group vmv-caption-1 inline-flex items-center gap-3 tracking-[0.22em] text-vmv-muted-foreground uppercase transition-colors duration-500 ease-vmv hover:text-vmv-foreground"
+              >
+                <span
+                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-vmv-border transition-[transform,border-color] duration-500 ease-vmv group-hover:-translate-x-1 group-hover:border-vmv-foreground"
+                  aria-hidden="true"
+                >
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M13 8H3M7 3.5L2.5 8 7 12.5"
+                      stroke="currentColor"
+                      stroke-width="1.3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                Todos los proyectos
+              </a>
+            </nav>
+
+            <div class="grid gap-[clamp(2.5rem,5vw,4.5rem)] lg:grid-cols-[minmax(0,1fr)_clamp(16rem,24vw,20rem)]">
+              <div class="flex flex-col gap-[clamp(1.5rem,3vw,2.25rem)]" data-proyecto-body>
+                <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+                  <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
+                  El proyecto
+                </p>
+
+                {leadParagraph && (
+                  <p class="vmv-subtitle-1 max-w-[54ch] text-balance text-vmv-foreground">
+                    {leadParagraph}
+                  </p>
+                )}
+
+                {restParagraphs.map((paragraph) => (
+                  <p class="vmv-body-1 max-w-[62ch] text-vmv-muted-foreground">{paragraph}</p>
+                ))}
+              </div>
+
+              <aside class="lg:sticky lg:top-[clamp(6rem,12vw,9rem)] lg:self-start" data-proyecto-aside>
+                <div class="flex flex-col gap-6 border-t border-vmv-border pt-6">
+                  <h2 class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
+                    Ficha técnica
+                  </h2>
+
+                  <dl class="flex flex-col">
+                    <div class="flex items-baseline justify-between gap-4 border-b border-vmv-border py-3">
+                      <dt class="vmv-caption-1 tracking-[0.16em] text-vmv-muted-foreground uppercase">
+                        Ubicación
+                      </dt>
+                      <dd class="vmv-body-3 text-right text-vmv-foreground">{project.location}</dd>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-4 border-b border-vmv-border py-3">
+                      <dt class="vmv-caption-1 tracking-[0.16em] text-vmv-muted-foreground uppercase">
+                        Año
+                      </dt>
+                      <dd class="vmv-body-3 text-right text-vmv-foreground tabular-nums">
+                        {project.year}
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <div class="flex flex-col gap-3">
+                    <h3 class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
+                      Servicios
+                    </h3>
+                    <ul class="flex flex-col">
+                      {project.services.map((service) => (
+                        <li class="vmv-body-3 flex items-center gap-3 border-b border-vmv-border py-3 text-vmv-foreground">
+                          <span class="h-px w-5 shrink-0 bg-vmv-sand-9/60" aria-hidden="true" />
+                          {service}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <Button
+                    href="/#contacto"
+                    variant="outline"
+                    size="xl"
+                    class="w-full"
+                    data-contacto-trigger
+                  >
+                    Quiero algo así
+                  </Button>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── NAVEGACIÓN ENTRE PROYECTOS ──────────────── */}
+        {(previousProject || nextProject) && (
+          <nav
+            class="relative bg-vmv-background pb-[clamp(3.5rem,8vw,6rem)]"
+            aria-label="Navegación entre proyectos"
+          >
+            <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
+              <div class="grid border-t border-vmv-border md:grid-cols-2">
+                {previousProject ? (
+                  <a
+                    href={`/projects/${previousProject.id}`}
+                    class="group flex flex-col gap-2 border-b border-vmv-border py-[clamp(1.75rem,3.5vw,2.5rem)] md:border-b-0 md:border-r md:pr-[clamp(1.5rem,3vw,2.5rem)]"
+                  >
+                    <span class="vmv-caption-1 flex items-center gap-3 tracking-[0.22em] text-vmv-muted-foreground uppercase">
+                      <span
+                        class="h-px w-6 bg-vmv-sand-9/60 transition-[width] duration-700 ease-vmv group-hover:w-10"
+                        aria-hidden="true"
+                      />
+                      Anterior
+                    </span>
+                    <span class="vmv-title-2 text-vmv-foreground transition-transform duration-700 ease-vmv group-hover:-translate-x-1">
+                      {previousProject.title}
+                    </span>
+                  </a>
+                ) : (
+                  <span class="hidden md:block" />
+                )}
+
+                {nextProject && (
+                  <a
+                    href={`/projects/${nextProject.id}`}
+                    class="group flex flex-col items-start gap-2 border-b border-vmv-border py-[clamp(1.75rem,3.5vw,2.5rem)] md:items-end md:border-b-0 md:pl-[clamp(1.5rem,3vw,2.5rem)] md:text-right"
+                  >
+                    <span class="vmv-caption-1 flex items-center gap-3 tracking-[0.22em] text-vmv-muted-foreground uppercase md:flex-row-reverse">
+                      <span
+                        class="h-px w-6 bg-vmv-sand-9/60 transition-[width] duration-700 ease-vmv group-hover:w-10"
+                        aria-hidden="true"
+                      />
+                      Siguiente
+                    </span>
+                    <span class="vmv-title-2 text-vmv-foreground transition-transform duration-700 ease-vmv group-hover:translate-x-1">
+                      {nextProject.title}
+                    </span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </nav>
+        )}
+
+        {/* ─── CTA ─────────────────────────────────────── */}
+        <section class="relative bg-[#0f0e0c] py-[clamp(3.5rem,8vw,6.5rem)]">
+          <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-center">
+            <p class="vmv-overline-1 flex items-center gap-3 text-white/60">
+              <span class="h-px w-9 bg-white/40" aria-hidden="true" />
+              Hablemos
+              <span class="h-px w-9 bg-white/40" aria-hidden="true" />
+            </p>
+            <h2 class="vmv-title-1 max-w-[20ch] text-balance text-white">
+              Tu proyecto puede ser el siguiente
+            </h2>
+            <p class="vmv-body-2 max-w-[46ch] text-white/72">
+              Del concepto a la obra terminada, cuidamos el diseño, los tiempos y cada acabado.
+            </p>
+            <Button href="/#contacto" variant="white" size="xl" class="mt-2" data-contacto-trigger>
+              Cuéntanos tu idea
+            </Button>
+          </div>
+        </section>
+      </>
+    ) : (
+      <section class="relative flex min-h-[80svh] items-center justify-center bg-[#0f0e0c] py-[clamp(4rem,10vw,8rem)]">
+        <div class="mx-auto flex w-full max-w-[46rem] flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-center">
+          <div class="h-11 w-px bg-white/50" aria-hidden="true" />
+          <p class="vmv-overline-1 text-white/60">Error 404</p>
+          <h1 class="vmv-title-1 max-w-[18ch] text-balance text-white">Proyecto no encontrado</h1>
+          <p class="vmv-body-2 max-w-[46ch] text-white/72">
+            El identificador solicitado no existe o aún no está publicado.
+          </p>
+          <Button href="/projects" variant="white" size="xl" class="mt-2">
+            Ver todos los proyectos
+          </Button>
         </div>
-        <div>
-          <dt class="text-vmv-muted-foreground">Ano</dt>
-          <dd class="mt-1 font-medium text-vmv-foreground">{project.year}</dd>
-        </div>
-      </dl>
-    </header>
-
-    <img
-      src={project.coverImage}
-      alt={`Imagen principal del proyecto ${project.title}`}
-      class="mt-10 h-[320px] w-full rounded-3xl object-cover md:h-[460px]"
-      loading="eager"
-      decoding="async"
-    />
-
-    <section class="mt-10 grid gap-10 md:grid-cols-[1fr_260px]">
-      <div class="vmv-body-1 space-y-5 text-vmv-foreground">
-        {project.content.map((paragraph) => (
-          <p>{paragraph}</p>
-        ))}
-      </div>
-
-      <aside class="rounded-2xl border border-vmv-border p-5">
-        <h2 class="vmv-caption-1 text-vmv-muted-foreground">Servicios</h2>
-        <ul class="vmv-body-3 mt-4 space-y-2 text-vmv-muted-foreground">
-          {project.services.map((service) => (
-            <li>{service}</li>
-          ))}
-        </ul>
-      </aside>
-    </section>
-  </section>
-  ) : (
-  <section class="mx-auto w-full max-w-3xl px-6 py-24 text-center md:px-10">
-    <p class="vmv-overline-1 text-vmv-sand-9">404</p>
-    <h1 class="vmv-title-1 mt-3 text-vmv-foreground">Proyecto no encontrado</h1>
-    <p class="vmv-body-1 mt-4 text-vmv-muted-foreground">El identificador solicitado no existe o aun no esta publicado.</p>
-    <a href="/projects" class="vmv-caption-1 mt-8 inline-flex text-vmv-foreground underline underline-offset-4">
-      Ir al listado de proyectos
-    </a>
-  </section>
-  )}
+      </section>
+    )
+  }
 </Layout>
+
+<script>
+  import gsap from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { $, $$ } from '@/lib/dom-selector'
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let cleanupProyecto: (() => void) | null = null
+
+  const setupProyecto = () => {
+    cleanupProyecto?.()
+    cleanupProyecto = null
+
+    const hero = $<HTMLElement>('[data-proyecto-hero]')
+    const section = $<HTMLElement>('[data-proyecto]')
+    if (!hero || !section) {
+      return
+    }
+
+    const mm = gsap.matchMedia()
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const heroImage = $<HTMLImageElement>('[data-proyecto-hero-image]', hero)
+      const heroCopy = $<HTMLElement>('[data-proyecto-hero-copy]', hero)
+      const body = $<HTMLElement>('[data-proyecto-body]', section)
+      const aside = $<HTMLElement>('[data-proyecto-aside]', section)
+
+      if (heroCopy) {
+        gsap.from(heroCopy.children, {
+          autoAlpha: 0,
+          y: 34,
+          duration: 1,
+          ease: 'power3.out',
+          stagger: 0.09,
+        })
+      }
+
+      if (heroImage) {
+        gsap.to(heroImage, {
+          yPercent: 12,
+          ease: 'none',
+          scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+        })
+      }
+
+      const revealed = [body, aside].filter(Boolean) as HTMLElement[]
+      revealed.forEach((element, index) => {
+        gsap.from(element, {
+          autoAlpha: 0,
+          y: 40,
+          duration: 0.9,
+          delay: index * 0.08,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: element, start: 'top 85%' },
+        })
+      })
+    })
+
+    cleanupProyecto = () => mm.revert()
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    cleanupProyecto?.()
+    cleanupProyecto = null
+  })
+
+  document.addEventListener('astro:page-load', setupProyecto)
+  setupProyecto()
+</script>
