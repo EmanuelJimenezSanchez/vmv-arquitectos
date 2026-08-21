@@ -1,0 +1,25 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import GaleriaManager from '@/components/dashboard/GaleriaManager.tsx'
+import type { GaleriaRecord } from '@/components/dashboard/GaleriaManager.tsx'
+
+const { supabase } = Astro.locals
+
+const { data, error } = await supabase.from('galeria').select('*').order('orden', {
+  ascending: true,
+})
+
+const entradas = (data ?? []) as GaleriaRecord[]
+---
+
+<DashboardLayout title="Galería">
+  {
+    error ? (
+      <p class="vmv-body-3 border border-red-500/40 bg-red-500/10 px-4 py-3 text-red-500">
+        No se pudo cargar la galería: {error.message}
+      </p>
+    ) : (
+      <GaleriaManager client:load initial={entradas} />
+    )
+  }
+</DashboardLayout>
