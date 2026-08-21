@@ -1,8 +1,9 @@
 ---
 import ServiciosGaleriaModal from '@/components/ServiciosGaleriaModal.astro'
 import Button from '@/components/ui/Button.astro'
-import { servicios } from '@/data/servicios'
+import { getServicios } from '@/lib/content'
 
+const servicios = await getServicios()
 const totalLabel = String(servicios.length).padStart(2, '0')
 ---
 
@@ -193,7 +194,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
     </footer>
   </div>
 
-  <ServiciosGaleriaModal />
+  <ServiciosGaleriaModal servicios={servicios} />
 </section>
 
 <script>
