@@ -1,8 +1,10 @@
 ---
-import { galeria } from '@/data/galeria'
+import { getGaleria } from '@/lib/content'
 import Button from '@/components/ui/Button.astro'
 
 const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`;
+
+const galeria = await getGaleria()
 ---
 
 <section id="nosotros" class="relative">
