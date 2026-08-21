@@ -1,0 +1,85 @@
+---
+import '@/styles/global.css'
+
+interface Props {
+  title: string
+  /** El login se renderiza sin navegación ni datos de sesión. */
+  bare?: boolean
+}
+
+const { title, bare = false } = Astro.props
+const { user } = Astro.locals
+
+const nav = [
+  { href: '/dashboard', label: 'Resumen' },
+  { href: '/dashboard/servicios', label: 'Servicios' },
+  { href: '/dashboard/galeria', label: 'Galería' },
+]
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/dashboard'
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} — Panel VMV</title>
+  </head>
+  <body class="min-h-dvh bg-vmv-background text-vmv-foreground">
+    {
+      bare ? (
+        <main class="flex min-h-dvh items-center justify-center px-4">
+          <slot />
+        </main>
+      ) : (
+        <div class="mx-auto flex min-h-dvh w-full max-w-[84rem] flex-col">
+          <header class="flex flex-wrap items-center justify-between gap-4 border-b border-vmv-border px-[clamp(1rem,4vw,2.5rem)] py-5">
+            <div class="flex items-center gap-6">
+              <a href="/dashboard" class="vmv-overline-1 text-vmv-sand-9">
+                VMV — Panel
+              </a>
+              <nav class="flex items-center gap-1" aria-label="Secciones del panel">
+                {nav.map((item) => (
+                  <a
+                    href={item.href}
+                    aria-current={currentPath === item.href ? 'page' : undefined}
+                    class="vmv-body-3 rounded-sm px-3 py-1.5 text-vmv-muted-foreground transition-colors duration-200 hover:bg-vmv-muted hover:text-vmv-foreground aria-[current=page]:bg-vmv-muted aria-[current=page]:text-vmv-foreground"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+            <div class="flex items-center gap-4">
+              <a
+                href="/"
+                target="_blank"
+                rel="noreferrer"
+                class="vmv-caption-1 text-vmv-muted-foreground underline-offset-4 hover:underline"
+              >
+                Ver sitio
+              </a>
+              <span class="vmv-caption-1 text-vmv-muted-foreground">{user?.email}</span>
+              <form method="POST" action="/dashboard/logout">
+                <button
+                  type="submit"
+                  class="vmv-caption-1 cursor-pointer rounded-sm border border-vmv-border px-3 py-1.5 transition-colors duration-200 hover:bg-vmv-muted"
+                >
+                  Salir
+                </button>
+              </form>
+            </div>
+          </header>
+
+          <main class="flex-1 px-[clamp(1rem,4vw,2.5rem)] py-[clamp(1.5rem,4vw,3rem)]">
+            <slot />
+          </main>
+        </div>
+      )
+    }
+  </body>
+</html>
