@@ -1,6 +1,8 @@
 ---
-import { galeria } from '@/data/galeria'
+import { getGaleria } from '@/lib/content'
 import Button from '@/components/ui/Button.astro'
+
+const galeria = await getGaleria()
 ---
 
 <section id="galeria" class="galeria-scroll" data-galeria aria-label="Galeria visual de proyectos">
@@ -10,7 +12,7 @@ import Button from '@/components/ui/Button.astro'
         {
           galeria.map((item, index) => (
             <img
-              src={item.image}
+              src={item.images.desktop}
               alt={item.description}
               class={`galeria-image ${index === 0 ? 'is-active' : ''}`}
               data-galeria-image
