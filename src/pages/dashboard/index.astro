@@ -1,0 +1,61 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+
+const { supabase, user } = Astro.locals
+
+const [servicios, fotos, galeria] = await Promise.all([
+  supabase.from('servicios').select('id', { count: 'exact', head: true }),
+  supabase.from('servicio_fotos').select('id', { count: 'exact', head: true }),
+  supabase.from('galeria').select('id', { count: 'exact', head: true }),
+])
+
+const tarjetas = [
+  {
+    href: '/dashboard/servicios',
+    label: 'Servicios',
+    total: servicios.count ?? 0,
+    detalle: `${fotos.count ?? 0} fotos en sus galerías`,
+  },
+  {
+    href: '/dashboard/galeria',
+    label: 'Galería',
+    total: galeria.count ?? 0,
+    detalle: 'Entradas de la galería del sitio',
+  },
+]
+---
+
+<DashboardLayout title="Resumen">
+  <div class="flex flex-col gap-8">
+    <header>
+      <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+        <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+        Panel de contenido
+      </p>
+      <h1 class="vmv-title-2 mt-3">Hola, {user?.email?.split('@')[0]}</h1>
+      <p class="vmv-body-3 mt-2 max-w-[56ch] text-vmv-muted-foreground">
+        Desde aquí administras el contenido que ve el público. Los cambios se reflejan en el sitio
+        en menos de un minuto, sin necesidad de volver a publicar.
+      </p>
+    </header>
+
+    <ul class="grid gap-4 sm:grid-cols-2">
+      {
+        tarjetas.map((tarjeta) => (
+          <li>
+            <a
+              href={tarjeta.href}
+              class="flex h-full flex-col gap-2 border border-vmv-border p-6 transition-colors duration-200 hover:bg-vmv-muted"
+            >
+              <span class="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
+                {tarjeta.label}
+              </span>
+              <span class="vmv-title-2 tabular-nums">{tarjeta.total}</span>
+              <span class="vmv-body-3 text-vmv-muted-foreground">{tarjeta.detalle}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</DashboardLayout>
