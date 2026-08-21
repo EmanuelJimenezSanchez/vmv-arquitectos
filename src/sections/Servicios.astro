@@ -1,4 +1,5 @@
 ---
+import ServiciosGaleriaModal from '@/components/ServiciosGaleriaModal.astro'
 import Button from '@/components/ui/Button.astro'
 import { servicios } from '@/data/servicios'
 
@@ -62,6 +63,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
             <article
               class="group relative w-[min(82vw,21rem)] shrink-0 snap-start hover:cursor-pointer min-[900px]:motion-safe:w-auto sm:w-[clamp(18rem,46vw,22rem)]"
               data-servicios-card
+              data-servicio-id={servicio.id}
             >
               <figure class="relative aspect-[3.6/5.3] w-full overflow-hidden rounded-sm min-[900px]:motion-safe:h-[clamp(18rem,52dvh,29rem)] min-[900px]:motion-safe:w-auto">
                 <div class="absolute inset-0 transition-transform duration-900 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05] group-data-[active=true]:scale-[1.05]">
@@ -103,6 +105,13 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                     </p> */}
                   </div>
                 </figcaption>
+                <button
+                  type="button"
+                  class="absolute inset-0 z-2 cursor-pointer rounded-sm focus-visible:ring-2 focus-visible:ring-vmv-sand-1 focus-visible:outline-none"
+                  data-servicios-galeria-trigger
+                >
+                  <span class="sr-only">Ver galería de {servicio.title}</span>
+                </button>
               </figure>
               {/* <div class="mt-4 h-px w-full bg-vmv-border">
                 <div
@@ -183,6 +192,8 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       </div> -->
     </footer>
   </div>
+
+  <ServiciosGaleriaModal />
 </section>
 
 <script>
@@ -234,6 +245,23 @@ const totalLabel = String(servicios.length).padStart(2, '0')
           if (!isActive) {
             card.dataset.active = 'true'
           }
+        },
+        { signal: tapController.signal },
+      )
+
+      // El clic abre la galería del servicio; el modal vive fuera del
+      // escenario fijado y escucha este evento.
+      const trigger = $<HTMLButtonElement>('[data-servicios-galeria-trigger]', card)
+      trigger?.addEventListener(
+        'click',
+        () => {
+          const id = card.dataset.servicioId
+          if (!id) {
+            return
+          }
+          document.dispatchEvent(
+            new CustomEvent('servicios:open-galeria', { detail: { id, trigger } }),
+          )
         },
         { signal: tapController.signal },
       )
