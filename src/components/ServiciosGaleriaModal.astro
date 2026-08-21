@@ -1,5 +1,12 @@
 ---
-import { servicios } from '@/data/servicios'
+import { getServicios, type Servicio } from '@/lib/content'
+
+interface Props {
+  /** La sección ya cargó los servicios; se pasan para no consultar dos veces. */
+  servicios?: Servicio[]
+}
+
+const { servicios = await getServicios() } = Astro.props
 
 const galerias = servicios.map((servicio) => ({
   id: servicio.id,
