@@ -71,7 +71,6 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
 
   const { upload, uploading, uploadError, clearUploadError } = useUpload()
 
-  const editing = draft !== null
   const slugTaken = useMemo(
     () => servicios.some((s) => s.slug === draft?.slug && s.id !== draft?.id),
     [servicios, draft],
@@ -85,6 +84,23 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
   }
 
   const patch = (values: Partial<Draft>) => setDraft((current) => ({ ...current!, ...values }))
+
+  // El formulario ocupa su propia vista, así que al abrirlo o cerrarlo se
+  // vuelve al inicio y se limpian los avisos de la vista anterior.
+  const openDraft = (next: Draft) => {
+    setError(null)
+    setNotice(null)
+    clearUploadError()
+    setDraft(next)
+    window.scrollTo({ top: 0 })
+  }
+
+  const closeDraft = () => {
+    setError(null)
+    clearUploadError()
+    setDraft(null)
+    window.scrollTo({ top: 0 })
+  }
 
   const handleSave = async () => {
     if (!draft) return
@@ -114,6 +130,7 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
     await refresh()
     setDraft(null)
     setNotice('Servicio guardado. Los cambios se ven en el sitio en menos de un minuto.')
+    window.scrollTo({ top: 0 })
   }
 
   const handleDelete = async (servicio: ServicioRecord) => {
@@ -177,28 +194,33 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
     patch({ gallery })
   }
 
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="vmv-title-3">Servicios</h1>
-          <p className="vmv-body-3 text-vmv-muted-foreground">
-            Arrastra las tarjetas para cambiar el orden en que aparecen en el sitio.
-          </p>
-        </div>
-        <Button variant="solid" onClick={() => setDraft(emptyDraft())} disabled={editing}>
-          Nuevo servicio
-        </Button>
-      </div>
-
+  const banners = (
+    <>
       {error && <Banner tone="error">{error}</Banner>}
       {uploadError && <Banner tone="error">{uploadError}</Banner>}
       {notice && !error && <Banner tone="ok">{notice}</Banner>}
+    </>
+  )
 
-      {editing && (
+  if (draft) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="vmv-title-3">{draft.id ? 'Editar servicio' : 'Nuevo servicio'}</h1>
+            <p className="vmv-body-3 text-vmv-muted-foreground">
+              {draft.id ? draft.slug : 'Completa los datos y guarda para publicarlo.'}
+            </p>
+          </div>
+          <Button onClick={closeDraft} disabled={saving}>
+            ← Volver a servicios
+          </Button>
+        </div>
+
+        {banners}
+
         <section className="flex flex-col gap-5 border border-vmv-border p-[clamp(1rem,3vw,1.75rem)]">
-          <header className="flex items-center justify-between gap-4">
-            <h2 className="vmv-title-3">{draft.id ? 'Editar servicio' : 'Nuevo servicio'}</h2>
+          <header className="flex items-center justify-end gap-4">
             <label className="vmv-body-3 flex items-center gap-2 text-vmv-muted-foreground">
               <input
                 type="checkbox"
@@ -379,13 +401,7 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
             >
               {saving ? 'Guardando…' : 'Guardar'}
             </Button>
-            <Button
-              onClick={() => {
-                setDraft(null)
-                clearUploadError()
-              }}
-              disabled={saving}
-            >
+            <Button onClick={closeDraft} disabled={saving}>
               Cancelar
             </Button>
             {uploading && (
@@ -393,13 +409,31 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
             )}
           </footer>
         </section>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="vmv-title-3">Servicios</h1>
+          <p className="vmv-body-3 text-vmv-muted-foreground">
+            Arrastra las tarjetas para cambiar el orden en que aparecen en el sitio.
+          </p>
+        </div>
+        <Button variant="solid" onClick={() => openDraft(emptyDraft())}>
+          Nuevo servicio
+        </Button>
+      </div>
+
+      {banners}
 
       <ul className="flex flex-col gap-3">
         {servicios.map((servicio, index) => (
           <li
             key={servicio.id}
-            draggable={!editing}
+            draggable
             onDragStart={() => {
               dragIndex.current = index
             }}
@@ -433,10 +467,8 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Button onClick={() => setDraft(toDraft(servicio))} disabled={editing}>
-                Editar
-              </Button>
-              <Button variant="danger" onClick={() => handleDelete(servicio)} disabled={editing}>
+              <Button onClick={() => openDraft(toDraft(servicio))}>Editar</Button>
+              <Button variant="danger" onClick={() => handleDelete(servicio)}>
                 Eliminar
               </Button>
             </div>
