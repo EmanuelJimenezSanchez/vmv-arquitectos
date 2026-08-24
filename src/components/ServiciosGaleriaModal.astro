@@ -195,7 +195,27 @@ const galerias = servicios.map((servicio) => ({
       window.lenis?.start()
     }
 
-    const showFoto = (nextIndex: number) => {
+    const prefersReducedMotion = () =>
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    // La tira de miniaturas se desborda cuando hay muchas fotos; se centra la
+    // activa para que las siguientes vayan apareciendo al navegar.
+    const scrollThumbIntoView = (thumb: HTMLElement, instant = false) => {
+      const maxScroll = thumbsEl.scrollWidth - thumbsEl.clientWidth
+      if (maxScroll <= 0) {
+        return
+      }
+      const target = Math.min(
+        Math.max(thumb.offsetLeft - (thumbsEl.clientWidth - thumb.offsetWidth) / 2, 0),
+        maxScroll,
+      )
+      thumbsEl.scrollTo({
+        left: target,
+        behavior: instant || prefersReducedMotion() ? 'auto' : 'smooth',
+      })
+    }
+
+    const showFoto = (nextIndex: number, instantThumbScroll = false) => {
       if (fotos.length === 0) {
         return
       }
@@ -209,8 +229,12 @@ const galerias = servicios.map((servicio) => ({
         ).padStart(2, '0')}`
       }
       $$<HTMLButtonElement>('[data-servicios-galeria-thumb]', thumbsEl).forEach((thumb, i) => {
-        thumb.setAttribute('aria-selected', String(i === index))
-        thumb.dataset.active = i === index ? 'true' : 'false'
+        const isActive = i === index
+        thumb.setAttribute('aria-selected', String(isActive))
+        thumb.dataset.active = isActive ? 'true' : 'false'
+        if (isActive) {
+          scrollThumbIntoView(thumb, instantThumbScroll)
+        }
       })
       const hasMultiple = fotos.length > 1
       if (prevButton) {
@@ -267,7 +291,8 @@ const galerias = servicios.map((servicio) => ({
         descriptionEl.textContent = servicio.description
       }
       renderThumbs()
-      showFoto(0)
+      thumbsEl.scrollLeft = 0
+      showFoto(0, true)
 
       window.clearTimeout(closeTimer)
       lastFocused = trigger ?? (document.activeElement as HTMLElement | null)
