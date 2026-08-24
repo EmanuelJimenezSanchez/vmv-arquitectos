@@ -1,0 +1,27 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import ServiciosManager from '@/components/dashboard/ServiciosManager.tsx'
+import type { ServicioRecord } from '@/components/dashboard/ServiciosManager.tsx'
+
+const { supabase } = Astro.locals
+
+const { data, error } = await supabase
+  .from('servicios')
+  .select('*, servicio_fotos(id, src, alt, orden)')
+  .order('orden', { ascending: true })
+  .order('orden', { ascending: true, referencedTable: 'servicio_fotos' })
+
+const servicios = (data ?? []) as ServicioRecord[]
+---
+
+<DashboardLayout title="Servicios">
+  {
+    error ? (
+      <p class="vmv-body-3 border border-red-500/40 bg-red-500/10 px-4 py-3 text-red-500">
+        No se pudieron cargar los servicios: {error.message}
+      </p>
+    ) : (
+      <ServiciosManager client:load initial={servicios} />
+    )
+  }
+</DashboardLayout>

@@ -1,0 +1,37 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import LoginForm from '@/components/dashboard/LoginForm.tsx'
+
+const redirectTo = Astro.url.searchParams.get('redirectTo') ?? '/dashboard'
+
+// Ya autenticado y en la allowlist: no tiene sentido mostrar el login.
+if (Astro.locals.isAdmin) {
+  return Astro.redirect(redirectTo.startsWith('/') ? redirectTo : '/dashboard', 302)
+}
+
+const sinAcceso = Boolean(Astro.locals.user && !Astro.locals.isAdmin)
+---
+
+<DashboardLayout title="Entrar" bare>
+  <div class="w-full max-w-[26rem]">
+    <p class="vmv-overline-1 mb-3 flex items-center gap-3 text-vmv-sand-9">
+      <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+      VMV Arquitectos
+    </p>
+    <h1 class="vmv-title-2 mb-2">Panel de contenido</h1>
+    <p class="vmv-body-3 mb-8 text-vmv-muted-foreground">
+      Entra con la cuenta que se te asignó para editar los servicios y la galería del sitio.
+    </p>
+
+    {
+      sinAcceso && (
+        <p class="vmv-body-3 mb-6 border border-vmv-border bg-vmv-muted px-4 py-3 text-vmv-foreground">
+          Tu sesión es válida, pero esta cuenta no tiene permisos sobre el panel. Pide que te
+          agreguen a la lista de administradores.
+        </p>
+      )
+    }
+
+    <LoginForm client:load redirectTo={redirectTo} />
+  </div>
+</DashboardLayout>

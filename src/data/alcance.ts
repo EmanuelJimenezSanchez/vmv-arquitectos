@@ -32,6 +32,10 @@ export const estados: Estado[] = [
     name: 'Baja California',
   },
   {
+    id: 'baja-california-sur',
+    name: 'Baja California Sur',
+  },
+  {
     id: 'chihuahua',
     name: 'Chihuahua',
   },
@@ -50,6 +54,10 @@ export const estados: Estado[] = [
   {
     id: 'guanajuato',
     name: 'Guanajuato',
+  },
+  {
+    id: 'guerrero',
+    name: 'Guerrero',
   },
   {
     id: 'hidalgo',
