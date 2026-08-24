@@ -53,7 +53,6 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
 
   const { upload, uploading, uploadError, clearUploadError } = useUpload()
 
-  const editing = draft !== null
   const slugTaken = useMemo(
     () => entradas.some((e) => e.slug === draft?.slug && e.id !== draft?.id),
     [entradas, draft],
@@ -67,6 +66,23 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
   }
 
   const patch = (values: Partial<Draft>) => setDraft((current) => ({ ...current!, ...values }))
+
+  // El formulario ocupa su propia vista, así que al abrirlo o cerrarlo se
+  // vuelve al inicio y se limpian los avisos de la vista anterior.
+  const openDraft = (next: Draft) => {
+    setError(null)
+    setNotice(null)
+    clearUploadError()
+    setDraft(next)
+    window.scrollTo({ top: 0 })
+  }
+
+  const closeDraft = () => {
+    setError(null)
+    clearUploadError()
+    setDraft(null)
+    window.scrollTo({ top: 0 })
+  }
 
   const handleSave = async () => {
     if (!draft) return
@@ -93,6 +109,7 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
     await refresh()
     setDraft(null)
     setNotice('Entrada guardada. Los cambios se ven en el sitio en menos de un minuto.')
+    window.scrollTo({ top: 0 })
   }
 
   const handleDelete = async (entrada: GaleriaRecord) => {
@@ -171,28 +188,33 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
     </div>
   )
 
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="vmv-title-3">Galería</h1>
-          <p className="vmv-body-3 text-vmv-muted-foreground">
-            Cada entrada necesita una imagen para escritorio y otra para móvil.
-          </p>
-        </div>
-        <Button variant="solid" onClick={() => setDraft(emptyDraft())} disabled={editing}>
-          Nueva entrada
-        </Button>
-      </div>
-
+  const banners = (
+    <>
       {error && <Banner tone="error">{error}</Banner>}
       {uploadError && <Banner tone="error">{uploadError}</Banner>}
       {notice && !error && <Banner tone="ok">{notice}</Banner>}
+    </>
+  )
 
-      {editing && (
+  if (draft) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="vmv-title-3">{draft.id ? 'Editar entrada' : 'Nueva entrada'}</h1>
+            <p className="vmv-body-3 text-vmv-muted-foreground">
+              {draft.id ? draft.slug : 'Completa los datos y guarda para publicarla.'}
+            </p>
+          </div>
+          <Button onClick={closeDraft} disabled={saving}>
+            ← Volver a la galería
+          </Button>
+        </div>
+
+        {banners}
+
         <section className="flex flex-col gap-5 border border-vmv-border p-[clamp(1rem,3vw,1.75rem)]">
-          <header className="flex items-center justify-between gap-4">
-            <h2 className="vmv-title-3">{draft.id ? 'Editar entrada' : 'Nueva entrada'}</h2>
+          <header className="flex items-center justify-end gap-4">
             <label className="vmv-body-3 flex items-center gap-2 text-vmv-muted-foreground">
               <input
                 type="checkbox"
@@ -248,13 +270,7 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
             >
               {saving ? 'Guardando…' : 'Guardar'}
             </Button>
-            <Button
-              onClick={() => {
-                setDraft(null)
-                clearUploadError()
-              }}
-              disabled={saving}
-            >
+            <Button onClick={closeDraft} disabled={saving}>
               Cancelar
             </Button>
             {uploading && (
@@ -262,13 +278,31 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
             )}
           </footer>
         </section>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="vmv-title-3">Galería</h1>
+          <p className="vmv-body-3 text-vmv-muted-foreground">
+            Cada entrada necesita una imagen para escritorio y otra para móvil.
+          </p>
+        </div>
+        <Button variant="solid" onClick={() => openDraft(emptyDraft())}>
+          Nueva entrada
+        </Button>
+      </div>
+
+      {banners}
 
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {entradas.map((entrada, index) => (
           <li
             key={entrada.id}
-            draggable={!editing}
+            draggable
             onDragStart={() => {
               dragIndex.current = index
             }}
@@ -300,10 +334,8 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
               </p>
             </div>
             <div className="mt-auto flex items-center gap-2">
-              <Button onClick={() => setDraft(toDraft(entrada))} disabled={editing}>
-                Editar
-              </Button>
-              <Button variant="danger" onClick={() => handleDelete(entrada)} disabled={editing}>
+              <Button onClick={() => openDraft(toDraft(entrada))}>Editar</Button>
+              <Button variant="danger" onClick={() => handleDelete(entrada)}>
                 Eliminar
               </Button>
             </div>
