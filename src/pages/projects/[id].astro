@@ -1,14 +1,20 @@
 ---
 import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
-import { getProjectById, projects } from '@/data/projects'
+import { getProyectos } from '@/lib/content'
 
 const id = Astro.params.id ?? ''
-const project = getProjectById(id)
+const projects = await getProyectos()
+const project = projects.find((item) => item.id === id)
 
 if (!project) {
   Astro.response.status = 404
 }
+
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
+)
 
 const canonical = project
   ? `https://www.vmv-arquitectos.com/projects/${project.id}`
@@ -20,18 +26,42 @@ const title = project
 const currentIndex = project ? projects.findIndex((item) => item.id === project.id) : -1
 const indexLabel = currentIndex >= 0 ? String(currentIndex + 1).padStart(2, '0') : ''
 const totalLabel = String(projects.length).padStart(2, '0')
-const previousProject = currentIndex > 0 ? projects[currentIndex - 1] : null
-const nextProject =
-  currentIndex >= 0 && currentIndex < projects.length - 1 ? projects[currentIndex + 1] : null
 
-const [leadParagraph, ...restParagraphs] = project?.content ?? []
+// El portafolio se recorre en bucle: desde el último se vuelve al primero, de
+// modo que el bloque de «siguiente proyecto» nunca queda vacío.
+const nextProject =
+  currentIndex >= 0 && projects.length > 1
+    ? projects[(currentIndex + 1) % projects.length]
+    : null
+
+const [leadParagraph, ...restParagraphs] = project?.parrafos ?? []
+
+/** Filas de la ficha técnica; se omiten las que el panel dejó vacías. */
+const fichaTecnica = project
+  ? [
+      { label: 'Firma', value: project.firma },
+      { label: 'Tipología', value: project.tipologia },
+      { label: 'Año de construcción', value: project.anio ? String(project.anio) : '' },
+      { label: 'Área útil', value: project.area },
+      { label: 'Localización', value: project.ubicacion },
+      { label: 'Niveles', value: project.niveles },
+    ].filter((fila) => Boolean(fila.value))
+  : []
+
+const heroDatos = project
+  ? [
+      { label: 'Ubicación', value: project.ubicacion },
+      { label: 'Año', value: project.anio ? String(project.anio) : '' },
+      { label: 'Área', value: project.area },
+    ].filter((dato) => Boolean(dato.value))
+  : []
 ---
 
 <Layout
   title={title}
-  description={project?.summary ?? 'Proyecto no encontrado.'}
+  description={project?.resumen || project?.tagline || 'Proyecto no encontrado.'}
   canonical={canonical}
-  ogImage={project?.coverImage}
+  ogImage={project?.cover}
   ogType="article"
   robots={project ? undefined : 'noindex, follow'}
 >
@@ -44,63 +74,55 @@ const [leadParagraph, ...restParagraphs] = project?.content ?? []
           aria-labelledby="proyecto-title"
           data-proyecto-hero
         >
-          <img
-            src={project.coverImage}
-            alt={`Imagen principal del proyecto ${project.title}`}
-            class="absolute inset-0 h-full w-full scale-105 object-cover"
-            data-proyecto-hero-image
-            loading="eager"
-            decoding="async"
-          />
+          {project.cover && (
+            <img
+              src={project.cover}
+              alt={project.coverAlt}
+              class="absolute inset-0 h-full w-full scale-105 object-cover"
+              data-proyecto-hero-image
+              loading="eager"
+              decoding="async"
+            />
+          )}
           <div
             class="absolute inset-0 bg-linear-to-b from-[#0f0e0c]/72 via-[#0f0e0c]/20 via-42% to-[#0f0e0c]/92"
             aria-hidden="true"
           />
 
           <div class="relative z-2 w-full px-[clamp(1.25rem,5vw,3rem)] pb-[clamp(2.5rem,6vw,4.5rem)]">
-            <div
-              class="mx-auto flex w-full max-w-[1200px] flex-col gap-5"
-              data-proyecto-hero-copy
-            >
+            <div class="mx-auto flex w-full max-w-[1200px] flex-col gap-5" data-proyecto-hero-copy>
               <p class="vmv-overline-1 flex items-center gap-3 text-white/70">
                 <span class="h-px w-9 bg-white/45" aria-hidden="true" />
                 Proyecto {indexLabel} / {totalLabel}
               </p>
 
-              <h1
-                id="proyecto-title"
-                class="vmv-display-1 max-w-[16ch] text-balance text-white"
-              >
+              <h1 id="proyecto-title" class="vmv-display-1 max-w-[16ch] text-balance text-white">
                 {project.title}
               </h1>
 
-              <p class="vmv-subtitle-1 max-w-[52ch] text-balance text-white/78">
-                {project.summary}
-              </p>
+              {project.tagline && (
+                <p class="vmv-subtitle-1 max-w-[52ch] text-balance text-white/78">
+                  {project.tagline}
+                </p>
+              )}
 
-              <dl class="mt-2 flex flex-wrap items-center gap-x-[clamp(1.5rem,4vw,3.5rem)] gap-y-3 border-t border-white/20 pt-5">
-                <div class="flex flex-col gap-1">
-                  <dt class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">
-                    Ubicación
-                  </dt>
-                  <dd class="vmv-title-3 text-white">{project.location}</dd>
-                </div>
-                <div class="flex flex-col gap-1">
-                  <dt class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">Año</dt>
-                  <dd class="vmv-title-3 text-white tabular-nums">{project.year}</dd>
-                </div>
-                <div class="flex flex-col gap-1">
-                  <dt class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">
-                    Alcance
-                  </dt>
-                  <dd class="vmv-title-3 text-white">{project.services.length} servicios</dd>
-                </div>
-              </dl>
+              {heroDatos.length > 0 && (
+                <dl class="mt-2 flex flex-wrap items-center gap-x-[clamp(1.5rem,4vw,3.5rem)] gap-y-3 border-t border-white/20 pt-5">
+                  {heroDatos.map((dato) => (
+                    <div class="flex flex-col gap-1">
+                      <dt class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">
+                        {dato.label}
+                      </dt>
+                      <dd class="vmv-title-3 text-white">{dato.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
             </div>
           </div>
         </section>
 
-        {/* ─── CONTENIDO ───────────────────────────────── */}
+        {/* ─── DESCRIPCIÓN + FICHA TÉCNICA ─────────────── */}
         <section class="relative bg-vmv-background py-[clamp(3.5rem,8vw,7rem)]" data-proyecto>
           <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
             <nav aria-label="Migas de pan" class="mb-[clamp(2rem,4vw,3rem)]">
@@ -133,53 +155,68 @@ const [leadParagraph, ...restParagraphs] = project?.content ?? []
                   El proyecto
                 </p>
 
-                {leadParagraph && (
+                {project.resumen && (
+                  <p class="vmv-subtitle-1 max-w-[54ch] text-balance text-vmv-foreground">
+                    {project.resumen}
+                  </p>
+                )}
+
+                {!project.resumen && leadParagraph && (
                   <p class="vmv-subtitle-1 max-w-[54ch] text-balance text-vmv-foreground">
                     {leadParagraph}
                   </p>
                 )}
 
-                {restParagraphs.map((paragraph) => (
+                {(project.resumen ? project.parrafos : restParagraphs).map((paragraph) => (
                   <p class="vmv-body-1 max-w-[62ch] text-vmv-muted-foreground">{paragraph}</p>
                 ))}
               </div>
 
-              <aside class="lg:sticky lg:top-[clamp(6rem,12vw,9rem)] lg:self-start" data-proyecto-aside>
+              <aside
+                class="lg:sticky lg:top-[clamp(6rem,12vw,9rem)] lg:self-start"
+                data-proyecto-aside
+              >
                 <div class="flex flex-col gap-6 border-t border-vmv-border pt-6">
                   <h2 class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
                     Ficha técnica
                   </h2>
 
                   <dl class="flex flex-col">
-                    <div class="flex items-baseline justify-between gap-4 border-b border-vmv-border py-3">
-                      <dt class="vmv-caption-1 tracking-[0.16em] text-vmv-muted-foreground uppercase">
-                        Ubicación
-                      </dt>
-                      <dd class="vmv-body-3 text-right text-vmv-foreground">{project.location}</dd>
-                    </div>
-                    <div class="flex items-baseline justify-between gap-4 border-b border-vmv-border py-3">
-                      <dt class="vmv-caption-1 tracking-[0.16em] text-vmv-muted-foreground uppercase">
-                        Año
-                      </dt>
-                      <dd class="vmv-body-3 text-right text-vmv-foreground tabular-nums">
-                        {project.year}
-                      </dd>
-                    </div>
+                    {fichaTecnica.map((fila) => (
+                      <div class="flex items-baseline justify-between gap-4 border-b border-vmv-border py-3">
+                        <dt class="vmv-caption-1 tracking-[0.16em] text-vmv-muted-foreground uppercase">
+                          {fila.label}
+                        </dt>
+                        <dd class="vmv-body-3 text-right text-vmv-foreground">{fila.value}</dd>
+                      </div>
+                    ))}
                   </dl>
 
-                  <div class="flex flex-col gap-3">
-                    <h3 class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
-                      Servicios
-                    </h3>
-                    <ul class="flex flex-col">
-                      {project.services.map((service) => (
-                        <li class="vmv-body-3 flex items-center gap-3 border-b border-vmv-border py-3 text-vmv-foreground">
-                          <span class="h-px w-5 shrink-0 bg-vmv-sand-9/60" aria-hidden="true" />
-                          {service}
-                        </li>
+                  {project.creditos.length > 0 && (
+                    <div class="flex flex-col gap-5">
+                      <h3 class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
+                        Colaboradores
+                      </h3>
+                      {project.creditos.map((grupo) => (
+                        <div class="flex flex-col gap-2">
+                          <p class="vmv-caption-1 tracking-[0.16em] text-vmv-sand-9 uppercase">
+                            {grupo.rol}
+                          </p>
+                          <ul class="flex flex-col">
+                            {grupo.nombres.map((nombre) => (
+                              <li class="vmv-body-3 flex items-center gap-3 border-b border-vmv-border py-3 text-vmv-foreground">
+                                <span
+                                  class="h-px w-5 shrink-0 bg-vmv-sand-9/60"
+                                  aria-hidden="true"
+                                />
+                                {nombre}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       ))}
-                    </ul>
-                  </div>
+                    </div>
+                  )}
 
                   <Button
                     href="/#contacto"
@@ -196,71 +233,191 @@ const [leadParagraph, ...restParagraphs] = project?.content ?? []
           </div>
         </section>
 
-        {/* ─── NAVEGACIÓN ENTRE PROYECTOS ──────────────── */}
-        {(previousProject || nextProject) && (
-          <nav
-            class="relative bg-vmv-background pb-[clamp(3.5rem,8vw,6rem)]"
-            aria-label="Navegación entre proyectos"
+        {/* ─── GALERÍA ─────────────────────────────────── */}
+        {project.fotos.length > 0 && (
+          <section
+            class="relative bg-vmv-muted py-[clamp(3.5rem,8vw,7rem)]"
+            aria-labelledby="proyecto-galeria-title"
+            data-proyecto-galeria
           >
             <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
-              <div class="grid border-t border-vmv-border md:grid-cols-2">
-                {previousProject ? (
-                  <a
-                    href={`/projects/${previousProject.id}`}
-                    class="group flex flex-col gap-2 border-b border-vmv-border py-[clamp(1.75rem,3.5vw,2.5rem)] md:border-b-0 md:border-r md:pr-[clamp(1.5rem,3vw,2.5rem)]"
-                  >
-                    <span class="vmv-caption-1 flex items-center gap-3 tracking-[0.22em] text-vmv-muted-foreground uppercase">
-                      <span
-                        class="h-px w-6 bg-vmv-sand-9/60 transition-[width] duration-700 ease-vmv group-hover:w-10"
-                        aria-hidden="true"
-                      />
-                      Anterior
-                    </span>
-                    <span class="vmv-title-2 text-vmv-foreground transition-transform duration-700 ease-vmv group-hover:-translate-x-1">
-                      {previousProject.title}
-                    </span>
-                  </a>
-                ) : (
-                  <span class="hidden md:block" />
-                )}
+              <header class="flex flex-col gap-4" data-proyecto-reveal>
+                <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+                  <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
+                  Galería
+                </p>
+                <h2
+                  id="proyecto-galeria-title"
+                  class="vmv-title-2 max-w-[20ch] text-vmv-foreground"
+                >
+                  El proyecto por dentro
+                </h2>
+              </header>
 
-                {nextProject && (
-                  <a
-                    href={`/projects/${nextProject.id}`}
-                    class="group flex flex-col items-start gap-2 border-b border-vmv-border py-[clamp(1.75rem,3.5vw,2.5rem)] md:items-end md:border-b-0 md:pl-[clamp(1.5rem,3vw,2.5rem)] md:text-right"
+              <ul class="mt-[clamp(2rem,5vw,3.5rem)] grid gap-[clamp(0.75rem,2vw,1.5rem)] sm:grid-cols-2">
+                {project.fotos.map((foto) => (
+                  <li
+                    class:list={[
+                      'group relative overflow-hidden rounded-sm',
+                      foto.ancha ? 'sm:col-span-2 aspect-[16/9]' : 'aspect-[4/3]',
+                    ]}
+                    data-proyecto-reveal
                   >
-                    <span class="vmv-caption-1 flex items-center gap-3 tracking-[0.22em] text-vmv-muted-foreground uppercase md:flex-row-reverse">
-                      <span
-                        class="h-px w-6 bg-vmv-sand-9/60 transition-[width] duration-700 ease-vmv group-hover:w-10"
-                        aria-hidden="true"
-                      />
-                      Siguiente
-                    </span>
-                    <span class="vmv-title-2 text-vmv-foreground transition-transform duration-700 ease-vmv group-hover:translate-x-1">
-                      {nextProject.title}
-                    </span>
-                  </a>
-                )}
-              </div>
+                    <img
+                      src={foto.src}
+                      alt={foto.alt}
+                      class="h-full w-full object-cover transition-transform duration-900 ease-vmv group-hover:scale-[1.04]"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                ))}
+              </ul>
             </div>
-          </nav>
+          </section>
+        )}
+
+        {/* ─── DOCUMENTOS TÉCNICOS ─────────────────────── */}
+        {project.documentos.length > 0 && (
+          <section
+            class="relative bg-vmv-background py-[clamp(3.5rem,8vw,7rem)]"
+            aria-labelledby="proyecto-planos-title"
+            data-proyecto-planos
+          >
+            <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
+              <header class="flex flex-col gap-4" data-proyecto-reveal>
+                <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+                  <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
+                  Documentos técnicos
+                </p>
+                <h2 id="proyecto-planos-title" class="vmv-title-2 max-w-[22ch] text-vmv-foreground">
+                  Planos del proyecto
+                </h2>
+              </header>
+
+              <ul class="mt-[clamp(2rem,5vw,3.5rem)] flex flex-col gap-[clamp(1.5rem,3vw,2.5rem)]">
+                {project.documentos.map((documento) => (
+                  <li
+                    class="grid gap-[clamp(1.25rem,3vw,2.5rem)] border-t border-vmv-border pt-[clamp(1.25rem,3vw,2rem)] md:grid-cols-[minmax(0,1fr)_clamp(14rem,22vw,18rem)]"
+                    data-proyecto-reveal
+                  >
+                    <figure class="relative overflow-hidden rounded-sm border border-vmv-border bg-vmv-muted">
+                      <img
+                        src={documento.preview}
+                        alt={`Plano ${documento.titulo} del proyecto ${project.title}`}
+                        class="h-full max-h-[36rem] w-full object-contain"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </figure>
+
+                    <div class="flex flex-col gap-3 md:pt-2">
+                      <h3 class="vmv-title-3 text-vmv-foreground">{documento.titulo}</h3>
+                      {documento.descripcion && (
+                        <p class="vmv-body-3 max-w-[42ch] text-vmv-muted-foreground">
+                          {documento.descripcion}
+                        </p>
+                      )}
+                      {documento.archivo && (
+                        <a
+                          href={documento.archivo}
+                          target="_blank"
+                          rel="noreferrer"
+                          class="group vmv-button-1 mt-1 inline-flex items-center gap-3 text-vmv-foreground"
+                        >
+                          Descargar PDF
+                          <span
+                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-vmv-border transition-[transform,border-color,background-color,color] duration-500 ease-vmv group-hover:translate-y-0.5 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-hover:text-vmv-background"
+                            aria-hidden="true"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                              <path
+                                d="M8 2.5v9M4 8l4 4 4-4M2.5 13.5h11"
+                                stroke="currentColor"
+                                stroke-width="1.3"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+
+        {/* ─── SIGUIENTE PROYECTO ──────────────────────── */}
+        {nextProject && (
+          <section
+            class="relative overflow-hidden bg-[#0f0e0c]"
+            aria-labelledby="proyecto-siguiente-title"
+          >
+            <a
+              href={`/projects/${nextProject.id}`}
+              class="group relative flex min-h-[clamp(22rem,52svh,34rem)] flex-col items-center justify-center gap-4 px-[clamp(1.25rem,5vw,3rem)] py-[clamp(3.5rem,8vw,6rem)] text-center focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-vmv-ring"
+              aria-label={`Ver el siguiente proyecto: ${nextProject.title}`}
+            >
+              {nextProject.cover && (
+                <img
+                  src={nextProject.cover}
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 h-full w-full scale-105 object-cover opacity-40 grayscale transition-[opacity,filter,transform] duration-900 ease-vmv group-hover:scale-100 group-hover:opacity-55 group-hover:grayscale-0"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <div class="absolute inset-0 bg-[#0f0e0c]/45" aria-hidden="true" />
+
+              <p class="relative z-2 vmv-overline-1 text-white/65">Explora el siguiente proyecto</p>
+              <h2
+                id="proyecto-siguiente-title"
+                class="relative z-2 vmv-display-1 max-w-[16ch] text-balance text-white transition-transform duration-700 ease-vmv group-hover:-translate-y-1"
+              >
+                {nextProject.title}
+              </h2>
+              {nextProject.ubicacion && (
+                <p class="relative z-2 vmv-caption-1 tracking-[0.22em] text-white/60 uppercase">
+                  {nextProject.ubicacion}
+                </p>
+              )}
+              <span
+                class="relative z-2 mt-3 flex h-12 w-12 items-center justify-center rounded-full border border-white/40 text-white transition-[transform,background-color,color,border-color] duration-500 ease-vmv group-hover:translate-x-1 group-hover:border-white group-hover:bg-white group-hover:text-[#0f0e0c]"
+                aria-hidden="true"
+              >
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                  <path
+                    d="M3 8h10M9 3.5L13.5 8 9 12.5"
+                    stroke="currentColor"
+                    stroke-width="1.3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+            </a>
+          </section>
         )}
 
         {/* ─── CTA ─────────────────────────────────────── */}
-        <section class="relative bg-[#0f0e0c] py-[clamp(3.5rem,8vw,6.5rem)]">
+        <section class="relative bg-vmv-background py-[clamp(3.5rem,8vw,6.5rem)]">
           <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-center">
-            <p class="vmv-overline-1 flex items-center gap-3 text-white/60">
-              <span class="h-px w-9 bg-white/40" aria-hidden="true" />
+            <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+              <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
               Hablemos
-              <span class="h-px w-9 bg-white/40" aria-hidden="true" />
+              <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
             </p>
-            <h2 class="vmv-title-1 max-w-[20ch] text-balance text-white">
+            <h2 class="vmv-title-1 max-w-[20ch] text-balance text-vmv-foreground">
               Tu proyecto puede ser el siguiente
             </h2>
-            <p class="vmv-body-2 max-w-[46ch] text-white/72">
+            <p class="vmv-body-2 max-w-[46ch] text-vmv-muted-foreground">
               Del concepto a la obra terminada, cuidamos el diseño, los tiempos y cada acabado.
             </p>
-            <Button href="/#contacto" variant="white" size="xl" class="mt-2" data-contacto-trigger>
+            <Button href="/#contacto" variant="outline" size="xl" class="mt-2" data-contacto-trigger>
               Cuéntanos tu idea
             </Button>
           </div>
@@ -329,13 +486,19 @@ const [leadParagraph, ...restParagraphs] = project?.content ?? []
         })
       }
 
-      const revealed = [body, aside].filter(Boolean) as HTMLElement[]
+      // Las secciones nuevas (galería y planos) marcan sus bloques con
+      // `data-proyecto-reveal`, así que entran con la misma aparición que el
+      // cuerpo sin tener que enumerarlas aquí una por una.
+      const revealed = [body, aside, ...$$<HTMLElement>('[data-proyecto-reveal]')].filter(
+        Boolean,
+      ) as HTMLElement[]
+
       revealed.forEach((element, index) => {
         gsap.from(element, {
           autoAlpha: 0,
           y: 40,
           duration: 0.9,
-          delay: index * 0.08,
+          delay: Math.min(index, 2) * 0.08,
           ease: 'power3.out',
           scrollTrigger: { trigger: element, start: 'top 85%' },
         })
