@@ -8,7 +8,8 @@ imágenes y los planos, en el bucket de Cloudflare R2. El panel está en
 
 1. Crea el proyecto en [supabase.com](https://supabase.com).
 2. En **SQL Editor**, ejecuta las migraciones en orden:
-   `migrations/0001_contenido.sql` y luego `migrations/0002_proyectos.sql`.
+   `migrations/0001_contenido.sql`, `migrations/0002_proyectos.sql` y
+   `migrations/0003_medidas_imagenes.sql`.
 3. En **Settings → API** copia `Project URL`, `anon public` y `service_role`
    hacia tu `.env` (ver `.env.example`).
 
