@@ -37,3 +37,50 @@ export interface GaleriaRow {
   publicado: boolean
   updated_at: string
 }
+
+export interface ProyectoRow {
+  id: string
+  slug: string
+  title: string
+  tagline: string
+  resumen: string
+  descripcion: string
+  cover_url: string | null
+  cover_alt: string
+  firma: string
+  tipologia: string
+  anio: number | null
+  area: string
+  ubicacion: string
+  niveles: string
+  orden: number
+  publicado: boolean
+  updated_at: string
+}
+
+export interface ProyectoFotoRow {
+  id: string
+  proyecto_id: string
+  src: string
+  alt: string
+  ancha: boolean
+  orden: number
+}
+
+export interface ProyectoDocumentoRow {
+  id: string
+  proyecto_id: string
+  titulo: string
+  descripcion: string
+  preview_url: string | null
+  archivo_url: string | null
+  orden: number
+}
+
+export interface ProyectoCreditoRow {
+  id: string
+  proyecto_id: string
+  rol: string
+  nombre: string
+  orden: number
+}
