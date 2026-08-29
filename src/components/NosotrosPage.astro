@@ -184,9 +184,8 @@ const galeria = await getGaleria()
   // El bloqueo va en tres capas porque ninguna cubre todas las formas de
   // scrollear:
   //  1. Observer: frena wheel/touch/pointer antes de que lleguen a nadie.
-  //  2. Lenis: es quien realmente mueve la página (y su plugin de snap
-  //     puede lanzar scrolls por su cuenta); `stop()` también hace que sus
-  //     `scrollTo` internos se ignoren.
+  //  2. Lenis: es quien realmente mueve la página; `stop()` también hace que
+  //     sus `scrollTo` internos se ignoren.
   //  3. `overflow: clip` en el root: lo único que impide el scroll nativo
   //     por teclado, barra de scroll o Home/End. No altera la posición
   //     actual (es el mismo mecanismo que usa Lenis con `autoToggle`).
@@ -211,6 +210,11 @@ const galeria = await getGaleria()
 
   function initNosotros() {
     killAll()
+
+    // Posición del scroll al montar: sirve para distinguir "el usuario llegó
+    // scrolleando" de "la página cargó ya dentro del pin" (ver el onUpdate
+    // del ScrollTrigger de la galería).
+    const scrollAtInit = window.scrollY
 
     // ── HERO ─────────────────────────────────────────
     const hero = $<HTMLElement>('[data-nosotros="hero"]')
@@ -300,6 +304,8 @@ const galeria = await getGaleria()
     const heroScrollTl = gsap.timeline({ paused: true })
     let galeriaScrollTrigger: ScrollTrigger | null = null
     let introDone = false
+    let introStarted = false
+    let introWatchdog: gsap.core.Tween | null = null
 
     // Red de seguridad para cuando el scrub ya avanzó sin que la intro se
     // haya reproducido (p. ej. al recargar la página con el scroll
@@ -312,6 +318,9 @@ const galeria = await getGaleria()
     const completeIntro = () => {
       if (introDone) return
       introDone = true
+      introStarted = true
+      introWatchdog?.kill()
+      introWatchdog = null
       // `suppressEvents` evita que se dispare el onComplete y se llame
       // a esta misma función en bucle.
       heroTl.progress(1, true).pause()
@@ -413,17 +422,23 @@ const galeria = await getGaleria()
         pin: true,
         scrub: 1,
         animation: heroScrollTl,
-        // Si el scrub avanza con la intro sin terminar y sin el candado
-        // puesto, la intro ya no puede seguir animando por su cuenta (ver
-        // completeIntro). Se difiere un frame porque este `onUpdate` y el
-        // `onEnter` que arranca la intro pueden caer en el mismo update:
-        // para entonces el candado ya está puesto y no hace falta.
+        // Red de seguridad: si el scrub avanzó sin que la intro arrancara,
+        // es que el `onEnter` de `heroSt` no llegó a dispararse (un frame
+        // de scroll suave puede saltarse su punto de inicio por completo).
+        // Se arranca aquí, que `startIntro` ya realinea el scroll al inicio
+        // del pin. Se difiere un frame porque este `onUpdate` y el
+        // `onEnter` pueden caer en el mismo update: para entonces la intro
+        // ya arrancó y esto no hace falta.
         onUpdate: (self) => {
-          if (introDone || scrollLocked || self.progress === 0) return
+          if (introDone || introStarted || scrollLocked || self.progress === 0) return
           requestAnimationFrame(() => {
-            if (!introDone && !scrollLocked && (galeriaScrollTrigger?.progress ?? 0) > 0) {
-              completeIntro()
-            }
+            if (introDone || introStarted || scrollLocked) return
+            if ((galeriaScrollTrigger?.progress ?? 0) === 0) return
+            // Si la página cargó con el scroll ya dentro del pin (recarga a
+            // media galería), la intro se da por vista: reproducirla ahora
+            // la pondría encima de la galería ya revelada.
+            if (scrollAtInit >= (galeriaScrollTrigger?.start ?? 0)) completeIntro()
+            else startIntro()
           })
         },
         // Al volver a cruzar el borde superior de la sección hacia arriba
@@ -432,7 +447,16 @@ const galeria = await getGaleria()
         // (heroTl) no está atada al scroll, así que hay que revertirla
         // a mano para volver al hero tal como se ve al cargar la página.
         onLeaveBack: () => {
+          // Con el candado puesto el usuario no puede scrollear, así que un
+          // cruce hacia atrás aquí solo puede venir del realineado que hace
+          // `startIntro`: al llegar de un scroll rápido el scroll se devuelve
+          // al inicio del pin, y ese salto hacia atrás cruza este punto. Sin
+          // esta guarda se revertía la intro que se acababa de arrancar (se
+          // quedaba en negro, sin animación) y, como `completeIntro` cuelga
+          // del `onComplete` de esa misma intro, el candado no se abría nunca.
+          if (scrollLocked) return
           introDone = false
+          introStarted = false
           heroTl.eventCallback('onReverseComplete', null)
           heroTl.reverse()
         },
@@ -468,6 +492,48 @@ const galeria = await getGaleria()
             }),
           ).then(() => undefined)
 
+    // Arranca la intro y deja el hero encuadrado contra el borde superior.
+    // El realineado es incondicional: el scroll llega aquí donde sea que lo
+    // dejó el último frame (unos píxeles antes o después del inicio del
+    // pin), así que sin él la intro se reproduce con la sección anterior
+    // todavía asomada o con el scrub ya avanzado. Como el hero queda
+    // pineado desde ese mismo punto, el reajuste no se nota en pantalla:
+    // solo deja el timeline de la galería en cero para empezar limpio.
+    const startIntro = () => {
+      if (introStarted || introDone) return
+      introStarted = true
+
+      const pinStart = galeriaScrollTrigger?.start
+      lockScroll(pinStart ?? undefined)
+      heroScrollTl.progress(0)
+
+      galeriaImagesReady.then(() => {
+        // `introDone` puede haberse resuelto mientras se esperaban las
+        // imágenes (ver completeIntro): en ese caso reproducir la intro
+        // la pondría encima de la galería ya revelada.
+        if (introDone) return
+
+        // Al volver a bajar, `heroTl` puede seguir donde lo dejó la reversa
+        // de `onLeaveBack`: a mitad de camino (se reanuda hacia adelante y
+        // se ve bien) o todavía en su valor final, si la bajada llegó antes
+        // de que la reversa rindiera un solo frame. En ese segundo caso
+        // `play()` no hace nada —el timeline ya está terminado— y su
+        // `onComplete` no vuelve a dispararse, así que `completeIntro`
+        // nunca corre y el candado del scroll se queda puesto para
+        // siempre. Rebobinar deja la intro lista para reproducirse entera.
+        if (heroTl.progress() >= 1) heroTl.progress(0)
+        heroTl.play()
+
+        // Seguro de última instancia: el candado del scroll solo se abre
+        // desde el `onComplete` de la intro, así que cualquier cosa que
+        // impida que ese timeline llegue al final dejaría la página
+        // inmovilizada y sin salida. Esto la libera pasado el tiempo que le
+        // queda a la intro, con margen de sobra para no cortarla.
+        introWatchdog?.kill()
+        introWatchdog = gsap.delayedCall(heroTl.duration() - heroTl.time() + 1, completeIntro)
+      })
+    }
+
     const heroSt = ScrollTrigger.create({
       trigger: hero,
       // Prácticamente el mismo punto que el pin de la galería: el candado
@@ -478,25 +544,7 @@ const galeria = await getGaleria()
       // se mide sobre el hero ya pineado y su punto de inicio se corre
       // hasta el final del pin, así que la intro nunca arrancaba.
       start: 'top top+=4',
-      onEnter: () => {
-        if (introDone) return
-        // En un scroll rápido, ScrollTrigger detecta el cruce con el punto
-        // de inicio ya pasado, así que el scrub habría avanzado unos
-        // píxeles. El hero ya está pineado, por lo que devolver el scroll
-        // al inicio del pin no mueve nada en pantalla: solo deja el
-        // timeline de la galería en cero para que la intro arranque limpia.
-        const pinStart = galeriaScrollTrigger?.start
-        const overshot = pinStart != null && window.scrollY > pinStart
-        lockScroll(overshot ? pinStart : undefined)
-        if (overshot) heroScrollTl.progress(0)
-        galeriaImagesReady.then(() => {
-          // `introDone` puede haberse resuelto mientras se esperaban las
-          // imágenes (ver completeIntro): en ese caso reproducir la intro
-          // la pondría encima de la galería ya revelada.
-          if (introDone) return
-          heroTl.play()
-        })
-      },
+      onEnter: startIntro,
     })
 
     activeTriggers.push(heroSt)
@@ -505,6 +553,7 @@ const galeria = await getGaleria()
     restartButton?.addEventListener('click', () => {
       lockScroll()
       introDone = false
+      introStarted = true
       heroScrollTl.pause(0)
       resetGaleriaMedia()
       // Devuelve el scroll al inicio del pin para que el scrub (ligado a
