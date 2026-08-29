@@ -10,12 +10,12 @@ const { phrases = ['Espacios pensados para habitar', 'Diseño, detalle y oficio'
   Astro.props as Props
 
 // Marcas radiales del spinner: la longitud alterna para dar el trazo irregular
-// de la referencia y la máscara cónica giratoria genera el barrido de luz.
+// de la referencia. No giran: crecen y se encogen en secuencia alrededor del aro.
 const TICK_COUNT = 56
 const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
   angle: (360 / TICK_COUNT) * index,
-  length: 26 + Math.round(Math.abs(Math.sin(index * 1.7)) * 12),
-  opacity: 0.35 + Math.abs(Math.sin(index * 0.9)) * 0.65,
+  length: 42 + Math.round(Math.abs(Math.sin(index * 1.7)) * 22),
+  opacity: 0.4 + Math.abs(Math.sin(index * 0.9)) * 0.6,
 }))
 ---
 
@@ -32,8 +32,10 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
         ticks.map((tick) => (
           <span
             class="vmv-loader__tick"
-            style={`--tick-angle:${tick.angle}deg;--tick-length:${tick.length}px;--tick-opacity:${tick.opacity}`}
-          />
+            style={`--tick-angle:${tick.angle}deg;--tick-length:${tick.length}px;opacity:${tick.opacity}`}
+          >
+            <span class="vmv-loader__tick-line" data-loader-tick />
+          </span>
         ))
       }
     </div>
@@ -77,49 +79,41 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     position: relative;
     display: grid;
     place-items: center;
-    width: 240px;
-    height: 240px;
+    width: 420px;
+    height: 420px;
   }
 
   .vmv-loader__ring {
     position: absolute;
     inset: 0;
-    animation: vmv-loader-spin 2.4s linear infinite;
-    -webkit-mask-image: conic-gradient(
-      from 0deg,
-      rgba(0, 0, 0, 0.04) 0deg,
-      rgba(0, 0, 0, 0.15) 60deg,
-      rgba(0, 0, 0, 1) 210deg,
-      rgba(0, 0, 0, 0.25) 330deg,
-      rgba(0, 0, 0, 0.04) 360deg
-    );
-    mask-image: conic-gradient(
-      from 0deg,
-      rgba(0, 0, 0, 0.04) 0deg,
-      rgba(0, 0, 0, 0.15) 60deg,
-      rgba(0, 0, 0, 1) 210deg,
-      rgba(0, 0, 0, 0.25) 330deg,
-      rgba(0, 0, 0, 0.04) 360deg
-    );
   }
 
+  /* El contenedor solo coloca la marca en su ángulo; la línea interior es la
+     que escala, con origen en el extremo cercano al centro. */
   .vmv-loader__tick {
     position: absolute;
     top: 50%;
     left: 50%;
     width: 2px;
-    height: var(--tick-length);
+    height: var(--tick-length, 40px);
+    transform: rotate(var(--tick-angle)) translate(-50%, -184px);
+    transform-origin: top left;
+  }
+
+  .vmv-loader__tick-line {
+    display: block;
+    width: 100%;
+    height: 100%;
     border-radius: 1px;
     background: linear-gradient(to top, rgba(245, 243, 240, 0), rgba(245, 243, 240, 1));
-    opacity: var(--tick-opacity);
-    transform: rotate(var(--tick-angle)) translate(-50%, -108px);
-    transform-origin: top left;
+    transform-origin: bottom center;
+    will-change: transform, opacity;
   }
 
   .vmv-loader__logo {
     position: relative;
     display: block;
-    width: 92px;
+    width: 220px;
     aspect-ratio: 1920 / 725;
     background-color: #f5f3f0;
     -webkit-mask-image: var(--logo-mask);
@@ -169,15 +163,9 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     will-change: transform;
   }
 
-  @keyframes vmv-loader-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .vmv-loader__ring {
-      animation-duration: 6s;
+  @media (max-width: 640px) {
+    .vmv-loader__stage {
+      transform: scale(0.62);
     }
   }
 </style>
@@ -187,8 +175,8 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
   import { $, $$ } from '@/lib/dom-selector'
 
   // El spinner se ve un mínimo aunque los medios ya estén en caché.
-  const MIN_SPINNER_MS = 2600
-  const MAX_WAIT_MS = 9000
+  const MIN_SPINNER_MS = 1800
+  const MAX_WAIT_MS = 7000
 
   type LenisLike = { start: () => void; stop: () => void }
 
@@ -230,6 +218,43 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     return Promise.all(pending)
   }
 
+  /**
+   * Las marcas no giran: aparecen creciendo en secuencia alrededor del aro y
+   * luego desaparecen encogiéndose en el mismo orden.
+   */
+  function createSpinnerLoop(root: HTMLElement, prefersReducedMotion: boolean) {
+    const lines = $$<HTMLElement>('[data-loader-tick]', root)
+    if (!lines.length) return null
+
+    gsap.set(lines, { scaleY: 0, opacity: 0 })
+
+    if (prefersReducedMotion) {
+      gsap.set(lines, { scaleY: 1, opacity: 1 })
+      return null
+    }
+
+    return gsap
+      .timeline({ repeat: -1, repeatDelay: 0.1 })
+      .to(lines, {
+        scaleY: 1,
+        opacity: 1,
+        duration: 0.4,
+        ease: 'power2.out',
+        stagger: { each: 0.014 },
+      })
+      .to(
+        lines,
+        {
+          scaleY: 0,
+          opacity: 0,
+          duration: 0.38,
+          ease: 'power2.in',
+          stagger: { each: 0.014 },
+        },
+        '>-0.2',
+      )
+  }
+
   async function runLoader() {
     const loader = $<HTMLElement>('#site-loader')
     if (!loader) return
@@ -241,11 +266,13 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const spinner = $<HTMLElement>('[data-loader-spinner]', loader)
     const phrases = $$<HTMLElement>('[data-loader-phrase]', loader)
+    const spinnerLoop = createSpinnerLoop(loader, prefersReducedMotion)
 
     // La carga real manda, pero el spinner se ve un mínimo y nunca bloquea de más.
     await Promise.race([Promise.all([mediaReady(), wait(MIN_SPINNER_MS)]), wait(MAX_WAIT_MS)])
 
     const finish = () => {
+      spinnerLoop?.kill()
       loader.remove()
       markDone()
     }
@@ -258,7 +285,13 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     const timeline = gsap.timeline({ onComplete: finish })
 
     // El spinner sale y cede el lugar a las frases.
-    timeline.to(spinner, { autoAlpha: 0, yPercent: -18, duration: 0.6, ease: 'power2.inOut' })
+    timeline.to(spinner, {
+      autoAlpha: 0,
+      yPercent: -18,
+      duration: 0.45,
+      ease: 'power2.inOut',
+      onComplete: () => spinnerLoop?.kill(),
+    })
 
     phrases.forEach((phrase) => {
       const words = $$<HTMLElement>('[data-loader-word]', phrase)
@@ -268,15 +301,15 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
         .fromTo(
           words,
           { yPercent: -130 },
-          { yPercent: 0, duration: 0.9, ease: 'power3.out', stagger: 0.09 },
+          { yPercent: 0, duration: 0.6, ease: 'power3.out', stagger: 0.05 },
         )
-        .to({}, { duration: 1.3 })
-        .to(words, { yPercent: 130, duration: 0.7, ease: 'power3.in', stagger: 0.06 })
+        .to({}, { duration: 0.55 })
+        .to(words, { yPercent: 130, duration: 0.45, ease: 'power3.in', stagger: 0.04 })
         .set(phrase, { opacity: 0 })
     })
 
     // Revelado final del sitio.
-    timeline.to(loader, { autoAlpha: 0, duration: 0.7, ease: 'power2.inOut' }, '-=0.15')
+    timeline.to(loader, { autoAlpha: 0, duration: 0.5, ease: 'power2.inOut' }, '-=0.2')
   }
 
   runLoader()
