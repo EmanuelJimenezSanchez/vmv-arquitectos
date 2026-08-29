@@ -223,8 +223,8 @@ import FontSwitcher from '@/components/FontSwitcher.astro'
       header.classList.toggle('is-scrolled', isScrolled)
       header.classList.toggle('is-top', isAtTop)
 
-      // At the very top the toolbar must always be visible, even if a snap
-      // (or the scroll-down that triggered it) had just hidden it.
+      // At the very top the toolbar must always be visible, even if the
+      // scroll-down that got us here had just hidden it.
       if (isAtTop) {
         toolbarShowAnim?.play()
       }
@@ -270,16 +270,6 @@ import FontSwitcher from '@/components/FontSwitcher.astro'
       start: 'top top',
       end: 'max',
       onUpdate: (self) => {
-        // Skip the hide/show toggle while Lenis's scroll-snap is driving the
-        // scroll — only user-initiated scrolling should hide the toolbar.
-        // Lenis clears `userData` back to `{}` the instant a real user
-        // scroll interrupts a snap, so reading it live (rather than a flag
-        // toggled by onSnapStart/onSnapComplete) can't get stuck if a snap
-        // animation is interrupted before it completes.
-        if ((window.lenis?.userData as { initiator?: string })?.initiator === 'snap') {
-          return
-        }
-
         if (self.direction === -1) {
           toolbarShowAnim?.play()
         } else {
