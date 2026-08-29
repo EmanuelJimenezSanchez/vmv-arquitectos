@@ -1,12 +1,14 @@
 # Panel de contenido — puesta en marcha
 
-El contenido de **Servicios** y **Galería** vive en Supabase; las imágenes, en el
-bucket de Cloudflare R2. El panel está en `/dashboard`.
+El contenido de **Proyectos**, **Servicios** y **Galería** vive en Supabase; las
+imágenes y los planos, en el bucket de Cloudflare R2. El panel está en
+`/dashboard`.
 
 ## 1. Supabase
 
 1. Crea el proyecto en [supabase.com](https://supabase.com).
-2. En **SQL Editor**, pega y ejecuta `migrations/0001_contenido.sql`.
+2. En **SQL Editor**, ejecuta las migraciones en orden:
+   `migrations/0001_contenido.sql` y luego `migrations/0002_proyectos.sql`.
 3. En **Settings → API** copia `Project URL`, `anon public` y `service_role`
    hacia tu `.env` (ver `.env.example`).
 
@@ -39,9 +41,12 @@ npm run seed
 ```
 
 Migra a Supabase los servicios y la galería que antes estaban en
-`src/data/servicios.ts` y `src/data/galeria.ts` (esos archivos ya se eliminaron;
-el contenido original quedó en `supabase/seed.mjs`). Es idempotente: hace upsert
-por `slug`.
+`src/data/servicios.ts` y `src/data/galeria.ts`, y carga la ficha de los
+proyectos que ya tienen texto (esos archivos ya se eliminaron; el contenido
+original quedó en `supabase/seed.mjs`). Es idempotente: hace upsert por `slug`.
+
+Las imágenes de un proyecto —portada, galería y planos— no se siembran: se
+suben desde `/dashboard/proyectos`.
 
 ## 4. Crear un administrador
 
