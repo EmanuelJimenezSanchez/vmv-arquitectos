@@ -10,6 +10,8 @@ interface Foto {
   src: string
   alt: string
   ancha: boolean
+  width: number | null
+  height: number | null
 }
 
 interface Documento {
@@ -17,6 +19,8 @@ interface Documento {
   titulo: string
   descripcion: string
   preview_url: string | null
+  preview_width: number | null
+  preview_height: number | null
   archivo_url: string | null
 }
 
@@ -109,11 +113,15 @@ const toDraft = (proyecto: ProyectoRecord): Draft => ({
     src: foto.src,
     alt: foto.alt,
     ancha: foto.ancha,
+    width: foto.width,
+    height: foto.height,
   })),
   documentos: proyecto.proyecto_documentos.map((doc) => ({
     titulo: doc.titulo,
     descripcion: doc.descripcion,
     preview_url: doc.preview_url,
+    preview_width: doc.preview_width,
+    preview_height: doc.preview_height,
     archivo_url: doc.archivo_url,
   })),
   creditos: proyecto.proyecto_creditos.map((credito) => ({
@@ -193,11 +201,19 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
       ubicacion: draft.ubicacion,
       niveles: draft.niveles,
       publicado: draft.publicado,
-      fotos: draft.fotos.map(({ src, alt, ancha }) => ({ src, alt, ancha })),
+      fotos: draft.fotos.map(({ src, alt, ancha, width, height }) => ({
+        src,
+        alt,
+        ancha,
+        width,
+        height,
+      })),
       documentos: draft.documentos.map((doc) => ({
         titulo: doc.titulo,
         descripcion: doc.descripcion,
         previewUrl: doc.preview_url,
+        previewWidth: doc.preview_width,
+        previewHeight: doc.preview_height,
         archivoUrl: doc.archivo_url,
       })),
       creditos: draft.creditos
@@ -254,15 +270,17 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
   }
 
   const handleCoverUpload = async (file: File) => {
-    const url = await upload(file, 'proyectos')
-    if (url) patch({ coverUrl: url })
+    const uploaded = await upload(file, 'proyectos')
+    if (uploaded) patch({ coverUrl: uploaded.url })
   }
 
   const handleFotosUpload = async (files: FileList) => {
     const uploaded: Foto[] = []
     for (const file of Array.from(files)) {
-      const url = await upload(file, 'proyectos')
-      if (url) uploaded.push({ src: url, alt: '', ancha: false })
+      const result = await upload(file, 'proyectos')
+      if (result) {
+        uploaded.push({ src: result.url, alt: '', ancha: false, width: result.width, height: result.height })
+      }
     }
     if (uploaded.length > 0) {
       setDraft((current) => ({ ...current!, fotos: [...current!.fotos, ...uploaded] }))
@@ -474,9 +492,14 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
         {/* ─── Galería ─────────────────────────────────── */}
         <section className="flex flex-col gap-4 border border-vmv-border p-[clamp(1rem,3vw,1.75rem)]">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
-              Galería ({draft.fotos.length})
-            </h2>
+            <div>
+              <h2 className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
+                Galería ({draft.fotos.length})
+              </h2>
+              <p className="vmv-caption-1 text-vmv-muted-foreground">
+                Se comprimen y reescalan al subirlas: puedes soltar los originales.
+              </p>
+            </div>
             <input
               type="file"
               multiple
@@ -575,7 +598,14 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                 patch({
                   documentos: [
                     ...draft.documentos,
-                    { titulo: '', descripcion: '', preview_url: null, archivo_url: null },
+                    {
+                      titulo: '',
+                      descripcion: '',
+                      preview_url: null,
+                      preview_width: null,
+                      preview_height: null,
+                      archivo_url: null,
+                    },
                   ],
                 })
               }
@@ -635,8 +665,14 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                             const file = event.target.files?.[0]
                             event.target.value = ''
                             if (!file) return
-                            const url = await upload(file, 'planos')
-                            if (url) patchDocumento(index, { preview_url: url })
+                            const uploaded = await upload(file, 'planos')
+                            if (uploaded) {
+                              patchDocumento(index, {
+                                preview_url: uploaded.url,
+                                preview_width: uploaded.width,
+                                preview_height: uploaded.height,
+                              })
+                            }
                           }}
                         />
                       </label>
@@ -650,8 +686,8 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                             const file = event.target.files?.[0]
                             event.target.value = ''
                             if (!file) return
-                            const url = await upload(file, 'planos')
-                            if (url) patchDocumento(index, { archivo_url: url })
+                            const uploaded = await upload(file, 'planos')
+                            if (uploaded) patchDocumento(index, { archivo_url: uploaded.url })
                           }}
                         />
                       </label>
