@@ -1,7 +1,15 @@
 import { useCallback, useState } from 'react'
 import { actions } from 'astro:actions'
+import { optimizeImage } from './optimizeImage'
 
 export type UploadFolder = 'services' | 'galeria' | 'proyectos' | 'planos'
+
+export interface UploadResult {
+  url: string
+  /** Medidas del archivo subido; null si el navegador no pudo leerlas. */
+  width: number | null
+  height: number | null
+}
 
 const ALLOWED = ['image/webp', 'image/jpeg', 'image/png', 'image/avif'] as const
 const ALLOWED_DOCUMENTS = ['application/pdf'] as const
@@ -21,24 +29,19 @@ export const useUpload = () => {
   const [uploading, setUploading] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
-  const upload = useCallback(async (file: File, folder: UploadFolder): Promise<string | null> => {
-    const documento = isDocument(file.type)
+  const upload = useCallback(async (original: File, folder: UploadFolder): Promise<
+    UploadResult | null
+  > => {
+    const documento = isDocument(original.type)
 
     // El PDF solo se acepta como plano descargable; en las demás carpetas el
     // archivo se termina pintando en un <img>.
     if (documento && folder !== 'planos') {
-      setError(`«${file.name}»: los PDF solo se admiten como documentos técnicos.`)
+      setError(`«${original.name}»: los PDF solo se admiten como documentos técnicos.`)
       return null
     }
-    if (!documento && !(ALLOWED as readonly string[]).includes(file.type)) {
-      setError(`«${file.name}»: formato no permitido. Usa WebP, JPG, PNG o AVIF.`)
-      return null
-    }
-
-    const maxBytes = documento ? MAX_DOCUMENT_BYTES : MAX_BYTES
-    if (file.size > maxBytes) {
-      const mb = Math.round(maxBytes / (1024 * 1024))
-      setError(`«${file.name}»: supera los ${mb} MB. Comprime el archivo antes de subirlo.`)
+    if (!documento && !(ALLOWED as readonly string[]).includes(original.type)) {
+      setError(`«${original.name}»: formato no permitido. Usa WebP, JPG, PNG o AVIF.`)
       return null
     }
 
@@ -46,6 +49,23 @@ export const useUpload = () => {
     setUploading((count) => count + 1)
 
     try {
+      // Las imágenes se reescalan y reencodean antes de medir el peso: el
+      // límite aplica a lo que se va a guardar, no al original de cámara.
+      const { file, width, height } = documento
+        ? { file: original, width: null, height: null }
+        : await optimizeImage(original)
+
+      const maxBytes = documento ? MAX_DOCUMENT_BYTES : MAX_BYTES
+      if (file.size > maxBytes) {
+        const mb = Math.round(maxBytes / (1024 * 1024))
+        setError(
+          documento
+            ? `«${original.name}»: supera los ${mb} MB. Comprime el PDF antes de subirlo.`
+            : `«${original.name}»: sigue pasando de ${mb} MB tras comprimirla. Reduce sus dimensiones antes de subirla.`,
+        )
+        return null
+      }
+
       const { data, error: signError } = await actions.uploads.sign({
         folder,
         fileName: file.name,
@@ -65,11 +85,11 @@ export const useUpload = () => {
       })
 
       if (!response.ok) {
-        setError(`No se pudo subir «${file.name}» a R2 (${response.status}).`)
+        setError(`No se pudo subir «${original.name}» a R2 (${response.status}).`)
         return null
       }
 
-      return data.url
+      return { url: data.url, width, height }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Error inesperado al subir la imagen.')
       return null
