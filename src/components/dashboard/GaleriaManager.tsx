@@ -144,8 +144,8 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
   }
 
   const uploadInto = async (file: File, target: 'imageDesktop' | 'imageMobile') => {
-    const url = await upload(file, 'galeria')
-    if (url) patch({ [target]: url } as Partial<Draft>)
+    const uploaded = await upload(file, 'galeria')
+    if (uploaded) patch({ [target]: uploaded.url } as Partial<Draft>)
   }
 
   const ImageSlot = ({
