@@ -1,0 +1,30 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import ProyectosManager from '@/components/dashboard/ProyectosManager.tsx'
+import type { ProyectoRecord } from '@/components/dashboard/ProyectosManager.tsx'
+import { PROYECTO_ADMIN_SELECT } from '@/actions/index'
+
+const { supabase } = Astro.locals
+
+const { data, error } = await supabase
+  .from('proyectos')
+  .select(PROYECTO_ADMIN_SELECT)
+  .order('orden', { ascending: true })
+  .order('orden', { ascending: true, referencedTable: 'proyecto_fotos' })
+  .order('orden', { ascending: true, referencedTable: 'proyecto_documentos' })
+  .order('orden', { ascending: true, referencedTable: 'proyecto_creditos' })
+
+const proyectos = (data ?? []) as ProyectoRecord[]
+---
+
+<DashboardLayout title="Proyectos">
+  {
+    error ? (
+      <p class="vmv-body-3 border border-red-500/40 bg-red-500/10 px-4 py-3 text-red-500">
+        No se pudieron cargar los proyectos: {error.message}
+      </p>
+    ) : (
+      <ProyectosManager client:load initial={proyectos} />
+    )
+  }
+</DashboardLayout>
