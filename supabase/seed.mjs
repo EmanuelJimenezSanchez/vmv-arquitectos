@@ -128,6 +128,42 @@ const GALERIA = [
   publicado: true,
 }))
 
+/**
+ * Proyectos del portafolio. El texto es el que el despacho manda a las
+ * publicaciones; las imágenes (portada, galería y planos) se cargan desde
+ * `/dashboard/proyectos`, así que aquí van vacías.
+ */
+const PROYECTOS = [
+  {
+    slug: 'casa-gt',
+    title: 'Casa GT',
+    tagline: 'Calidez, elegancia y convivencia en un fraccionamiento de Guadalajara.',
+    resumen:
+      'Una arquitectura contemporánea donde los materiales naturales, la iluminación y los detalles interiores generan una atmósfera acogedora.',
+    descripcion: [
+      'Ubicada en un fraccionamiento residencial de Guadalajara, Jalisco, Casa GT surge de la intención de crear un espacio que combine calidez, elegancia y convivencia. El concepto parte de una arquitectura contemporánea donde los materiales naturales, la iluminación y los detalles interiores adquieren un papel fundamental para generar una atmósfera acogedora. La chimenea se integra como uno de los elementos centrales de la propuesta, acompañada por una iluminación cálida y luz indirecta en plafones que enfatiza las texturas y aporta profundidad a los espacios.',
+      'Uno de los principales retos del proyecto fue encontrar el equilibrio entre amplitud, funcionalidad y carácter arquitectónico. Al tratarse de una vivienda pensada para la convivencia, fue fundamental crear espacios generosos y conectados entre sí, sin perder la sensación de intimidad y confort. La solución se desarrolló mediante una distribución abierta y elementos arquitectónicos que permiten establecer relaciones visuales entre las diferentes áreas de la casa, haciendo que la experiencia espacial sea continua y dinámica.',
+      'Las escaleras representan uno de los puntos de mayor importancia dentro del proyecto y fueron concebidas como un elemento protagonista de la vivienda. Para lograrlo, se incorporó un árbol como punto focal, alrededor del cual se desarrolla la composición. Las escaleras flotadas refuerzan la sensación de ligereza, mientras que la iluminación indirecta integrada en cada escalón acentúa su geometría. El muro frontal, revestido con lambrín, genera un fondo cálido y texturizado que complementa la composición y convierte este espacio en uno de los elementos distintivos de Casa GT.',
+      'La materialidad responde a una búsqueda de equilibrio entre lo natural y lo contemporáneo. El concreto aparente aporta solidez y carácter, mientras que las vigas de WPC, el lambrín y el cristal introducen calidez, textura y transparencia. Constructivamente, se utilizaron muros de block y losas de vigueta y bovedilla, sistemas que contribuyen al confort interior y al desempeño de la vivienda.',
+      'La configuración espacial se planteó para favorecer la amplitud y la convivencia. La sala y el comedor se desarrollan en doble altura, generando un espacio central de gran presencia que se conecta directamente con las áreas sociales exteriores. La relación con la terraza permite extender las actividades hacia el exterior y establecer una continuidad entre la sala, el comedor y los espacios de convivencia al aire libre. El resultado es una vivienda contemporánea y acogedora, donde arquitectura, materialidad e iluminación se integran para crear una experiencia cálida, funcional y atemporal.',
+    ].join('\n\n'),
+    cover_url: null,
+    cover_alt: 'Casa GT, vivienda residencial de VMV Arquitectos en Guadalajara',
+    firma: 'VMV Arquitectos',
+    tipologia: 'Casa residencial',
+    anio: 2026,
+    area: '350 m²',
+    ubicacion: 'Guadalajara, Jalisco, México',
+    niveles: '2 y roof',
+    creditos: [
+      { rol: 'Diseño arquitectónico', nombre: 'Víctor Manuel Medina Vela' },
+      { rol: 'Diseño arquitectónico', nombre: 'Orlando Toache' },
+      { rol: 'Diseño arquitectónico', nombre: 'Fabiola Martín del Campo Flores' },
+      { rol: 'Fotografías', nombre: 'Miriam Pérez' },
+    ],
+  },
+]
+
 const run = async () => {
   for (const [index, { gallery, ...servicio }] of SERVICIOS.entries()) {
     const { data, error } = await supabase
@@ -167,6 +203,36 @@ const run = async () => {
     throw new Error(`galeria: ${galeriaError.message}`)
   }
   console.log(`✓ galería (${GALERIA.length} entradas)`)
+
+  for (const [index, { creditos, ...proyecto }] of PROYECTOS.entries()) {
+    const { data, error } = await supabase
+      .from('proyectos')
+      .upsert({ ...proyecto, orden: index, publicado: true }, { onConflict: 'slug' })
+      .select('id')
+      .single()
+
+    if (error) {
+      throw new Error(`proyectos/${proyecto.slug}: ${error.message}`)
+    }
+
+    await supabase.from('proyecto_creditos').delete().eq('proyecto_id', data.id)
+
+    if (creditos.length > 0) {
+      const { error: creditosError } = await supabase.from('proyecto_creditos').insert(
+        creditos.map((credito, orden) => ({
+          proyecto_id: data.id,
+          rol: credito.rol,
+          nombre: credito.nombre,
+          orden,
+        })),
+      )
+      if (creditosError) {
+        throw new Error(`proyecto_creditos/${proyecto.slug}: ${creditosError.message}`)
+      }
+    }
+
+    console.log(`✓ ${proyecto.slug} (${creditos.length} colaboradores)`)
+  }
 }
 
 run().catch((error) => {
