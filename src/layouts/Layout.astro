@@ -8,6 +8,7 @@ import Header from '../sections/Header.astro'
 import Footer from '@/sections/Footer.astro'
 import Button from '@/components/ui/Button.astro'
 import ContactoModal from '@/components/ContactoModal.astro'
+import SiteLoader from '@/components/SiteLoader.astro'
 
 const SITE_URL = 'https://www.vmv-arquitectos.com'
 const DEFAULT_OG_IMAGE = `https://cdn.vmv-arquitectos.com/og.jpg`
@@ -24,6 +25,8 @@ interface Props {
   ogType?: 'website' | 'article' | 'profile'
   /** Site chrome; disable on full-bleed routes (e.g. combate detail). */
   showHeader?: boolean
+  /** Loader de carga inicial (spinner + frases). Solo corre una vez por sesión. */
+  showLoader?: boolean
 }
 
 const {
@@ -36,6 +39,7 @@ const {
   ogUrl,
   ogType = 'website',
   showHeader = true,
+  showLoader = true,
 } = Astro.props
 
 const cleanPathname = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '')
@@ -105,11 +109,20 @@ const finalRobots = robots ?? 'index, follow'
       })()
     </script>
 
+    <style is:global>
+      /* Mientras el loader corre no debe haber scroll detrás. */
+      html.is-loading,
+      html.is-loading body {
+        overflow: hidden;
+      }
+    </style>
+
     <slot name="head" />
     <ClientRouter />
     <Analytics />
   </head>
   <body>
+    {showLoader && <SiteLoader />}
     {showHeader && <Header />}
     <main id="main-content">
       <slot />
