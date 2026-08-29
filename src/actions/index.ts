@@ -68,18 +68,25 @@ const servicioSchema = z.object({
  * del literal, y partirlo con `+` lo degrada a `string` y rompe la inferencia.
  */
 export const PROYECTO_ADMIN_SELECT =
-  '*, proyecto_fotos(id, src, alt, ancha, orden), proyecto_documentos(id, titulo, descripcion, preview_url, archivo_url, orden), proyecto_creditos(id, rol, nombre, orden)'
+  '*, proyecto_fotos(id, src, alt, ancha, width, height, orden), proyecto_documentos(id, titulo, descripcion, preview_url, archivo_url, preview_width, preview_height, orden), proyecto_creditos(id, rol, nombre, orden)'
+
+/** Medidas que el panel calcula al comprimir; null en lo subido antes. */
+const dimension = z.number().int().positive().max(100000).nullable().default(null)
 
 const proyectoFotoSchema = z.object({
   src: z.string().url(),
   alt: z.string().max(300).default(''),
   ancha: z.boolean().default(false),
+  width: dimension,
+  height: dimension,
 })
 
 const proyectoDocumentoSchema = z.object({
   titulo: z.string().min(1).max(160),
   descripcion: z.string().max(600).default(''),
   previewUrl: z.string().url().nullable().default(null),
+  previewWidth: dimension,
+  previewHeight: dimension,
   archivoUrl: z.string().url().nullable().default(null),
 })
 
@@ -421,6 +428,8 @@ export const server = {
               src: foto.src,
               alt: foto.alt,
               ancha: foto.ancha,
+              width: foto.width,
+              height: foto.height,
               orden: index,
             })),
           )
@@ -436,6 +445,8 @@ export const server = {
               titulo: doc.titulo,
               descripcion: doc.descripcion,
               preview_url: doc.previewUrl,
+              preview_width: doc.previewWidth,
+              preview_height: doc.previewHeight,
               archivo_url: doc.archivoUrl,
               orden: index,
             })),
