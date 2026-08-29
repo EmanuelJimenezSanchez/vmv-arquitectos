@@ -266,6 +266,8 @@ const heroDatos = project
                     <img
                       src={foto.src}
                       alt={foto.alt}
+                      width={foto.width ?? undefined}
+                      height={foto.height ?? undefined}
                       class="h-full w-full object-cover transition-transform duration-900 ease-vmv group-hover:scale-[1.04]"
                       loading="lazy"
                       decoding="async"
@@ -302,10 +304,15 @@ const heroDatos = project
                     data-proyecto-reveal
                   >
                     <figure class="relative overflow-hidden rounded-sm border border-vmv-border bg-vmv-muted">
+                      {/* `h-auto` + width/height deja que el navegador reserve
+                          el alto por la proporción real del plano, en vez de
+                          que la página salte cuando termina de cargar. */}
                       <img
                         src={documento.preview}
                         alt={`Plano ${documento.titulo} del proyecto ${project.title}`}
-                        class="h-full max-h-[36rem] w-full object-contain"
+                        width={documento.previewWidth ?? undefined}
+                        height={documento.previewHeight ?? undefined}
+                        class="mx-auto h-auto max-h-[36rem] w-full object-contain"
                         loading="lazy"
                         decoding="async"
                       />
