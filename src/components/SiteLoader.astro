@@ -1,0 +1,294 @@
+---
+import logoVmv from '@/assets/svg/logo-vmv.svg'
+
+interface Props {
+  /** Frases que aparecen tras la carga; cada una se anima palabra por palabra. */
+  phrases?: string[]
+}
+
+const { phrases = ['Espacios pensados para habitar', 'Diseño, detalle y oficio'] } =
+  Astro.props as Props
+
+// Marcas radiales del spinner: la longitud alterna para dar el trazo irregular
+// de la referencia y la máscara cónica giratoria genera el barrido de luz.
+const TICK_COUNT = 56
+const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
+  angle: (360 / TICK_COUNT) * index,
+  length: 26 + Math.round(Math.abs(Math.sin(index * 1.7)) * 12),
+  opacity: 0.35 + Math.abs(Math.sin(index * 0.9)) * 0.65,
+}))
+---
+
+<div
+  id="site-loader"
+  class="vmv-loader"
+  role="status"
+  aria-live="polite"
+  aria-label="Cargando VMV Arquitectos"
+>
+  <div class="vmv-loader__stage" data-loader-spinner>
+    <div class="vmv-loader__ring">
+      {
+        ticks.map((tick) => (
+          <span
+            class="vmv-loader__tick"
+            style={`--tick-angle:${tick.angle}deg;--tick-length:${tick.length}px;--tick-opacity:${tick.opacity}`}
+          />
+        ))
+      }
+    </div>
+
+    <span
+      class="vmv-loader__logo"
+      style={`--logo-mask:url(${logoVmv.src})`}
+      aria-label="VMV Arquitectos"></span>
+  </div>
+
+  <div class="vmv-loader__phrases" data-loader-phrases aria-hidden="true">
+    {
+      phrases.map((phrase) => (
+        <p class="vmv-loader__phrase" data-loader-phrase>
+          {phrase.split(' ').map((word) => (
+            <span class="vmv-loader__word">
+              <span class="vmv-loader__word-inner" data-loader-word>
+                {word}
+              </span>
+            </span>
+          ))}
+        </p>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .vmv-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    background-color: #17191b;
+    color: #f5f3f0;
+    will-change: opacity;
+  }
+
+  .vmv-loader__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 240px;
+    height: 240px;
+  }
+
+  .vmv-loader__ring {
+    position: absolute;
+    inset: 0;
+    animation: vmv-loader-spin 2.4s linear infinite;
+    -webkit-mask-image: conic-gradient(
+      from 0deg,
+      rgba(0, 0, 0, 0.04) 0deg,
+      rgba(0, 0, 0, 0.15) 60deg,
+      rgba(0, 0, 0, 1) 210deg,
+      rgba(0, 0, 0, 0.25) 330deg,
+      rgba(0, 0, 0, 0.04) 360deg
+    );
+    mask-image: conic-gradient(
+      from 0deg,
+      rgba(0, 0, 0, 0.04) 0deg,
+      rgba(0, 0, 0, 0.15) 60deg,
+      rgba(0, 0, 0, 1) 210deg,
+      rgba(0, 0, 0, 0.25) 330deg,
+      rgba(0, 0, 0, 0.04) 360deg
+    );
+  }
+
+  .vmv-loader__tick {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: var(--tick-length);
+    border-radius: 1px;
+    background: linear-gradient(to top, rgba(245, 243, 240, 0), rgba(245, 243, 240, 1));
+    opacity: var(--tick-opacity);
+    transform: rotate(var(--tick-angle)) translate(-50%, -108px);
+    transform-origin: top left;
+  }
+
+  .vmv-loader__logo {
+    position: relative;
+    display: block;
+    width: 92px;
+    aspect-ratio: 1920 / 725;
+    background-color: #f5f3f0;
+    -webkit-mask-image: var(--logo-mask);
+    mask-image: var(--logo-mask);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  .vmv-loader__phrases {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding-inline: 1.5rem;
+    pointer-events: none;
+  }
+
+  .vmv-loader__phrase {
+    grid-area: 1 / 1;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.32em;
+    max-width: 22ch;
+    text-align: center;
+    font-family: var(--font-display, sans-serif);
+    font-size: clamp(2rem, 7vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    opacity: 0;
+  }
+
+  .vmv-loader__word {
+    display: block;
+    overflow: hidden;
+    padding-block: 0.08em;
+  }
+
+  .vmv-loader__word-inner {
+    display: block;
+    will-change: transform;
+  }
+
+  @keyframes vmv-loader-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vmv-loader__ring {
+      animation-duration: 6s;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap'
+  import { $, $$ } from '@/lib/dom-selector'
+
+  // El spinner se ve un mínimo aunque los medios ya estén en caché.
+  const MIN_SPINNER_MS = 2600
+  const MAX_WAIT_MS = 9000
+
+  type LenisLike = { start: () => void; stop: () => void }
+
+  const getLenis = () => (window as unknown as { lenis?: LenisLike }).lenis ?? null
+
+  const markDone = () => {
+    document.documentElement.classList.remove('is-loading')
+    getLenis()?.start()
+  }
+
+  const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms))
+
+  /** Se resuelve cuando videos e imágenes no diferidas ya pueden pintarse. */
+  function mediaReady() {
+    const pending: Promise<unknown>[] = []
+
+    $$<HTMLVideoElement>('video').forEach((video) => {
+      if (video.readyState >= 3) return
+      pending.push(
+        new Promise<void>((resolve) => {
+          const done = () => resolve()
+          video.addEventListener('canplay', done, { once: true })
+          video.addEventListener('loadeddata', done, { once: true })
+          video.addEventListener('error', done, { once: true })
+        }),
+      )
+    })
+
+    $$<HTMLImageElement>('img').forEach((image) => {
+      if (image.complete || image.loading === 'lazy') return
+      pending.push(
+        new Promise<void>((resolve) => {
+          image.addEventListener('load', () => resolve(), { once: true })
+          image.addEventListener('error', () => resolve(), { once: true })
+        }),
+      )
+    })
+
+    return Promise.all(pending)
+  }
+
+  async function runLoader() {
+    const loader = $<HTMLElement>('#site-loader')
+    if (!loader) return
+
+    loader.dataset.loaderActive = 'true'
+    document.documentElement.classList.add('is-loading')
+    getLenis()?.stop()
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const spinner = $<HTMLElement>('[data-loader-spinner]', loader)
+    const phrases = $$<HTMLElement>('[data-loader-phrase]', loader)
+
+    // La carga real manda, pero el spinner se ve un mínimo y nunca bloquea de más.
+    await Promise.race([Promise.all([mediaReady(), wait(MIN_SPINNER_MS)]), wait(MAX_WAIT_MS)])
+
+    const finish = () => {
+      loader.remove()
+      markDone()
+    }
+
+    if (prefersReducedMotion) {
+      gsap.to(loader, { autoAlpha: 0, duration: 0.4, onComplete: finish })
+      return
+    }
+
+    const timeline = gsap.timeline({ onComplete: finish })
+
+    // El spinner sale y cede el lugar a las frases.
+    timeline.to(spinner, { autoAlpha: 0, yPercent: -18, duration: 0.6, ease: 'power2.inOut' })
+
+    phrases.forEach((phrase) => {
+      const words = $$<HTMLElement>('[data-loader-word]', phrase)
+
+      timeline
+        .set(phrase, { opacity: 1 })
+        .fromTo(
+          words,
+          { yPercent: -130 },
+          { yPercent: 0, duration: 0.9, ease: 'power3.out', stagger: 0.09 },
+        )
+        .to({}, { duration: 1.3 })
+        .to(words, { yPercent: 130, duration: 0.7, ease: 'power3.in', stagger: 0.06 })
+        .set(phrase, { opacity: 0 })
+    })
+
+    // Revelado final del sitio.
+    timeline.to(loader, { autoAlpha: 0, duration: 0.7, ease: 'power2.inOut' }, '-=0.15')
+  }
+
+  runLoader()
+
+  // Este módulo solo corre en la primera carga: tras una navegación con
+  // ClientRouter el markup del loader vuelve al DOM y hay que retirarlo.
+  document.addEventListener('astro:page-load', () => {
+    const current = $<HTMLElement>('#site-loader')
+    // `astro:page-load` también se dispara en la carga inicial: ahí el loader
+    // está corriendo y no debe tocarse.
+    if (!current || current.dataset.loaderActive === 'true') return
+    current.remove()
+    markDone()
+  })
+</script>
