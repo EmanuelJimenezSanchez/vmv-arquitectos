@@ -171,15 +171,15 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
   }
 
   const handleCoverUpload = async (file: File) => {
-    const url = await upload(file, 'services')
-    if (url) patch({ imageUrl: url })
+    const uploaded = await upload(file, 'services')
+    if (uploaded) patch({ imageUrl: uploaded.url })
   }
 
   const handleGalleryUpload = async (files: FileList) => {
     const uploaded: Foto[] = []
     for (const file of Array.from(files)) {
-      const url = await upload(file, 'services')
-      if (url) uploaded.push({ src: url, alt: '' })
+      const result = await upload(file, 'services')
+      if (result) uploaded.push({ src: result.url, alt: '' })
     }
     if (uploaded.length > 0) {
       setDraft((current) => ({ ...current!, gallery: [...current!.gallery, ...uploaded] }))
