@@ -64,6 +64,8 @@ export interface ProyectoFotoRow {
   src: string
   alt: string
   ancha: boolean
+  width: number | null
+  height: number | null
   orden: number
 }
 
@@ -74,6 +76,8 @@ export interface ProyectoDocumentoRow {
   descripcion: string
   preview_url: string | null
   archivo_url: string | null
+  preview_width: number | null
+  preview_height: number | null
   orden: number
 }
 
