@@ -131,12 +131,16 @@ export interface ProyectoFoto {
   src: string
   alt: string
   ancha: boolean
+  width: number | null
+  height: number | null
 }
 
 export interface ProyectoDocumento {
   titulo: string
   descripcion: string
   preview: string
+  previewWidth: number | null
+  previewHeight: number | null
   archivo: string
 }
 
@@ -169,8 +173,8 @@ export interface Proyecto {
 const PROYECTO_SELECT =
   'id, slug, title, tagline, resumen, descripcion, cover_url, cover_alt, firma, tipologia, anio,' +
   ' area, ubicacion, niveles, orden, publicado, updated_at,' +
-  ' proyecto_fotos(id, proyecto_id, src, alt, ancha, orden),' +
-  ' proyecto_documentos(id, proyecto_id, titulo, descripcion, preview_url, archivo_url, orden),' +
+  ' proyecto_fotos(id, proyecto_id, src, alt, ancha, width, height, orden),' +
+  ' proyecto_documentos(id, proyecto_id, titulo, descripcion, preview_url, archivo_url, preview_width, preview_height, orden),' +
   ' proyecto_creditos(id, proyecto_id, rol, nombre, orden)'
 
 type ProyectoJoined = ProyectoRow & {
@@ -224,6 +228,8 @@ const toProyecto = (row: ProyectoJoined): Proyecto => ({
     src: foto.src,
     alt: foto.alt,
     ancha: foto.ancha,
+    width: foto.width,
+    height: foto.height,
   })),
   documentos: byOrden(row.proyecto_documentos)
     // Sin imagen no hay nada que enseñar en la página.
@@ -232,6 +238,8 @@ const toProyecto = (row: ProyectoJoined): Proyecto => ({
       titulo: doc.titulo,
       descripcion: doc.descripcion,
       preview: doc.preview_url ?? '',
+      previewWidth: doc.preview_width,
+      previewHeight: doc.preview_height,
       archivo: doc.archivo_url ?? '',
     })),
   creditos: toCreditos(row.proyecto_creditos),
