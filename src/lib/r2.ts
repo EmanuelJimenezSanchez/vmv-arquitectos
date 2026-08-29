@@ -10,13 +10,24 @@ const PUBLIC_URL = import.meta.env.R2_BUCKET_URL?.replace(/\/+$/, '')
 /** Tipos permitidos en la subida; evita que el bucket reciba cualquier archivo. */
 export const ALLOWED_MIME_TYPES = ['image/webp', 'image/jpeg', 'image/png', 'image/avif'] as const
 
+/**
+ * Los planos de un proyecto se ofrecen además como PDF descargable, así que
+ * ese tipo se permite aparte del de las imágenes: la action de firma decide
+ * cuál aplica según la carpeta destino.
+ */
+export const ALLOWED_DOCUMENT_MIME_TYPES = ['application/pdf'] as const
+
 export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
+
+/** Los PDF de planos pesan más que una foto ya optimizada. */
+export const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024
 
 const EXTENSION_BY_MIME: Record<string, string> = {
   'image/webp': 'webp',
   'image/jpeg': 'jpg',
   'image/png': 'png',
   'image/avif': 'avif',
+  'application/pdf': 'pdf',
 }
 
 let client: S3Client | null = null
