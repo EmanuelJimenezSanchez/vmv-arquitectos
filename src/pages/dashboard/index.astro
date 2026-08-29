@@ -3,13 +3,21 @@ import DashboardLayout from '@/layouts/DashboardLayout.astro'
 
 const { supabase, user } = Astro.locals
 
-const [servicios, fotos, galeria] = await Promise.all([
+const [servicios, fotos, galeria, proyectos, proyectoFotos] = await Promise.all([
   supabase.from('servicios').select('id', { count: 'exact', head: true }),
   supabase.from('servicio_fotos').select('id', { count: 'exact', head: true }),
   supabase.from('galeria').select('id', { count: 'exact', head: true }),
+  supabase.from('proyectos').select('id', { count: 'exact', head: true }),
+  supabase.from('proyecto_fotos').select('id', { count: 'exact', head: true }),
 ])
 
 const tarjetas = [
+  {
+    href: '/dashboard/proyectos',
+    label: 'Proyectos',
+    total: proyectos.count ?? 0,
+    detalle: `${proyectoFotos.count ?? 0} fotos en sus galerías`,
+  },
   {
     href: '/dashboard/servicios',
     label: 'Servicios',
