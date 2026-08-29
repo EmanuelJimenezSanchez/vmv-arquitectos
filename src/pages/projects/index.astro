@@ -1,17 +1,30 @@
 ---
 import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
-import { projects } from '@/data/projects'
+import { getProyectos } from '@/lib/content'
 
 const title = 'Proyectos | VMV Arquitectos'
 const description =
   'Portafolio de VMV Arquitectos: arquitectura, interiorismo y construcción en proyectos residenciales y comerciales.'
 const canonical = 'https://www.vmv-arquitectos.com/projects'
 
+const projects = await getProyectos()
+
 const totalLabel = String(projects.length).padStart(2, '0')
-const heroImage = projects[0]?.coverImage
-const years = projects.map((project) => project.year)
+const heroImage = projects.find((project) => project.cover)?.cover
+const years = projects
+  .map((project) => project.anio)
+  .filter((anio): anio is number => typeof anio === 'number')
 const rangeLabel = years.length ? `${Math.min(...years)} — ${Math.max(...years)}` : ''
+
+/** Chips de la ficha: solo los campos que el panel dejó llenos. */
+const fichaChips = (project: (typeof projects)[number]) =>
+  [project.tipologia, project.area, project.niveles && `${project.niveles} niveles`].filter(Boolean)
+
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
+)
 ---
 
 <Layout title={title} description={description} canonical={canonical}>
@@ -97,8 +110,8 @@ const rangeLabel = years.length ? `${Math.min(...years)} — ${Math.max(...years
                 >
                   <div class="absolute inset-0 transition-transform duration-900 ease-vmv group-hover:scale-[1.05]">
                     <img
-                      src={project.coverImage}
-                      alt={`Vista del proyecto ${project.title}`}
+                      src={project.cover}
+                      alt={project.coverAlt}
                       class="h-full w-full object-cover grayscale transition-[filter] duration-700 ease-vmv group-hover:grayscale-0"
                       loading="lazy"
                       decoding="async"
@@ -133,15 +146,15 @@ const rangeLabel = years.length ? `${Math.min(...years)} — ${Math.max(...years
                   </h3>
 
                   <p class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
-                    {project.location} · {project.year}
+                    {[project.ubicacion, project.anio].filter(Boolean).join(" · ")}
                   </p>
 
-                  <p class="vmv-body-2 max-w-[52ch] text-vmv-muted-foreground">{project.summary}</p>
+                  <p class="vmv-body-2 max-w-[52ch] text-vmv-muted-foreground">{project.resumen || project.tagline}</p>
 
                   <ul class="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    {project.services.map((service) => (
+                    {fichaChips(project).map((chip) => (
                       <li class="vmv-caption-1 border border-vmv-border px-3 py-1 tracking-[0.16em] text-vmv-muted-foreground uppercase">
-                        {service}
+                        {chip}
                       </li>
                     ))}
                   </ul>
