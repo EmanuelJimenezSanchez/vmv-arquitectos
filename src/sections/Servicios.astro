@@ -14,7 +14,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
   aria-label="Servicios de la constructora"
 >
   <div
-    class="relative min-[900px]:motion-safe:h-screen min-[900px]:motion-safe:overflow-hidden"
+    class="relative min-[900px]:motion-safe:h-screen min-[900px]:motion-safe:snap-x min-[900px]:motion-safe:snap-proximity min-[900px]:motion-safe:scroll-px-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:overflow-x-auto min-[900px]:motion-safe:overflow-y-hidden min-[900px]:motion-safe:overscroll-x-contain min-[900px]:motion-safe:scrollbar-none min-[900px]:motion-safe:[&::-webkit-scrollbar]:hidden"
     data-servicios-stage
   >
     <div
@@ -38,7 +38,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       data-servicios-track
     >
       <header
-        class="flex flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-left min-[900px]:motion-safe:w-[clamp(24rem,36vw,32rem)] min-[900px]:motion-safe:shrink-0 min-[900px]:motion-safe:px-0 min-[900px]:motion-safe:pr-[clamp(2rem,5vw,5rem)]"
+        class="flex flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-left min-[900px]:motion-safe:snap-start min-[900px]:motion-safe:w-[clamp(24rem,36vw,32rem)] min-[900px]:motion-safe:shrink-0 min-[900px]:motion-safe:px-0 min-[900px]:motion-safe:pr-[clamp(2rem,5vw,5rem)]"
         data-servicios-intro
       >
         <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
@@ -136,10 +136,11 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         }
       </div>
     </div>
+  </div>
 
-    <footer
-      class="pointer-events-none absolute inset-x-0 top-[calc(50dvh+clamp(9rem,26dvh,14.5rem)+clamp(0.5rem,2dvh,1.5rem)+1.5rem)] z-2 hidden justify-center min-[900px]:motion-safe:flex"
-    >
+  <footer
+    class="pointer-events-none absolute inset-x-0 top-[calc(50dvh+clamp(9rem,26dvh,14.5rem)+clamp(0.5rem,2dvh,1.5rem)+1.5rem)] z-2 hidden justify-center min-[900px]:motion-safe:flex"
+  >
       <!-- <span
         class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase"
         aria-hidden="true"
@@ -191,8 +192,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         >
         </div>
       </div> -->
-    </footer>
-  </div>
+  </footer>
 
   <ServiciosGaleriaModal servicios={servicios} />
 </section>
@@ -272,10 +272,6 @@ const totalLabel = String(servicios.length).padStart(2, '0')
 
     // Debe coincidir con las variantes `min-[900px]:motion-safe:` del markup.
     mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-      const getDistance = () => track.scrollWidth - stage.clientWidth
-
-      const scrollFactor = 2.6
-
       const splits = words.map((word) => new SplitText(word, { type: 'chars', aria: 'none' }))
 
       let activeWordIndex = -1
@@ -330,6 +326,26 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         }
       }
 
+      // Posición de scroll con la que cada tarjeta queda alineada contra el
+      // borde izquierdo. La primera es 0 para que el encabezado del riel
+      // siga siendo el punto de partida. Las últimas se recortan al máximo
+      // scrolleable: ya entran juntas en pantalla, así que comparten
+      // posición aunque sigan siendo servicios distintos.
+      const cardOffset = (card: HTMLElement) => card.offsetLeft - track.offsetLeft
+      const scrollPadding = () => parseFloat(getComputedStyle(stage).scrollPaddingLeft) || 0
+      const maxScroll = () => Math.max(stage.scrollWidth - stage.clientWidth, 0)
+
+      const stopFor = (index: number) => {
+        if (index <= 0) {
+          return 0
+        }
+        const card = cards[index]
+        if (!card) {
+          return 0
+        }
+        return Math.min(Math.max(cardOffset(card) - scrollPadding(), 0), maxScroll())
+      }
+
       const updateNavButtons = () => {
         if (prevButton) {
           prevButton.disabled = currentIndex <= 0
@@ -339,42 +355,66 @@ const totalLabel = String(servicios.length).padStart(2, '0')
         }
       }
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: () => `+=${getDistance() * scrollFactor}`,
-          scrub: 2.5,
-          pin: stage,
-          pinSpacing: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            currentIndex = Math.round(self.progress * (cards.length - 1))
-            if (counter) {
-              counter.textContent = String(currentIndex + 1).padStart(2, '0')
-            }
-            setActiveWord(currentIndex)
-            setActiveCard(currentIndex)
-            updateNavButtons()
-          },
-        },
-      })
+      const syncVisuals = () => {
+        const progress = maxScroll() > 0 ? stage.scrollLeft / maxScroll() : 0
+        if (counter) {
+          counter.textContent = String(currentIndex + 1).padStart(2, '0')
+        }
+        if (progressBar) {
+          gsap.set(progressBar, { scaleX: progress })
+        }
+        if (wordsLayer) {
+          gsap.set(wordsLayer, { xPercent: progress * -5 })
+        }
+        setActiveWord(currentIndex)
+        setActiveCard(currentIndex)
+        updateNavButtons()
+      }
+
+      // Los botones mandan sobre el índice activo: las últimas tarjetas
+      // comparten posición de scroll (el riel ya llegó al final), así que
+      // si el índice se recalculara desde `scrollLeft` la navegación se
+      // quedaría trabada en la última posición distinta y no se podrían
+      // seleccionar los servicios finales. Mientras el scroll suave de un
+      // botón está en curso, se ignora lo que diga la posición.
+      let navScrolling = false
+      let navScrollTimeout = 0
+
+      const releaseNavScroll = () => {
+        navScrolling = false
+      }
 
       const goToIndex = (index: number) => {
-        const scrollTrigger = tl.scrollTrigger
-        if (!scrollTrigger) {
+        const clamped = Math.max(0, Math.min(cards.length - 1, index))
+        if (clamped === currentIndex) {
           return
         }
-        const clampedIndex = Math.max(0, Math.min(cards.length - 1, index))
-        const progress = cards.length > 1 ? clampedIndex / (cards.length - 1) : 0
-        const target = scrollTrigger.start + progress * (scrollTrigger.end - scrollTrigger.start)
-        const lenis = window.lenis
-        if (lenis) {
-          lenis.scrollTo(target, { duration: 1.2 })
-        } else {
-          window.scrollTo({ top: target, behavior: 'smooth' })
+        currentIndex = clamped
+        navScrolling = true
+        window.clearTimeout(navScrollTimeout)
+        navScrollTimeout = window.setTimeout(releaseNavScroll, 700)
+        syncVisuals()
+        stage.scrollTo({ left: stopFor(clamped), behavior: 'smooth' })
+      }
+
+      // Scroll manual (arrastre, trackpad, barra): el índice sí se deduce
+      // de la posición, tomando la tarjeta con la parada más cercana.
+      const syncFromScroll = () => {
+        if (navScrolling) {
+          syncVisuals()
+          return
         }
+        let nearest = 0
+        let best = Infinity
+        cards.forEach((_, index) => {
+          const distance = Math.abs(stopFor(index) - stage.scrollLeft)
+          if (distance < best) {
+            best = distance
+            nearest = index
+          }
+        })
+        currentIndex = nearest
+        syncVisuals()
       }
 
       const navController = new AbortController()
@@ -384,44 +424,24 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       nextButton?.addEventListener('click', () => goToIndex(currentIndex + 1), {
         signal: navController.signal,
       })
-      updateNavButtons()
-
-      tl.to(track, {
-        x: () => -getDistance(),
-        ease: 'none',
+      stage.addEventListener('scroll', syncFromScroll, {
+        passive: true,
+        signal: navController.signal,
       })
+      stage.addEventListener('scrollend', releaseNavScroll, { signal: navController.signal })
+      stage.addEventListener('pointerdown', releaseNavScroll, {
+        passive: true,
+        signal: navController.signal,
+      })
+      stage.addEventListener('wheel', releaseNavScroll, {
+        passive: true,
+        signal: navController.signal,
+      })
+      window.addEventListener('resize', syncFromScroll, { signal: navController.signal })
 
-      if (progressBar) {
-        tl.fromTo(progressBar, { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0)
-      }
-
-      if (wordsLayer) {
-        tl.to(wordsLayer, { xPercent: -5, ease: 'none', duration: 1 }, 0)
-      }
       setActiveWord(0)
       setActiveCard(0)
-
-      // cards.forEach((card, index) => {
-      //   const image = images[index]
-      //   if (!image) {
-      //     return
-      //   }
-      //   gsap.fromTo(
-      //     image,
-      //     { xPercent: -4 },
-      //     {
-      //       xPercent: 4,
-      //       ease: 'none',
-      //       scrollTrigger: {
-      //         trigger: card,
-      //         containerAnimation: tl,
-      //         start: 'left right',
-      //         end: 'right left',
-      //         scrub: true,
-      //       },
-      //     },
-      //   )
-      // })
+      syncVisuals()
 
       const entrance = [intro, ...cards].filter(Boolean)
       gsap.from(entrance, {
@@ -439,6 +459,7 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       // SplitText altera el DOM: restaurar el markup original al revertir.
       return () => {
         navController.abort()
+        window.clearTimeout(navScrollTimeout)
         cards.forEach((card) => delete card.dataset.active)
         splits.forEach((split) => split.revert())
       }
