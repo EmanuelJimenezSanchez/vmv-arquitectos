@@ -1,5 +1,13 @@
 import { supabasePublic } from '@/lib/supabase/server'
-import type { GaleriaRow, ServicioFotoRow, ServicioRow } from '@/lib/supabase/types'
+import type {
+  GaleriaRow,
+  ProyectoCreditoRow,
+  ProyectoDocumentoRow,
+  ProyectoFotoRow,
+  ProyectoRow,
+  ServicioFotoRow,
+  ServicioRow,
+} from '@/lib/supabase/types'
 
 /**
  * Tipos de dominio que consumen las secciones públicas. Se mantienen con la
@@ -118,3 +126,133 @@ export const getGaleria = (): Promise<Galeria[]> =>
       },
     }))
   })
+
+export interface ProyectoFoto {
+  src: string
+  alt: string
+  ancha: boolean
+}
+
+export interface ProyectoDocumento {
+  titulo: string
+  descripcion: string
+  preview: string
+  archivo: string
+}
+
+/** Colaboradores agrupados por rol, en el orden en que se capturaron. */
+export interface ProyectoCreditoGrupo {
+  rol: string
+  nombres: string[]
+}
+
+export interface Proyecto {
+  id: string
+  title: string
+  tagline: string
+  resumen: string
+  /** `descripcion` ya separada en párrafos. */
+  parrafos: string[]
+  cover: string
+  coverAlt: string
+  firma: string
+  tipologia: string
+  anio: number | null
+  area: string
+  ubicacion: string
+  niveles: string
+  fotos: ProyectoFoto[]
+  documentos: ProyectoDocumento[]
+  creditos: ProyectoCreditoGrupo[]
+}
+
+const PROYECTO_SELECT =
+  'id, slug, title, tagline, resumen, descripcion, cover_url, cover_alt, firma, tipologia, anio,' +
+  ' area, ubicacion, niveles, orden, publicado, updated_at,' +
+  ' proyecto_fotos(id, proyecto_id, src, alt, ancha, orden),' +
+  ' proyecto_documentos(id, proyecto_id, titulo, descripcion, preview_url, archivo_url, orden),' +
+  ' proyecto_creditos(id, proyecto_id, rol, nombre, orden)'
+
+type ProyectoJoined = ProyectoRow & {
+  proyecto_fotos: ProyectoFotoRow[]
+  proyecto_documentos: ProyectoDocumentoRow[]
+  proyecto_creditos: ProyectoCreditoRow[]
+}
+
+const byOrden = <T extends { orden: number }>(rows: T[] | null | undefined): T[] =>
+  [...(rows ?? [])].sort((a, b) => a.orden - b.orden)
+
+/**
+ * El cuerpo se captura como un solo texto en el panel; aquí se parte en
+ * párrafos por línea en blanco, que es como se escribe de forma natural.
+ */
+const toParrafos = (descripcion: string): string[] =>
+  descripcion
+    .split(/\n\s*\n/)
+    .map((parrafo) => parrafo.trim())
+    .filter(Boolean)
+
+/** Agrupa los créditos por rol conservando el orden de captura. */
+const toCreditos = (rows: ProyectoCreditoRow[]): ProyectoCreditoGrupo[] => {
+  const grupos = new Map<string, string[]>()
+  byOrden(rows).forEach((row) => {
+    const nombres = grupos.get(row.rol)
+    if (nombres) {
+      nombres.push(row.nombre)
+    } else {
+      grupos.set(row.rol, [row.nombre])
+    }
+  })
+  return [...grupos].map(([rol, nombres]) => ({ rol, nombres }))
+}
+
+const toProyecto = (row: ProyectoJoined): Proyecto => ({
+  id: row.slug,
+  title: row.title,
+  tagline: row.tagline,
+  resumen: row.resumen,
+  parrafos: toParrafos(row.descripcion),
+  cover: row.cover_url ?? '',
+  coverAlt: row.cover_alt || `Proyecto ${row.title} de VMV Arquitectos`,
+  firma: row.firma,
+  tipologia: row.tipologia,
+  anio: row.anio,
+  area: row.area,
+  ubicacion: row.ubicacion,
+  niveles: row.niveles,
+  fotos: byOrden(row.proyecto_fotos).map((foto) => ({
+    src: foto.src,
+    alt: foto.alt,
+    ancha: foto.ancha,
+  })),
+  documentos: byOrden(row.proyecto_documentos)
+    // Sin imagen no hay nada que enseñar en la página.
+    .filter((doc) => Boolean(doc.preview_url))
+    .map((doc) => ({
+      titulo: doc.titulo,
+      descripcion: doc.descripcion,
+      preview: doc.preview_url ?? '',
+      archivo: doc.archivo_url ?? '',
+    })),
+  creditos: toCreditos(row.proyecto_creditos),
+})
+
+export const getProyectos = (): Promise<Proyecto[]> =>
+  cached('proyectos', async () => {
+    const { data, error } = await supabasePublic
+      .from('proyectos')
+      .select(PROYECTO_SELECT)
+      .eq('publicado', true)
+      .order('orden', { ascending: true })
+
+    if (error) {
+      throw new Error(`No se pudieron cargar los proyectos: ${error.message}`)
+    }
+
+    return ((data ?? []) as unknown as ProyectoJoined[]).map(toProyecto)
+  })
+
+export const getProyectoBySlug = async (slug: string): Promise<Proyecto | undefined> => {
+  const proyectos = await getProyectos()
+  return proyectos.find((proyecto) => proyecto.id === slug)
+}
