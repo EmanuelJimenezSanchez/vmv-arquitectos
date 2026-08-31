@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { actions } from 'astro:actions'
-import { Banner, Button, Field, inputClass, slugify } from './ui'
+import { AspectHint, Banner, Button, Field, inputClass, slugify } from './ui'
 import { useUpload } from './useUpload'
 
 export interface GaleriaRecord {
@@ -152,15 +152,22 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
     label,
     value,
     target,
+    ratio,
+    ratioLabel,
+    note,
   }: {
     label: string
     value: string | null
     target: 'imageDesktop' | 'imageMobile'
+    ratio: [number, number]
+    ratioLabel: string
+    note: string
   }) => (
     <div className="flex flex-col gap-3">
       <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
         {label}
       </span>
+      <AspectHint ratio={ratio} label={ratioLabel} note={note} />
       {value ? (
         <img src={value} alt="" className="h-32 w-full border border-vmv-border object-cover" />
       ) : (
@@ -258,8 +265,22 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
           </Field>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <ImageSlot label="Escritorio" value={draft.imageDesktop} target="imageDesktop" />
-            <ImageSlot label="Móvil" value={draft.imageMobile} target="imageMobile" />
+            <ImageSlot
+              label="Escritorio"
+              value={draft.imageDesktop}
+              target="imageDesktop"
+              ratio={[16, 9]}
+              ratioLabel="Horizontal 16:9"
+              note="Se abre a pantalla completa en escritorio."
+            />
+            <ImageSlot
+              label="Móvil"
+              value={draft.imageMobile}
+              target="imageMobile"
+              ratio={[9, 16]}
+              ratioLabel="Vertical 9:16"
+              note="La misma toma, reencuadrada en vertical para el celular."
+            />
           </div>
 
           <footer className="flex flex-wrap items-center gap-3">
