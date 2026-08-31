@@ -1,9 +1,16 @@
 import { useMemo, useRef, useState } from 'react'
 import { actions } from 'astro:actions'
-import { AspectHint, Banner, Button, Field, inputClass, slugify } from './ui'
+import {
+  AspectHint,
+  Banner,
+  Button,
+  Field,
+  FileDrop,
+  IMAGE_ACCEPT,
+  inputClass,
+  slugify,
+} from './ui'
 import { useUpload } from './useUpload'
-
-const IMAGE_ACCEPT = 'image/webp,image/jpeg,image/png,image/avif'
 
 interface Foto {
   id?: string
@@ -274,12 +281,18 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
     if (uploaded) patch({ coverUrl: uploaded.url })
   }
 
-  const handleFotosUpload = async (files: FileList) => {
+  const handleFotosUpload = async (files: File[]) => {
     const uploaded: Foto[] = []
-    for (const file of Array.from(files)) {
+    for (const file of files) {
       const result = await upload(file, 'proyectos')
       if (result) {
-        uploaded.push({ src: result.url, alt: '', ancha: false, width: result.width, height: result.height })
+        uploaded.push({
+          src: result.url,
+          alt: '',
+          ancha: false,
+          width: result.width,
+          height: result.height,
+        })
       }
     }
     if (uploaded.length > 0) {
@@ -411,33 +424,33 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
               label="Horizontal 16:9"
               note="Se recorta distinto en cada sitio (pantalla completa, listado 4:3, siguiente proyecto): deja lo importante al centro."
             />
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-start gap-4">
               {draft.coverUrl ? (
                 <img
                   src={draft.coverUrl}
                   alt=""
-                  className="h-28 w-44 border border-vmv-border object-cover"
+                  className="h-28 w-44 shrink-0 border border-vmv-border object-cover"
                 />
               ) : (
-                <div className="vmv-caption-1 flex h-28 w-44 items-center justify-center border border-dashed border-vmv-border text-vmv-muted-foreground">
+                <div className="vmv-caption-1 flex h-28 w-44 shrink-0 items-center justify-center border border-dashed border-vmv-border text-vmv-muted-foreground">
                   Sin portada
                 </div>
               )}
-              <input
-                type="file"
-                accept={IMAGE_ACCEPT}
-                className="vmv-body-3 text-vmv-muted-foreground"
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  if (file) void handleCoverUpload(file)
-                  event.target.value = ''
-                }}
-              />
-              {draft.coverUrl && (
-                <Button variant="ghost" onClick={() => patch({ coverUrl: null })}>
-                  Quitar
-                </Button>
-              )}
+              <div className="flex min-w-[15rem] flex-1 flex-col gap-2">
+                <FileDrop
+                  accept={IMAGE_ACCEPT}
+                  busy={uploading}
+                  label={draft.coverUrl ? 'Arrastra otra portada aquí' : 'Arrastra la portada aquí'}
+                  onFiles={(files) => void handleCoverUpload(files[0])}
+                />
+                {draft.coverUrl && (
+                  <div className="flex justify-end">
+                    <Button variant="ghost" onClick={() => patch({ coverUrl: null })}>
+                      Quitar portada
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -496,25 +509,13 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
 
         {/* ─── Galería ─────────────────────────────────── */}
         <section className="flex flex-col gap-4 border border-vmv-border p-[clamp(1rem,3vw,1.75rem)]">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
-                Galería ({draft.fotos.length})
-              </h2>
-              <p className="vmv-caption-1 text-vmv-muted-foreground">
-                Se comprimen y reescalan al subirlas: puedes soltar los originales.
-              </p>
-            </div>
-            <input
-              type="file"
-              multiple
-              accept={IMAGE_ACCEPT}
-              className="vmv-body-3 text-vmv-muted-foreground"
-              onChange={(event) => {
-                if (event.target.files?.length) void handleFotosUpload(event.target.files)
-                event.target.value = ''
-              }}
-            />
+          <div>
+            <h2 className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
+              Galería ({draft.fotos.length})
+            </h2>
+            <p className="vmv-caption-1 text-vmv-muted-foreground">
+              Se comprimen y reescalan al subirlas: puedes soltar los originales.
+            </p>
           </div>
 
           {/* Las dos formas que puede tomar una foto en el mosaico; la de cada
@@ -532,6 +533,15 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
             />
           </div>
 
+          <FileDrop
+            accept={IMAGE_ACCEPT}
+            multiple
+            busy={uploading}
+            label="Arrastra aquí las fotos de la galería"
+            hint="o haz clic para seleccionarlas; puedes soltar varias a la vez"
+            onFiles={(files) => void handleFotosUpload(files)}
+          />
+
           {draft.fotos.length === 0 ? (
             <p className="vmv-body-3 border border-dashed border-vmv-border px-4 py-6 text-center text-vmv-muted-foreground">
               Aún no hay fotos. Súbelas para que aparezcan en la galería del proyecto.
@@ -539,7 +549,10 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {draft.fotos.map((foto, index) => (
-                <li key={`${foto.src}-${index}`} className="flex gap-3 border border-vmv-border p-3">
+                <li
+                  key={`${foto.src}-${index}`}
+                  className="flex gap-3 border border-vmv-border p-3"
+                >
                   <img src={foto.src} alt="" className="h-20 w-20 shrink-0 object-cover" />
                   <div className="flex min-w-0 flex-1 flex-col gap-2">
                     <input
@@ -692,53 +705,48 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                         Sin imagen
                       </div>
                     )}
-                    <div className="flex flex-col gap-2">
-                      <label className="vmv-caption-1 flex flex-wrap items-center gap-2 text-vmv-muted-foreground">
-                        Imagen del plano
-                        <input
-                          type="file"
-                          accept={IMAGE_ACCEPT}
-                          className="vmv-body-3"
-                          onChange={async (event) => {
-                            const file = event.target.files?.[0]
-                            event.target.value = ''
-                            if (!file) return
-                            const uploaded = await upload(file, 'planos')
-                            if (uploaded) {
-                              patchDocumento(index, {
-                                preview_url: uploaded.url,
-                                preview_width: uploaded.width,
-                                preview_height: uploaded.height,
-                              })
-                            }
-                          }}
-                        />
-                      </label>
-                      <label className="vmv-caption-1 flex flex-wrap items-center gap-2 text-vmv-muted-foreground">
-                        PDF descargable (opcional)
-                        <input
-                          type="file"
-                          accept="application/pdf"
-                          className="vmv-body-3"
-                          onChange={async (event) => {
-                            const file = event.target.files?.[0]
-                            event.target.value = ''
-                            if (!file) return
-                            const uploaded = await upload(file, 'planos')
-                            if (uploaded) patchDocumento(index, { archivo_url: uploaded.url })
-                          }}
-                        />
-                      </label>
+                    <div className="flex min-w-[15rem] flex-1 flex-col gap-2">
+                      <FileDrop
+                        accept={IMAGE_ACCEPT}
+                        busy={uploading}
+                        compact
+                        label="Imagen del plano"
+                        hint="arrástrala o haz clic para seleccionarla"
+                        onFiles={async (files) => {
+                          const uploaded = await upload(files[0], 'planos')
+                          if (uploaded) {
+                            patchDocumento(index, {
+                              preview_url: uploaded.url,
+                              preview_width: uploaded.width,
+                              preview_height: uploaded.height,
+                            })
+                          }
+                        }}
+                      />
+                      <FileDrop
+                        accept="application/pdf,.pdf"
+                        busy={uploading}
+                        compact
+                        label="PDF descargable (opcional)"
+                        hint={
+                          doc.archivo_url
+                            ? 'PDF cargado: suelta otro para reemplazarlo'
+                            : 'arrástralo o haz clic para seleccionarlo'
+                        }
+                        onFiles={async (files) => {
+                          const uploaded = await upload(files[0], 'planos')
+                          if (uploaded) patchDocumento(index, { archivo_url: uploaded.url })
+                        }}
+                      />
                       {doc.archivo_url && (
-                        <span className="vmv-caption-1 flex items-center gap-2 text-vmv-muted-foreground">
-                          PDF cargado
+                        <div className="flex justify-end">
                           <Button
                             variant="ghost"
                             onClick={() => patchDocumento(index, { archivo_url: null })}
                           >
-                            Quitar
+                            Quitar PDF
                           </Button>
-                        </span>
+                        </div>
                       )}
                     </div>
                   </div>
