@@ -1,6 +1,15 @@
 import { useMemo, useRef, useState } from 'react'
 import { actions } from 'astro:actions'
-import { AspectHint, Banner, Button, Field, inputClass, slugify } from './ui'
+import {
+  AspectHint,
+  Banner,
+  Button,
+  Field,
+  FileDrop,
+  IMAGE_ACCEPT,
+  inputClass,
+  slugify,
+} from './ui'
 import { useUpload } from './useUpload'
 
 export interface GaleriaRecord {
@@ -175,23 +184,19 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
           Sin imagen
         </div>
       )}
-      <div className="flex flex-wrap items-center gap-3">
-        <input
-          type="file"
-          accept="image/webp,image/jpeg,image/png,image/avif"
-          className="vmv-body-3 text-vmv-muted-foreground"
-          onChange={(event) => {
-            const file = event.target.files?.[0]
-            if (file) void uploadInto(file, target)
-            event.target.value = ''
-          }}
-        />
-        {value && (
+      <FileDrop
+        accept={IMAGE_ACCEPT}
+        busy={uploading}
+        label={value ? 'Arrastra otra imagen aquí' : 'Arrastra la imagen aquí'}
+        onFiles={(files) => void uploadInto(files[0], target)}
+      />
+      {value && (
+        <div className="flex justify-end">
           <Button variant="ghost" onClick={() => patch({ [target]: null } as Partial<Draft>)}>
-            Quitar
+            Quitar imagen
           </Button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 
