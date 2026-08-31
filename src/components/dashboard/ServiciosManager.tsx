@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { actions } from 'astro:actions'
-import { Banner, Button, Field, inputClass, slugify } from './ui'
+import { AspectHint, Banner, Button, Field, inputClass, slugify } from './ui'
 import { useUpload } from './useUpload'
 
 interface Foto {
@@ -288,6 +288,11 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
             <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
               Portada
             </span>
+            <AspectHint
+              ratio={[36, 53]}
+              label="Vertical 2:3"
+              note="La tarjeta del servicio es alta y estrecha: una foto horizontal se recorta mucho por los lados."
+            />
             <div className="flex flex-wrap items-center gap-4">
               {draft.imageUrl ? (
                 <img
@@ -334,6 +339,12 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
                 }}
               />
             </div>
+
+            <AspectHint
+              ratio={[16, 10]}
+              label="Horizontal 16:10"
+              note="Es la proporción del visor que se abre al hacer clic en la tarjeta."
+            />
 
             {draft.gallery.length === 0 ? (
               <p className="vmv-body-3 border border-dashed border-vmv-border px-4 py-6 text-center text-vmv-muted-foreground">
