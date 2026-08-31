@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { actions } from 'astro:actions'
-import { Banner, Button, Field, inputClass, slugify } from './ui'
+import { AspectHint, Banner, Button, Field, inputClass, slugify } from './ui'
 import { useUpload } from './useUpload'
 
 const IMAGE_ACCEPT = 'image/webp,image/jpeg,image/png,image/avif'
@@ -406,6 +406,11 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
             <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
               Portada
             </span>
+            <AspectHint
+              ratio={[16, 9]}
+              label="Horizontal 16:9"
+              note="Se recorta distinto en cada sitio (pantalla completa, listado 4:3, siguiente proyecto): deja lo importante al centro."
+            />
             <div className="flex flex-wrap items-center gap-4">
               {draft.coverUrl ? (
                 <img
@@ -512,6 +517,21 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
             />
           </div>
 
+          {/* Las dos formas que puede tomar una foto en el mosaico; la de cada
+              una se elige con la casilla «ocupa el ancho completo». */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <AspectHint
+              ratio={[4, 3]}
+              label="Horizontal 4:3"
+              note="Foto normal: van de dos en dos por fila."
+            />
+            <AspectHint
+              ratio={[16, 9]}
+              label="Horizontal 16:9"
+              note="Foto marcada como «ancho completo»."
+            />
+          </div>
+
           {draft.fotos.length === 0 ? (
             <p className="vmv-body-3 border border-dashed border-vmv-border px-4 py-6 text-center text-vmv-muted-foreground">
               Aún no hay fotos. Súbelas para que aparezcan en la galería del proyecto.
@@ -543,6 +563,19 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                         }}
                       />
                       Ocupa el ancho completo
+                      {/* Recuerda a qué proporción se recorta esta foto con
+                          la casilla como está ahora mismo. */}
+                      <span
+                        className="ml-auto flex items-center gap-1.5 text-vmv-foreground"
+                        title={`Se recorta a ${foto.ancha ? '16:9' : '4:3'}`}
+                      >
+                        <span
+                          className="border border-vmv-sand-9/70 bg-vmv-sand-9/12"
+                          style={foto.ancha ? { width: 24, height: 14 } : { width: 20, height: 15 }}
+                          aria-hidden="true"
+                        />
+                        {foto.ancha ? '16:9' : '4:3'}
+                      </span>
                     </label>
                     <div className="flex items-center gap-1">
                       <Button
@@ -613,6 +646,11 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
               Añadir plano
             </Button>
           </div>
+
+          <AspectHint
+            label="Proporción libre"
+            note="El plano se muestra completo, sin recorte: sube la imagen con la proporción que tenga."
+          />
 
           {draft.documentos.length === 0 ? (
             <p className="vmv-body-3 border border-dashed border-vmv-border px-4 py-6 text-center text-vmv-muted-foreground">
