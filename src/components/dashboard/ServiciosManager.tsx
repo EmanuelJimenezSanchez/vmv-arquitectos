@@ -1,6 +1,15 @@
 import { useMemo, useRef, useState } from 'react'
 import { actions } from 'astro:actions'
-import { AspectHint, Banner, Button, Field, inputClass, slugify } from './ui'
+import {
+  AspectHint,
+  Banner,
+  Button,
+  Field,
+  FileDrop,
+  IMAGE_ACCEPT,
+  inputClass,
+  slugify,
+} from './ui'
 import { useUpload } from './useUpload'
 
 interface Foto {
@@ -175,9 +184,9 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
     if (uploaded) patch({ imageUrl: uploaded.url })
   }
 
-  const handleGalleryUpload = async (files: FileList) => {
+  const handleGalleryUpload = async (files: File[]) => {
     const uploaded: Foto[] = []
-    for (const file of Array.from(files)) {
+    for (const file of files) {
       const result = await upload(file, 'services')
       if (result) uploaded.push({ src: result.url, alt: '' })
     }
@@ -244,7 +253,9 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
             </Field>
             <Field
               label="Slug"
-              hint={slugTaken ? 'Ya existe un servicio con este slug.' : 'Identificador en el sitio.'}
+              hint={
+                slugTaken ? 'Ya existe un servicio con este slug.' : 'Identificador en el sitio.'
+              }
             >
               <input
                 className={inputClass}
@@ -293,57 +304,54 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
               label="Vertical 2:3"
               note="La tarjeta del servicio es alta y estrecha: una foto horizontal se recorta mucho por los lados."
             />
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-start gap-4">
               {draft.imageUrl ? (
                 <img
                   src={draft.imageUrl}
                   alt=""
-                  className="h-28 w-20 border border-vmv-border object-cover"
+                  className="h-28 w-20 shrink-0 border border-vmv-border object-cover"
                 />
               ) : (
-                <div className="vmv-caption-1 flex h-28 w-20 items-center justify-center border border-dashed border-vmv-border text-vmv-muted-foreground">
+                <div className="vmv-caption-1 flex h-28 w-20 shrink-0 items-center justify-center border border-dashed border-vmv-border text-vmv-muted-foreground">
                   Sin foto
                 </div>
               )}
-              <input
-                type="file"
-                accept="image/webp,image/jpeg,image/png,image/avif"
-                className="vmv-body-3 text-vmv-muted-foreground"
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  if (file) void handleCoverUpload(file)
-                  event.target.value = ''
-                }}
-              />
-              {draft.imageUrl && (
-                <Button variant="ghost" onClick={() => patch({ imageUrl: null })}>
-                  Quitar
-                </Button>
-              )}
+              <div className="flex min-w-[15rem] flex-1 flex-col gap-2">
+                <FileDrop
+                  accept={IMAGE_ACCEPT}
+                  busy={uploading}
+                  label={draft.imageUrl ? 'Arrastra otra foto aquí' : 'Arrastra la foto aquí'}
+                  onFiles={(files) => void handleCoverUpload(files[0])}
+                />
+                {draft.imageUrl && (
+                  <div className="flex justify-end">
+                    <Button variant="ghost" onClick={() => patch({ imageUrl: null })}>
+                      Quitar foto
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
-                Galería ({draft.gallery.length})
-              </span>
-              <input
-                type="file"
-                multiple
-                accept="image/webp,image/jpeg,image/png,image/avif"
-                className="vmv-body-3 text-vmv-muted-foreground"
-                onChange={(event) => {
-                  if (event.target.files?.length) void handleGalleryUpload(event.target.files)
-                  event.target.value = ''
-                }}
-              />
-            </div>
+            <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
+              Galería ({draft.gallery.length})
+            </span>
 
             <AspectHint
               ratio={[16, 10]}
               label="Horizontal 16:10"
               note="Es la proporción del visor que se abre al hacer clic en la tarjeta."
+            />
+
+            <FileDrop
+              accept={IMAGE_ACCEPT}
+              multiple
+              busy={uploading}
+              label="Arrastra aquí las fotos de la galería"
+              hint="o haz clic para seleccionarlas; puedes soltar varias a la vez"
+              onFiles={(files) => void handleGalleryUpload(files)}
             />
 
             {draft.gallery.length === 0 ? (
