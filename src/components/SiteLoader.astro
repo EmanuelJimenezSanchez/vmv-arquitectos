@@ -19,6 +19,37 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
 }))
 ---
 
+<style is:inline>
+  /*
+    La capa base del loader va en un estilo inline (no empaquetado por Astro /
+    Vite) para que el primer pintado ya sea del color del tema. Si dependiera
+    del <style> del componente, cualquier instante en que ese CSS no esté
+    aplicado —el swap de estilos del dev server, o el <link> en producción—
+    dejaría --vmv-background sin resolver y el loader arrancaría con el color
+    del tema contrario: ese es el salto de color.
+
+    Por eso el fallback de cada var ya corresponde al tema que resolvió el
+    script inline de Layout.astro; en cuanto global.css está disponible mandan
+    --vmv-background / --vmv-foreground y no hay divergencia.
+  */
+  #site-loader {
+    --loader-bg: var(--vmv-background, #fcfaf6);
+    --loader-ink: var(--vmv-foreground, #1d1b18);
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    background-color: var(--loader-bg);
+    color: var(--loader-ink);
+  }
+
+  html.dark #site-loader {
+    --loader-bg: var(--vmv-background, #12100e);
+    --loader-ink: var(--vmv-foreground, #e9dfd2);
+  }
+</style>
+
 <div
   id="site-loader"
   class="vmv-loader"
@@ -68,18 +99,9 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
 </div>
 
 <style>
-  /* El script inline de Layout.astro resuelve el tema antes de pintar, así que
-     estos tokens ya son los correctos cuando el loader aparece. */
+  /* La capa base (posición, fondo y tokens de color) vive en el
+     <style is:inline> de arriba para que no dependa de este bundle. */
   .vmv-loader {
-    --loader-bg: var(--vmv-background, #17191b);
-    --loader-ink: var(--vmv-foreground, #f5f3f0);
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: grid;
-    place-items: center;
-    background-color: var(--loader-bg);
-    color: var(--loader-ink);
     will-change: opacity;
   }
 
@@ -113,6 +135,10 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     width: 100%;
     height: 100%;
     border-radius: 1px;
+    /* Estado inicial igual al `gsap.set` de abajo, para no ver el aro completo
+       en el primer pintado. */
+    opacity: 0;
+    transform: scaleY(0);
     background-color: var(--loader-ink);
     -webkit-mask-image: linear-gradient(to top, transparent, #000);
     mask-image: linear-gradient(to top, transparent, #000);
