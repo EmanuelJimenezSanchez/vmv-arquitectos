@@ -27,7 +27,7 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
   aria-label="Cargando VMV Arquitectos"
 >
   <div class="vmv-loader__stage" data-loader-spinner>
-    <div class="vmv-loader__ring">
+    <!-- <div class="vmv-loader__ring">
       {
         ticks.map((tick) => (
           <span
@@ -38,12 +38,16 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
           </span>
         ))
       }
-    </div>
+    </div> -->
 
     <span
       class="vmv-loader__logo"
       style={`--logo-mask:url(${logoVmv.src})`}
-      aria-label="VMV Arquitectos"></span>
+      aria-label="VMV Arquitectos"
+      data-loader-logo
+    >
+      <span class="vmv-loader__logo-fill"></span>
+    </span>
   </div>
 
   <div class="vmv-loader__phrases" data-loader-phrases aria-hidden="true">
@@ -110,12 +114,16 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     will-change: transform, opacity;
   }
 
+  /* El logo es la máscara: dentro se pinta una base tenue y encima el relleno
+     que sube según el progreso real de carga (--logo-fill: 0 -> 1). */
   .vmv-loader__logo {
+    --logo-fill: 0;
+    --logo-edge: 0;
     position: relative;
     display: block;
     width: 220px;
     aspect-ratio: 1920 / 725;
-    background-color: #f5f3f0;
+    background-color: rgba(245, 243, 240, 0.16);
     -webkit-mask-image: var(--logo-mask);
     mask-image: var(--logo-mask);
     -webkit-mask-repeat: no-repeat;
@@ -124,6 +132,38 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     mask-position: center;
     -webkit-mask-size: contain;
     mask-size: contain;
+  }
+
+  /* El degradado de la máscara difumina el borde superior, así el relleno se
+     lee como líquido y no como un corte recto. */
+  .vmv-loader__logo-fill {
+    position: absolute;
+    inset: 0;
+    background-color: #f5f3f0;
+    -webkit-mask-image: linear-gradient(
+      to top,
+      #000 calc(var(--logo-fill) * 100%),
+      transparent calc(var(--logo-fill) * 100% + 9%)
+    );
+    mask-image: linear-gradient(
+      to top,
+      #000 calc(var(--logo-fill) * 100%),
+      transparent calc(var(--logo-fill) * 100% + 9%)
+    );
+    will-change: mask-image;
+  }
+
+  /* Línea de avance: la máscara del logo la recorta, así que solo se ve sobre
+     el trazo. */
+  .vmv-loader__logo::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--logo-fill) * 100%);
+    height: 2px;
+    background-color: rgba(245, 243, 240, 0.9);
+    opacity: var(--logo-edge);
   }
 
   .vmv-loader__phrases {
@@ -189,8 +229,12 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
 
   const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms))
 
-  /** Se resuelve cuando videos e imágenes no diferidas ya pueden pintarse. */
-  function mediaReady() {
+  /**
+   * Se resuelve cuando videos e imágenes no diferidas ya pueden pintarse.
+   * `onProgress` recibe la fracción de medios ya resueltos (1 si no hay nada
+   * pendiente) para alimentar el relleno del logo.
+   */
+  function mediaReady(onProgress: (progress: number) => void) {
     const pending: Promise<unknown>[] = []
 
     $$<HTMLVideoElement>('video').forEach((video) => {
@@ -215,7 +259,86 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
       )
     })
 
-    return Promise.all(pending)
+    const total = pending.length
+    if (!total) {
+      onProgress(1)
+      return Promise.resolve([])
+    }
+
+    let settled = 0
+    onProgress(0)
+
+    return Promise.all(
+      pending.map((item) =>
+        item.then((value) => {
+          settled += 1
+          onProgress(settled / total)
+          return value
+        }),
+      ),
+    )
+  }
+
+  /**
+   * Rellena el trazo del logo de abajo hacia arriba. El objetivo es monótono:
+   * combina el progreso real de los medios con el tiempo transcurrido para que
+   * el relleno avance aunque un medio tarde en resolverse.
+   */
+  function createLogoFill(root: HTMLElement, prefersReducedMotion: boolean) {
+    const logo = $<HTMLElement>('[data-loader-logo]', root)
+    if (!logo) return null
+
+    const state = { value: 0 }
+
+    const apply = (value: number) => {
+      logo.style.setProperty('--logo-fill', String(value))
+      logo.style.setProperty('--logo-edge', value > 0.02 && value < 0.985 ? '1' : '0')
+    }
+
+    const render = () => apply(state.value)
+
+    if (prefersReducedMotion) {
+      state.value = 1
+      render()
+      return { state, render, setMediaProgress: () => {}, stopTicker: () => {}, kill: () => {} }
+    }
+
+    apply(0)
+
+    const startedAt = performance.now()
+    let mediaProgress = 0
+    let target = 0
+    let running = true
+
+    const tick = () => {
+      const elapsed = performance.now() - startedAt
+      // El reloj marca el ritmo mínimo y los medios pueden frenarlo, pero el
+      // avance lento de `creep` evita que el relleno se quede congelado.
+      const paced = Math.min(mediaProgress, elapsed / MIN_SPINNER_MS)
+      const creep = Math.min(elapsed / MAX_WAIT_MS, 1) * 0.9
+      target = Math.min(Math.max(target, paced, creep), 1)
+      state.value += (target - state.value) * 0.08
+      apply(state.value)
+    }
+
+    gsap.ticker.add(tick)
+
+    const stop = () => {
+      if (!running) return
+      running = false
+      gsap.ticker.remove(tick)
+    }
+
+    return {
+      /** El timeline de salida toma el control del relleno con `stopTicker`. */
+      state,
+      render,
+      setMediaProgress: (progress: number) => {
+        mediaProgress = Math.max(mediaProgress, progress)
+      },
+      stopTicker: stop,
+      kill: stop,
+    }
   }
 
   /**
@@ -267,12 +390,20 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     const spinner = $<HTMLElement>('[data-loader-spinner]', loader)
     const phrases = $$<HTMLElement>('[data-loader-phrase]', loader)
     const spinnerLoop = createSpinnerLoop(loader, prefersReducedMotion)
+    const logoFill = createLogoFill(loader, prefersReducedMotion)
 
     // La carga real manda, pero el spinner se ve un mínimo y nunca bloquea de más.
-    await Promise.race([Promise.all([mediaReady(), wait(MIN_SPINNER_MS)]), wait(MAX_WAIT_MS)])
+    await Promise.race([
+      Promise.all([
+        mediaReady((progress) => logoFill?.setMediaProgress(progress)),
+        wait(MIN_SPINNER_MS),
+      ]),
+      wait(MAX_WAIT_MS),
+    ])
 
     const finish = () => {
       spinnerLoop?.kill()
+      logoFill?.kill()
       loader.remove()
       markDone()
     }
@@ -284,14 +415,28 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
 
     const timeline = gsap.timeline({ onComplete: finish })
 
+    // El logo termina de rellenarse antes de que el spinner ceda el lugar.
+    if (logoFill) {
+      logoFill.stopTicker()
+      timeline.to(
+        logoFill.state,
+        { value: 1, duration: 0.55, ease: 'power2.out', onUpdate: logoFill.render },
+        0,
+      )
+    }
+
     // El spinner sale y cede el lugar a las frases.
-    timeline.to(spinner, {
-      autoAlpha: 0,
-      yPercent: -18,
-      duration: 0.45,
-      ease: 'power2.inOut',
-      onComplete: () => spinnerLoop?.kill(),
-    })
+    timeline.to(
+      spinner,
+      {
+        autoAlpha: 0,
+        yPercent: -18,
+        duration: 0.45,
+        ease: 'power2.inOut',
+        onComplete: () => spinnerLoop?.kill(),
+      },
+      logoFill ? 0.45 : 0,
+    )
 
     phrases.forEach((phrase) => {
       const words = $$<HTMLElement>('[data-loader-word]', phrase)
