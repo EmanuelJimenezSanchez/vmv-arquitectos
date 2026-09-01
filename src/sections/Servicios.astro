@@ -108,10 +108,16 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                 </figcaption>
                 <button
                   type="button"
-                  class="absolute inset-0 z-2 cursor-pointer rounded-sm focus-visible:ring-2 focus-visible:ring-vmv-sand-1 focus-visible:outline-none"
+                  class="group/trigger absolute inset-0 z-2 cursor-pointer rounded-sm focus-visible:ring-2 focus-visible:ring-vmv-sand-1 focus-visible:outline-none"
                   data-servicios-galeria-trigger
                 >
                   <span class="sr-only">Ver galería de {servicio.title}</span>
+                  <span
+                    class="vmv-caption-1 absolute top-[clamp(0.75rem,1.4vw,1.1rem)] right-[clamp(0.75rem,1.4vw,1.1rem)] translate-y-[-0.35rem] rounded-full border border-vmv-sand-1/30 bg-vmv-gray-12/45 px-3 py-1.5 tracking-[0.18em] text-vmv-sand-1 uppercase opacity-0 backdrop-blur-sm transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible/trigger:translate-y-0 group-focus-visible/trigger:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100"
+                    aria-hidden="true"
+                  >
+                    Ver imágenes
+                  </span>
                 </button>
               </figure>
               {/* <div class="mt-4 h-px w-full bg-vmv-border">
