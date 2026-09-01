@@ -68,14 +68,18 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
 </div>
 
 <style>
+  /* El script inline de Layout.astro resuelve el tema antes de pintar, así que
+     estos tokens ya son los correctos cuando el loader aparece. */
   .vmv-loader {
+    --loader-bg: var(--vmv-background, #17191b);
+    --loader-ink: var(--vmv-foreground, #f5f3f0);
     position: fixed;
     inset: 0;
     z-index: 200;
     display: grid;
     place-items: center;
-    background-color: #17191b;
-    color: #f5f3f0;
+    background-color: var(--loader-bg);
+    color: var(--loader-ink);
     will-change: opacity;
   }
 
@@ -109,7 +113,9 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     width: 100%;
     height: 100%;
     border-radius: 1px;
-    background: linear-gradient(to top, rgba(245, 243, 240, 0), rgba(245, 243, 240, 1));
+    background-color: var(--loader-ink);
+    -webkit-mask-image: linear-gradient(to top, transparent, #000);
+    mask-image: linear-gradient(to top, transparent, #000);
     transform-origin: bottom center;
     will-change: transform, opacity;
   }
@@ -123,7 +129,7 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     display: block;
     width: 220px;
     aspect-ratio: 1920 / 725;
-    background-color: rgba(245, 243, 240, 0.16);
+    background-color: color-mix(in srgb, var(--loader-ink) 16%, transparent);
     -webkit-mask-image: var(--logo-mask);
     mask-image: var(--logo-mask);
     -webkit-mask-repeat: no-repeat;
@@ -139,7 +145,7 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
   .vmv-loader__logo-fill {
     position: absolute;
     inset: 0;
-    background-color: #f5f3f0;
+    background-color: var(--loader-ink);
     -webkit-mask-image: linear-gradient(
       to top,
       #000 calc(var(--logo-fill) * 100%),
@@ -162,7 +168,7 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
     right: 0;
     bottom: calc(var(--logo-fill) * 100%);
     height: 2px;
-    background-color: rgba(245, 243, 240, 0.9);
+    background-color: color-mix(in srgb, var(--loader-ink) 90%, transparent);
     opacity: var(--logo-edge);
   }
 
