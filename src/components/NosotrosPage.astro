@@ -7,7 +7,7 @@ const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`
 const galeria = await getGaleria()
 ---
 
-<section id="nosotros" class="relative">
+<section id="nosotros" class="relative" aria-labelledby="nosotros-title">
   <!-- ─── HERO: CORTINA + FRASE ICÓNICA ──────────────── -->
   <div
     data-nosotros="hero"
@@ -43,7 +43,7 @@ const galeria = await getGaleria()
       class="pointer-events-none absolute top-1/2 left-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
     >
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
-      <span class="vmv-title-1 text-white"> NOSOTROS </span>
+      <h2 id="nosotros-title" class="vmv-title-1 text-white">NOSOTROS</h2>
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
       <!-- <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
         <Button href="/#contacto" variant="white" size="lg" data-contacto-trigger>Conócenos</Button>
