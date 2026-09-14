@@ -1,20 +1,63 @@
 ---
-import Proceso2 from '@/sections/Proceso2.astro';
-import Layout from '../layouts/Layout.astro';
-import Alcance from '../sections/Alcance.astro';
-import Contacto from '../sections/Contacto.astro';
-import Footer from '../sections/Footer.astro';
-import Galeria from '../sections/Galeria.astro';
-import Hero from '../sections/Hero.astro';
-import Nosotros from '../sections/Nosotros.astro';
-import Proceso from '../sections/Proceso.astro';
-import Servicios from '../sections/Servicios.astro';
+import Proceso2 from '@/sections/Proceso2.astro'
+import Layout from '../layouts/Layout.astro'
+import Alcance from '../sections/Alcance.astro'
+import Contacto from '../sections/Contacto.astro'
+import Galeria from '../sections/Galeria.astro'
+import Hero from '../sections/Hero.astro'
+import Nosotros from '../sections/Nosotros.astro'
+import Proceso from '../sections/Proceso.astro'
+import Servicios from '../sections/Servicios.astro'
+import { getServicios } from '@/lib/content'
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  ORGANIZATION_ID,
+  SITE_URL,
+  WEBSITE_ID,
+} from '@/lib/seo'
 
-const SITE_URL = 'https://www.vmv-arquitectos.com'
-const title = 'VMV Arquitectos | Diseño y construcción de espacios para habitar'
-const description =
-  'Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse. Con base en Guadalajara y proyectos en todo México.'
-const canonical = `${SITE_URL}/`
+const title = DEFAULT_TITLE
+const description = DEFAULT_DESCRIPTION
+const canonical = '/'
+
+const servicios = await getServicios()
+
+// El catálogo de servicios se declara a partir del contenido real del panel,
+// así los datos estructurados no se desincronizan de lo que ve el visitante.
+const schema = [
+  {
+    '@type': 'WebPage',
+    '@id': `${SITE_URL}/#webpage`,
+    url: `${SITE_URL}/`,
+    name: title,
+    description,
+    inLanguage: 'es-MX',
+    isPartOf: { '@id': WEBSITE_ID },
+    about: { '@id': ORGANIZATION_ID },
+  },
+  ...(servicios.length
+    ? [
+        {
+          '@type': 'OfferCatalog',
+          '@id': `${SITE_URL}/#servicios`,
+          name: 'Servicios de VMV Arquitectos',
+          itemListElement: servicios.map((servicio, index) => ({
+            '@type': 'Offer',
+            position: index + 1,
+            itemOffered: {
+              '@type': 'Service',
+              name: servicio.title,
+              description: servicio.description,
+              serviceType: servicio.title,
+              provider: { '@id': ORGANIZATION_ID },
+              areaServed: { '@type': 'Country', name: 'México' },
+            },
+          })),
+        },
+      ]
+    : []),
+]
 
 // El contenido viene de Supabase: se cachea en el edge un minuto y se sirve
 // obsoleto mientras se revalida, para que editar en el panel no cueste latencia.
@@ -24,8 +67,8 @@ Astro.response.headers.set(
 )
 ---
 
-<Layout title={title} description={description} canonical={canonical}>
-	<Hero />
+<Layout title={title} description={description} canonical={canonical} schema={schema}>
+  <Hero />
   <Nosotros />
   <!-- <Galeria /> -->
   <Servicios />
