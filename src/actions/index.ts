@@ -3,6 +3,7 @@ import { z } from 'astro:schema'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { invalidateContentCache } from '@/lib/content'
 import { contactRecipients, sendEmail } from '@/lib/email'
+import { renderContactoEmail } from '@/lib/email-templates'
 import {
   ALLOWED_DOCUMENT_MIME_TYPES,
   ALLOWED_MIME_TYPES,
@@ -25,14 +26,6 @@ const requireAdmin = (locals: App.Locals): SupabaseClient => {
   }
   return locals.supabase
 }
-
-/** El correo de contacto interpola datos del visitante en HTML. */
-const escapeHtml = (value: string): string =>
-  value.replace(
-    /[&<>"']/g,
-    (char) =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] as string,
-  )
 
 const fail = (message: string, error: { message: string } | null): never => {
   throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: `${message}: ${error?.message}` })
@@ -163,32 +156,12 @@ export const server = {
         website: z.string().max(0).optional(),
       }),
       handler: async (data) => {
-        const nombre = `${data.nombres} ${data.apellidos}`
-
-        const rows: [string, string][] = [
-          ['Nombre', nombre],
-          ['E-mail', data.email],
-          ['Teléfono', data.telefono],
-          ['¿Considera construir?', data.considerandoConstruir || '—'],
-          ['¿Tiene terreno?', data.tieneTerreno || '—'],
-        ]
-
-        // El mensaje va fuera de la tabla: es multilínea y se debe conservar
-        // el salto de línea tal como lo escribió el contacto.
-        const text = `${rows.map(([label, value]) => `${label}: ${value}`).join('\n')}\n\nMensaje:\n${data.mensaje}`
-        const html =
-          `<h2>Nuevo contacto desde la web</h2><table cellpadding="6">${rows
-            .map(
-              ([label, value]) =>
-                `<tr><td><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(value)}</td></tr>`,
-            )
-            .join('')}</table>` +
-          `<h3>Mensaje</h3><p style="white-space:pre-wrap">${escapeHtml(data.mensaje)}</p>`
+        const { subject, html, text } = renderContactoEmail(data)
 
         try {
           await sendEmail({
             to: contactRecipients(),
-            subject: `Nuevo contacto desde la web - ${nombre}`,
+            subject,
             replyTo: data.email,
             text,
             html,
