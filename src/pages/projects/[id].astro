@@ -102,6 +102,7 @@ const heroDatos = project
               data-proyecto-hero-image
               loading="eager"
               decoding="async"
+              transition:name={`proyecto-cover-${project.id}`}
             />
           )}
           <div
@@ -486,6 +487,7 @@ const heroDatos = project
                   class="absolute inset-0 h-full w-full scale-105 object-cover opacity-40 grayscale transition-[opacity,filter,scale] duration-900 ease-vmv group-hover:scale-100 group-hover:opacity-55 group-hover:grayscale-0"
                   loading="lazy"
                   decoding="async"
+                  transition:name={`proyecto-cover-${nextProject.id}`}
                 />
               )}
               <div class="absolute inset-0 bg-[#0f0e0c]/45" aria-hidden="true" />
