@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
+import ProyectoGaleriaModal from '@/components/ProyectoGaleriaModal.astro'
 import { getProyectos } from '@/lib/content'
 
 const id = Astro.params.id ?? ''
@@ -47,6 +48,25 @@ const fichaTecnica = project
       { label: 'Niveles', value: project.niveles },
     ].filter((fila) => Boolean(fila.value))
   : []
+
+/**
+ * El mosaico muestra como máximo seis piezas: las demás se consultan desde el
+ * visor, así la sección ocupa poco más de una pantalla en vez de crecer sin fin.
+ */
+const MOSAICO_VISIBLE = 6
+
+/** Reparto de celdas del mosaico (rejilla de 2 columnas en móvil, 6 en desktop). */
+const MOSAICO_SPANS = [
+  'col-span-2 row-span-2 md:col-span-4 md:row-span-3',
+  'col-span-1 row-span-2 md:col-span-2 md:row-span-2',
+  'col-span-1 row-span-2 md:col-span-2 md:row-span-1',
+  'col-span-1 row-span-2 md:col-span-2 md:row-span-2',
+  'col-span-1 row-span-2 md:col-span-2 md:row-span-2',
+  'col-span-2 row-span-2 md:col-span-2 md:row-span-2',
+]
+
+const fotosVisibles = project?.fotos.slice(0, MOSAICO_VISIBLE) ?? []
+const fotosRestantes = Math.max((project?.fotos.length ?? 0) - MOSAICO_VISIBLE, 0)
 
 const heroDatos = project
   ? [
@@ -241,39 +261,105 @@ const heroDatos = project
             data-proyecto-galeria
           >
             <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
-              <header class="flex flex-col gap-4" data-proyecto-reveal>
-                <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
-                  <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
-                  Galería
-                </p>
-                <h2
-                  id="proyecto-galeria-title"
-                  class="vmv-title-2 max-w-[20ch] text-vmv-foreground"
+              <header
+                class="flex flex-wrap items-end justify-between gap-x-8 gap-y-4"
+                data-proyecto-reveal
+              >
+                <div class="flex flex-col gap-4">
+                  <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+                    <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
+                    Galería
+                  </p>
+                  <h2
+                    id="proyecto-galeria-title"
+                    class="vmv-title-2 max-w-[20ch] text-vmv-foreground"
+                  >
+                    El proyecto por dentro
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  class="group vmv-caption-1 inline-flex cursor-pointer items-center gap-3 tracking-[0.22em] text-vmv-muted-foreground uppercase transition-colors duration-500 ease-vmv hover:text-vmv-foreground focus-visible:ring-2 focus-visible:ring-vmv-ring focus-visible:outline-none"
+                  data-visor-trigger
+                  data-visor-grupo="fotos"
+                  data-visor-indice="0"
                 >
-                  El proyecto por dentro
-                </h2>
+                  Ver las {String(project.fotos.length).padStart(2, '0')} fotos
+                  <span
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-vmv-border transition-[transform,border-color] duration-500 ease-vmv group-hover:translate-x-1 group-hover:border-vmv-foreground"
+                    aria-hidden="true"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                      <path
+                        d="M3 8h10M9 3.5L13.5 8 9 12.5"
+                        stroke="currentColor"
+                        stroke-width="1.3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                </button>
               </header>
 
-              <ul class="mt-[clamp(2rem,5vw,3.5rem)] grid gap-[clamp(0.75rem,2vw,1.5rem)] sm:grid-cols-2">
-                {project.fotos.map((foto) => (
-                  <li
-                    class:list={[
-                      'group relative overflow-hidden rounded-sm',
-                      foto.ancha ? 'sm:col-span-2 aspect-[16/9]' : 'aspect-[4/3]',
-                    ]}
-                    data-proyecto-reveal
-                  >
-                    <img
-                      src={foto.src}
-                      alt={foto.alt}
-                      width={foto.width ?? undefined}
-                      height={foto.height ?? undefined}
-                      class="h-full w-full object-cover transition-transform duration-900 ease-vmv group-hover:scale-[1.04]"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </li>
-                ))}
+              {/* Mosaico de altura fija: las celdas comparten una misma pauta de
+                  filas, así la sección mide lo mismo tenga 4 o 40 fotografías. */}
+              <ul
+                class="mt-[clamp(1.75rem,4vw,2.75rem)] grid auto-rows-[clamp(4.5rem,14vw,7.5rem)] grid-cols-2 gap-[clamp(0.5rem,1.2vw,0.9rem)] md:auto-rows-[clamp(5rem,8vw,7.5rem)] md:grid-cols-6"
+                data-proyecto-reveal
+              >
+                {fotosVisibles.map((foto, index) => {
+                  const esUltima = index === fotosVisibles.length - 1
+                  const ocultas = esUltima ? fotosRestantes : 0
+
+                  return (
+                    <li class:list={['relative', MOSAICO_SPANS[index]]}>
+                      <button
+                        type="button"
+                        class="group relative block h-full w-full cursor-pointer overflow-hidden rounded-sm bg-vmv-background focus-visible:ring-2 focus-visible:ring-vmv-ring focus-visible:outline-none"
+                        data-visor-trigger
+                        data-visor-grupo="fotos"
+                        data-visor-indice={index}
+                        aria-label={
+                          ocultas > 0
+                            ? `Ver las ${project.fotos.length} fotografías del proyecto`
+                            : `Ampliar fotografía ${index + 1}`
+                        }
+                      >
+                        <img
+                          src={foto.src}
+                          alt={foto.alt}
+                          width={foto.width ?? undefined}
+                          height={foto.height ?? undefined}
+                          class="h-full w-full object-cover transition-transform duration-900 ease-vmv group-hover:scale-[1.05]"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span
+                          class:list={[
+                            'absolute inset-0 transition-colors duration-500 ease-vmv',
+                            ocultas > 0
+                              ? 'bg-[#0f0e0c]/62 group-hover:bg-[#0f0e0c]/72'
+                              : 'bg-[#0f0e0c]/0 group-hover:bg-[#0f0e0c]/18',
+                          ]}
+                          aria-hidden="true"
+                        />
+                        {ocultas > 0 && (
+                          <span
+                            class="vmv-title-3 absolute inset-0 flex flex-col items-center justify-center gap-1 text-white"
+                            aria-hidden="true"
+                          >
+                            +{ocultas}
+                            <span class="vmv-caption-1 tracking-[0.22em] text-white/70 uppercase">
+                              Ver todas
+                            </span>
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           </section>
@@ -287,66 +373,90 @@ const heroDatos = project
             data-proyecto-planos
           >
             <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
-              <header class="flex flex-col gap-4" data-proyecto-reveal>
-                <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
-                  <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
-                  Documentos técnicos
+              <header
+                class="flex flex-wrap items-end justify-between gap-x-8 gap-y-4"
+                data-proyecto-reveal
+              >
+                <div class="flex flex-col gap-4">
+                  <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+                    <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
+                    Documentos técnicos
+                  </p>
+                  <h2
+                    id="proyecto-planos-title"
+                    class="vmv-title-2 max-w-[22ch] text-vmv-foreground"
+                  >
+                    Planos del proyecto
+                  </h2>
+                </div>
+
+                <p class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
+                  {String(project.documentos.length).padStart(2, '0')} planos
                 </p>
-                <h2 id="proyecto-planos-title" class="vmv-title-2 max-w-[22ch] text-vmv-foreground">
-                  Planos del proyecto
-                </h2>
               </header>
 
-              <ul class="mt-[clamp(2rem,5vw,3.5rem)] flex flex-col gap-[clamp(1.5rem,3vw,2.5rem)]">
-                {project.documentos.map((documento) => (
+              {/* Tarjetas compactas: la vista previa sirve de acceso al visor,
+                  donde el plano sí se ve a pantalla completa. */}
+              <ul class="mt-[clamp(1.75rem,4vw,2.75rem)] grid gap-[clamp(0.75rem,2vw,1.25rem)] sm:grid-cols-2 xl:grid-cols-3">
+                {project.documentos.map((documento, index) => (
                   <li
-                    class="grid gap-[clamp(1.25rem,3vw,2.5rem)] border-t border-vmv-border pt-[clamp(1.25rem,3vw,2rem)] md:grid-cols-[minmax(0,1fr)_clamp(14rem,22vw,18rem)]"
+                    class="group flex flex-col overflow-hidden rounded-sm border border-vmv-border bg-vmv-background transition-[border-color,transform] duration-500 ease-vmv hover:-translate-y-0.5 hover:border-vmv-foreground/35"
                     data-proyecto-reveal
                   >
-                    <figure class="relative overflow-hidden rounded-sm border border-vmv-border bg-vmv-muted">
-                      {/* `h-auto` + width/height deja que el navegador reserve
-                          el alto por la proporción real del plano, en vez de
-                          que la página salte cuando termina de cargar. */}
+                    <button
+                      type="button"
+                      class="relative block w-full cursor-pointer overflow-hidden bg-vmv-muted focus-visible:ring-2 focus-visible:ring-vmv-ring focus-visible:outline-none"
+                      data-visor-trigger
+                      data-visor-grupo="planos"
+                      data-visor-indice={index}
+                      aria-label={`Ampliar el plano ${documento.titulo}`}
+                    >
                       <img
                         src={documento.preview}
                         alt={`Plano ${documento.titulo} del proyecto ${project.title}`}
                         width={documento.previewWidth ?? undefined}
                         height={documento.previewHeight ?? undefined}
-                        class="mx-auto h-auto max-h-[36rem] w-full object-contain"
+                        class="aspect-16/10 w-full object-contain p-[clamp(0.5rem,1.5vw,1rem)] transition-transform duration-900 ease-vmv group-hover:scale-[1.03]"
                         loading="lazy"
                         decoding="async"
                       />
-                    </figure>
+                      <span
+                        class="vmv-caption-1 absolute right-3 bottom-3 flex h-9 w-9 items-center justify-center rounded-full border border-vmv-border bg-vmv-background/85 text-vmv-foreground opacity-0 backdrop-blur-sm transition-opacity duration-500 ease-vmv group-hover:opacity-100"
+                        aria-hidden="true"
+                      >
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                          <path
+                            d="M7 1.5v11M1.5 7h11"
+                            stroke="currentColor"
+                            stroke-width="1.3"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </span>
+                    </button>
 
-                    <div class="flex flex-col gap-3 md:pt-2">
+                    <div class="flex flex-1 flex-col gap-2 border-t border-vmv-border px-[clamp(1rem,2vw,1.35rem)] py-[clamp(0.9rem,2vw,1.15rem)]">
                       <h3 class="vmv-title-3 text-vmv-foreground">{documento.titulo}</h3>
                       {documento.descripcion && (
-                        <p class="vmv-body-3 max-w-[42ch] text-vmv-muted-foreground">
-                          {documento.descripcion}
-                        </p>
+                        <p class="vmv-body-3 text-vmv-muted-foreground">{documento.descripcion}</p>
                       )}
                       {documento.archivo && (
                         <a
                           href={documento.archivo}
                           target="_blank"
                           rel="noreferrer"
-                          class="group vmv-button-1 mt-1 inline-flex items-center gap-3 text-vmv-foreground"
+                          class="vmv-caption-1 mt-auto inline-flex items-center gap-2 pt-3 tracking-[0.22em] text-vmv-muted-foreground uppercase transition-colors duration-500 ease-vmv hover:text-vmv-foreground"
                         >
                           Descargar PDF
-                          <span
-                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-vmv-border transition-[transform,border-color,background-color,color] duration-500 ease-vmv group-hover:translate-y-0.5 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-hover:text-vmv-background"
-                            aria-hidden="true"
-                          >
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                              <path
-                                d="M8 2.5v9M4 8l4 4 4-4M2.5 13.5h11"
-                                stroke="currentColor"
-                                stroke-width="1.3"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              />
-                            </svg>
-                          </span>
+                          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                            <path
+                              d="M8 2.5v9M4 8l4 4 4-4M2.5 13.5h11"
+                              stroke="currentColor"
+                              stroke-width="1.3"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
                         </a>
                       )}
                     </div>
@@ -429,6 +539,14 @@ const heroDatos = project
             </Button>
           </div>
         </section>
+
+        {(project.fotos.length > 0 || project.documentos.length > 0) && (
+          <ProyectoGaleriaModal
+            fotos={project.fotos}
+            documentos={project.documentos}
+            projectTitle={project.title}
+          />
+        )}
       </>
     ) : (
       <section class="relative flex min-h-[80svh] items-center justify-center bg-[#0f0e0c] py-[clamp(4rem,10vw,8rem)]">
