@@ -2,6 +2,7 @@ import { ActionError, defineAction } from 'astro:actions'
 import { z } from 'astro:schema'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { invalidateContentCache } from '@/lib/content'
+import { contactRecipients, sendEmail } from '@/lib/email'
 import {
   ALLOWED_DOCUMENT_MIME_TYPES,
   ALLOWED_MIME_TYPES,
@@ -24,6 +25,14 @@ const requireAdmin = (locals: App.Locals): SupabaseClient => {
   }
   return locals.supabase
 }
+
+/** El correo de contacto interpola datos del visitante en HTML. */
+const escapeHtml = (value: string): string =>
+  value.replace(
+    /[&<>"']/g,
+    (char) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] as string,
+  )
 
 const fail = (message: string, error: { message: string } | null): never => {
   throw new ActionError({ code: 'INTERNAL_SERVER_ERROR', message: `${message}: ${error?.message}` })
@@ -135,6 +144,60 @@ const galeriaSchema = z.object({
 })
 
 export const server = {
+  /**
+   * Única action pública del sitio: la envía el formulario de contacto, así
+   * que no pasa por `requireAdmin`.
+   */
+  contacto: {
+    enviar: defineAction({
+      accept: 'json',
+      input: z.object({
+        nombres: z.string().trim().min(1).max(80),
+        apellidos: z.string().trim().min(1).max(80),
+        email: z.string().trim().email().max(160),
+        telefono: z.string().trim().min(6).max(40),
+        considerandoConstruir: z.string().trim().max(10).default(''),
+        tieneTerreno: z.string().trim().max(10).default(''),
+        /** Señuelo anti-spam: los bots lo rellenan, las personas no lo ven. */
+        website: z.string().max(0).optional(),
+      }),
+      handler: async (data) => {
+        const nombre = `${data.nombres} ${data.apellidos}`
+
+        const rows: [string, string][] = [
+          ['Nombre', nombre],
+          ['E-mail', data.email],
+          ['Teléfono', data.telefono],
+          ['¿Considera construir?', data.considerandoConstruir || '—'],
+          ['¿Tiene terreno?', data.tieneTerreno || '—'],
+        ]
+
+        const text = rows.map(([label, value]) => `${label}: ${value}`).join('\n')
+        const html = `<h2>Nuevo contacto desde la web</h2><table cellpadding="6">${rows
+          .map(([label, value]) => `<tr><td><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(value)}</td></tr>`)
+          .join('')}</table>`
+
+        try {
+          await sendEmail({
+            to: contactRecipients(),
+            subject: `Nuevo contacto desde la web - ${nombre}`,
+            replyTo: data.email,
+            text,
+            html,
+          })
+        } catch (error) {
+          console.error('[contacto] no se pudo enviar el correo', error)
+          throw new ActionError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'No se pudo enviar el mensaje. Escríbenos a ventas@vmvarquitectos.com.',
+          })
+        }
+
+        return { ok: true }
+      },
+    }),
+  },
+
   uploads: {
     /**
      * Devuelve una URL firmada para subir directo a R2. El archivo nunca pasa
