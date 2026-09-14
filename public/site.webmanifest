@@ -1,8 +1,11 @@
 {
+  "id": "/",
   "name": "VMV Arquitectos",
   "short_name": "VMV",
-  "description": "Diseño y Construcción de Espacios Funcionales y Estéticos",
-  "lang": "es",
+  "description": "Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse.",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "categories": ["business", "lifestyle"],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
