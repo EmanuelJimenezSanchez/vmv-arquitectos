@@ -2,7 +2,6 @@
 import { defineConfig } from 'astro/config'
 import tailwindcss from '@tailwindcss/vite'
 import vercel from '@astrojs/vercel'
-import sitemap from '@astrojs/sitemap'
 import react from '@astrojs/react'
 
 export default defineConfig({
@@ -20,10 +19,11 @@ export default defineConfig({
 
   // El dashboard es la única parte que usa React; el sitio público sigue
   // siendo Astro puro y no carga runtime extra.
-  integrations: [
-    sitemap({ filter: (page) => !page.includes('/dashboard') }),
-    react({ include: ['**/dashboard/**'] }),
-  ],
+  //
+  // El sitemap no se genera con `@astrojs/sitemap`: en SSR solo veía las rutas
+  // estáticas y dejaba fuera las fichas de proyecto. Se construye en tiempo de
+  // petición desde `src/pages/sitemap.xml.ts`.
+  integrations: [react({ include: ['**/dashboard/**'] })],
 
-  site: 'https://www.infolavelada.com/',
+  site: 'https://www.vmv-arquitectos.com',
 })
