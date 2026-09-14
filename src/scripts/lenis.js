@@ -102,11 +102,20 @@ export function initLenis() {
     true,
   )
 
+  // Un `scrollTo` en vuelo (la inercia de un scroll suave, o el salto a un
+  // ancla) sobrevive al cambio de página y sigue animando hasta el destino de
+  // la página anterior: se entraba al proyecto ya scrolleado. `stop()` corta
+  // esa animación antes de que Astro intercambie el documento.
+  document.addEventListener('astro:before-swap', () => {
+    lenis.stop()
+  })
+
   document.addEventListener('astro:page-load', () => {
     // Tras el swap, Astro reposiciona el scroll por su cuenta; Lenis mantiene
     // su propio valor animado y volvería a la posición de la página anterior.
     lenis.resize()
     lenis.scrollTo(window.scrollY, { immediate: true, force: true })
+    lenis.start()
 
     // Las secciones montan sus pins en su propio listener de page-load; el rAF
     // deja que todos corran antes de recalcular las medidas de ScrollTrigger.
