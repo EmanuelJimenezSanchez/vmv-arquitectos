@@ -9,13 +9,20 @@ import Footer from '@/sections/Footer.astro'
 import Button from '@/components/ui/Button.astro'
 import ContactoModal from '@/components/ContactoModal.astro'
 import SiteLoader from '@/components/SiteLoader.astro'
-
-const SITE_URL = 'https://www.vmv-arquitectos.com'
-const DEFAULT_OG_IMAGE = `https://cdn.vmv-arquitectos.com/og.jpg`
-const DEFAULT_OG_ALT = 'VMV Arquitectos — Diseño y construcción de espacios para habitar'
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_OG_ALT,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_TITLE,
+  SITE_LOCALE,
+  SITE_NAME,
+  absoluteUrl,
+  organizationSchema,
+  websiteSchema,
+} from '@/lib/seo'
 
 interface Props {
-  title: string
+  title?: string
   description?: string
   canonical?: string
   robots?: string
@@ -23,6 +30,8 @@ interface Props {
   ogImageAlt?: string
   ogUrl?: string
   ogType?: 'website' | 'article' | 'profile'
+  /** Nodos extra del grafo JSON-LD (breadcrumbs, ficha del proyecto, etc.). */
+  schema?: Record<string, unknown>[]
   /** Site chrome; disable on full-bleed routes (e.g. combate detail). */
   showHeader?: boolean
   /** Loader de carga inicial (spinner + frases). Solo corre una vez por sesión. */
@@ -30,35 +39,76 @@ interface Props {
 }
 
 const {
-  title,
-  description = 'Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse. Con base en Guadalajara y proyectos en todo México.',
+  title = DEFAULT_TITLE,
+  description = DEFAULT_DESCRIPTION,
   canonical,
   robots,
   ogImage = DEFAULT_OG_IMAGE,
   ogImageAlt = DEFAULT_OG_ALT,
   ogUrl,
   ogType = 'website',
+  schema = [],
   showHeader = true,
   showLoader = true,
 } = Astro.props
 
-const cleanPathname = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '')
-const canonicalURL = canonical ?? `${SITE_URL}${cleanPathname}`
-const finalOgUrl = ogUrl ?? canonicalURL
-const finalRobots = robots ?? 'index, follow'
+// La canónica se normaliza siempre sin barra final, que es la forma a la que
+// redirige `vercel.json`; si no, apuntaría a una URL que responde 301.
+const canonicalURL = canonical ? absoluteUrl(canonical) : absoluteUrl(Astro.url.pathname)
+const finalOgUrl = ogUrl ? absoluteUrl(ogUrl) : canonicalURL
+const finalOgImage = ogImage || DEFAULT_OG_IMAGE
+const finalRobots =
+  robots ?? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+
+// Un solo bloque JSON-LD con todos los nodos: así las referencias cruzadas por
+// `@id` se resuelven sin depender de que Google una scripts sueltos.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [organizationSchema(), websiteSchema(), ...schema],
+}
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es-MX">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VMV Arquitectos | Diseño y construcción de espacios para habitar</title>
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="robots" content={finalRobots} />
+    <meta name="author" content={SITE_NAME} />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fcfaf6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1d1b18" />
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content={SITE_LOCALE} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={finalOgUrl} />
+    <meta property="og:image" content={finalOgImage} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={finalOgImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    <!--
+      Las portadas y el video del hero viven en CDN externo: abrir la conexión
+      antes de que el parser llegue a ellos adelanta el LCP.
+    -->
+    <link rel="preconnect" href="https://cdn.vmv-arquitectos.com" crossorigin />
+    <link rel="preconnect" href="https://pub-8c8a4bc70753408c9012d4e9ca17f103.r2.dev" crossorigin />
 
     <!--
       Pruebas de tipografía (temporal): se cargan las 4 opciones a la vez
@@ -73,17 +123,7 @@ const finalRobots = robots ?? 'index, follow'
       rel="stylesheet"
     />
 
-    <meta
-      name="description"
-      content="Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse. Con base en Guadalajara y proyectos en todo México."
-    />
-    <meta
-      name="keywords"
-      content="despacho de arquitectura, diseño y construcción, interiorismo, arquitectos en Guadalajara, construcción de casas, espacios comerciales, remodelación de espacios, arquitectura residencial y comercial, diseño de interiores, construcción en México"
-    />
-    <meta name="author" content="VMV Arquitectos" />
-    <link rel="canonical" href="https://www.vmv-arquitectos.com/" />
-    <meta name="robots" content="index, follow" />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
     <script is:inline>
       ;(() => {
