@@ -242,6 +242,29 @@ const paymentMethods = [
     const bottom = $<HTMLElement>('[data-footer-bottom]', footer)
     const entrance = [top, bottom].filter(Boolean) as HTMLElement[]
 
+    // Lenis mantiene su propia posición animada, así que el salto nativo del
+    // anchor se revierte en el siguiente frame. Se delega en su scrollTo.
+    const topLink = $<HTMLAnchorElement>('[data-footer-top-link]', footer)
+
+    const scrollToTop = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey) {
+        return
+      }
+
+      event.preventDefault()
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+      if (window.lenis) {
+        window.lenis.scrollTo(0, { immediate: reduceMotion, force: true })
+        return
+      }
+
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
+    }
+
+    topLink?.addEventListener('click', scrollToTop)
+
     const mm = gsap.matchMedia()
 
     mm.add('(prefers-reduced-motion: no-preference)', () => {
@@ -259,6 +282,7 @@ const paymentMethods = [
     })
 
     cleanupFooter = () => {
+      topLink?.removeEventListener('click', scrollToTop)
       mm.revert()
     }
   }
