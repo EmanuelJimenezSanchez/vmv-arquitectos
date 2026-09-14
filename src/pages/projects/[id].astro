@@ -31,9 +31,7 @@ const totalLabel = String(projects.length).padStart(2, '0')
 // El portafolio se recorre en bucle: desde el último se vuelve al primero, de
 // modo que el bloque de «siguiente proyecto» nunca queda vacío.
 const nextProject =
-  currentIndex >= 0 && projects.length > 1
-    ? projects[(currentIndex + 1) % projects.length]
-    : null
+  currentIndex >= 0 && projects.length > 1 ? projects[(currentIndex + 1) % projects.length] : null
 
 const [leadParagraph, ...restParagraphs] = project?.parrafos ?? []
 
@@ -94,21 +92,27 @@ const heroDatos = project
           aria-labelledby="proyecto-title"
           data-proyecto-hero
         >
-          {project.cover && (
-            <img
-              src={project.cover}
-              alt={project.coverAlt}
-              class="absolute inset-0 h-full w-full scale-105 object-cover"
-              data-proyecto-hero-image
-              loading="eager"
-              decoding="async"
-              transition:name={`proyecto-cover-${project.id}`}
+          {/*
+            La portada y su degradado viajan juntos en la transición: si solo
+            se nombra la imagen, la capa morfada se pinta por encima del
+            degradado y este aparece de golpe al terminar.
+          */}
+          <div class="absolute inset-0" transition:name={`proyecto-cover-${project.id}`}>
+            {project.cover && (
+              <img
+                src={project.cover}
+                alt={project.coverAlt}
+                class="absolute inset-0 h-full w-full scale-105 object-cover"
+                data-proyecto-hero-image
+                loading="eager"
+                decoding="async"
+              />
+            )}
+            <div
+              class="absolute inset-0 bg-linear-to-b from-[#0f0e0c]/72 via-[#0f0e0c]/20 via-42% to-[#0f0e0c]/92"
+              aria-hidden="true"
             />
-          )}
-          <div
-            class="absolute inset-0 bg-linear-to-b from-[#0f0e0c]/72 via-[#0f0e0c]/20 via-42% to-[#0f0e0c]/92"
-            aria-hidden="true"
-          />
+          </div>
 
           <div class="relative z-2 w-full px-[clamp(1.25rem,5vw,3rem)] pb-[clamp(2.5rem,6vw,4.5rem)]">
             <div class="mx-auto flex w-full max-w-[1200px] flex-col gap-5" data-proyecto-hero-copy>
@@ -479,28 +483,29 @@ const heroDatos = project
               class="group relative flex min-h-[clamp(22rem,52svh,34rem)] flex-col items-center justify-center gap-4 px-[clamp(1.25rem,5vw,3rem)] py-[clamp(3.5rem,8vw,6rem)] text-center focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-vmv-ring"
               aria-label={`Ver el siguiente proyecto: ${nextProject.title}`}
             >
-              {nextProject.cover && (
-                <img
-                  src={nextProject.cover}
-                  alt=""
-                  aria-hidden="true"
-                  class="absolute inset-0 h-full w-full scale-105 object-cover opacity-40 grayscale transition-[opacity,filter,scale] duration-900 ease-vmv group-hover:scale-100 group-hover:opacity-55 group-hover:grayscale-0"
-                  loading="lazy"
-                  decoding="async"
-                  transition:name={`proyecto-cover-${nextProject.id}`}
-                />
-              )}
-              <div class="absolute inset-0 bg-[#0f0e0c]/45" aria-hidden="true" />
+              <div class="absolute inset-0" transition:name={`proyecto-cover-${nextProject.id}`}>
+                {nextProject.cover && (
+                  <img
+                    src={nextProject.cover}
+                    alt=""
+                    aria-hidden="true"
+                    class="absolute inset-0 h-full w-full scale-105 object-cover opacity-40 grayscale transition-[opacity,filter,scale] duration-900 ease-vmv group-hover:scale-100 group-hover:opacity-55 group-hover:grayscale-0"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+                <div class="absolute inset-0 bg-[#0f0e0c]/45" aria-hidden="true" />
+              </div>
 
-              <p class="relative z-2 vmv-overline-1 text-white/65">Explora el siguiente proyecto</p>
+              <p class="vmv-overline-1 relative z-2 text-white/65">Explora el siguiente proyecto</p>
               <h2
                 id="proyecto-siguiente-title"
-                class="relative z-2 vmv-display-1 max-w-[16ch] text-balance text-white transition-transform duration-700 ease-vmv group-hover:-translate-y-1"
+                class="vmv-display-1 relative z-2 max-w-[16ch] text-balance text-white transition-transform duration-700 ease-vmv group-hover:-translate-y-1"
               >
                 {nextProject.title}
               </h2>
               {nextProject.ubicacion && (
-                <p class="relative z-2 vmv-caption-1 tracking-[0.22em] text-white/60 uppercase">
+                <p class="vmv-caption-1 relative z-2 tracking-[0.22em] text-white/60 uppercase">
                   {nextProject.ubicacion}
                 </p>
               )}
@@ -536,7 +541,13 @@ const heroDatos = project
             <p class="vmv-body-2 max-w-[46ch] text-vmv-muted-foreground">
               Del concepto a la obra terminada, cuidamos el diseño, los tiempos y cada acabado.
             </p>
-            <Button href="/#contacto" variant="outline" size="xl" class="mt-2" data-contacto-trigger>
+            <Button
+              href="/#contacto"
+              variant="outline"
+              size="xl"
+              class="mt-2"
+              data-contacto-trigger
+            >
               Cuéntanos tu idea
             </Button>
           </div>
