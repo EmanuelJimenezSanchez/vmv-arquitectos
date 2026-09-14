@@ -27,108 +27,158 @@ const radioGroups = [
 ]
 ---
 
-<form class:list={['flex flex-col gap-6', className]} data-contacto-form novalidate>
-  <div class="grid gap-6 sm:grid-cols-2">
+<div class:list={['relative', className]} data-contacto-wrapper>
+  <form class="flex flex-col gap-6" data-contacto-form novalidate>
+    <div class="grid gap-6 sm:grid-cols-2">
+      {
+        textFields.map((field) => (
+          <div class="flex flex-col gap-2">
+            <label
+              for={`${idPrefix}-${field.name}`}
+              class="vmv-caption-1 text-vmv-muted-foreground"
+            >
+              {field.label}
+            </label>
+            <input
+              id={`${idPrefix}-${field.name}`}
+              name={field.name}
+              type={field.type}
+              autocomplete={field.autocomplete}
+              required
+              class={fieldClass}
+            />
+          </div>
+        ))
+      }
+    </div>
+
     {
-      textFields.map((field) => (
-        <div class="flex flex-col gap-2">
-          <label
-            for={`${idPrefix}-${field.name}`}
-            class="vmv-caption-1 text-vmv-muted-foreground"
-          >
-            {field.label}
-          </label>
-          <input
-            id={`${idPrefix}-${field.name}`}
-            name={field.name}
-            type={field.type}
-            autocomplete={field.autocomplete}
-            required
-            class={fieldClass}
-          />
-        </div>
+      radioGroups.map((group) => (
+        <fieldset class="flex flex-col gap-3">
+          <legend class="vmv-caption-1 text-vmv-muted-foreground">{group.legend}</legend>
+          <div class="flex flex-wrap gap-3">
+            {['Sí', 'No'].map((option) => (
+              <label class={optionClass}>
+                <input
+                  type="radio"
+                  name={`${idPrefix}-${group.name}`}
+                  data-field={group.name}
+                  value={option}
+                  required
+                  class="sr-only"
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        </fieldset>
       ))
     }
+
+    <div class="flex flex-col gap-2">
+      <label for={`${idPrefix}-mensaje`} class="vmv-caption-1 text-vmv-muted-foreground">
+        Mensaje
+      </label>
+      <textarea
+        id={`${idPrefix}-mensaje`}
+        name="mensaje"
+        rows="4"
+        maxlength="2000"
+        required
+        placeholder="Cuéntanos sobre tu proyecto."
+        class:list={[fieldClass, 'resize-y']}></textarea>
+    </div>
+
+    {/* Señuelo anti-spam: oculto para personas, irresistible para bots. */}
+    <input
+      type="text"
+      name="website"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+      class="absolute left-[-9999px] h-0 w-0 opacity-0"
+      data-contacto-honeypot
+    />
+
+    <p class="vmv-caption-1 text-vmv-muted-foreground">
+      Te contactaremos por WhatsApp o e-mail en las próximas horas.
+    </p>
+
+    <Button type="submit" variant="primary" size="lg" class="mt-2 w-fit" data-contacto-submit>
+      Enviar
+    </Button>
+
+    <p class="vmv-caption-1 hidden text-vmv-sand-11" data-contacto-error role="alert"></p>
+  </form>
+
+  <div
+    class="hidden flex-col items-start gap-6 py-[clamp(1.5rem,4vw,3rem)]"
+    data-contacto-success
+    role="status"
+    aria-live="polite"
+  >
+    <span
+      class="flex h-16 w-16 items-center justify-center rounded-full border border-vmv-sand-9/35"
+      aria-hidden="true"
+      data-contacto-success-item
+    >
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <path
+          d="M8 15.5 13 20.5 22 10"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-vmv-sand-9"
+          data-contacto-check></path>
+      </svg>
+    </span>
+
+    <div class="flex flex-col gap-4">
+      <h3 class="vmv-title-2 max-w-[16ch] text-vmv-foreground" data-contacto-success-item>
+        Gracias por escribirnos
+      </h3>
+      <p class="vmv-body-2 max-w-[38ch] text-vmv-muted-foreground" data-contacto-success-item>
+        Hemos recibido tu mensaje. Te contactaremos por WhatsApp o e-mail en las próximas horas.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="vmv-overline-1 cursor-pointer border-b border-vmv-border pb-1 text-vmv-muted-foreground transition-colors duration-450 ease-vmv hover:border-vmv-foreground hover:text-vmv-foreground"
+      data-contacto-reset
+      data-contacto-success-item
+    >
+      Enviar otro mensaje
+    </button>
   </div>
-
-  {
-    radioGroups.map((group) => (
-      <fieldset class="flex flex-col gap-3">
-        <legend class="vmv-caption-1 text-vmv-muted-foreground">{group.legend}</legend>
-        <div class="flex flex-wrap gap-3">
-          {['Sí', 'No'].map((option) => (
-            <label class={optionClass}>
-              <input
-                type="radio"
-                name={`${idPrefix}-${group.name}`}
-                data-field={group.name}
-                value={option}
-                required
-                class="sr-only"
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-    ))
-  }
-
-  <div class="flex flex-col gap-2">
-    <label for={`${idPrefix}-mensaje`} class="vmv-caption-1 text-vmv-muted-foreground">
-      Mensaje
-    </label>
-    <textarea
-      id={`${idPrefix}-mensaje`}
-      name="mensaje"
-      rows="4"
-      maxlength="2000"
-      required
-      placeholder="Cuéntanos sobre tu proyecto."
-      class:list={[fieldClass, 'resize-y']}></textarea>
-  </div>
-
-  {/* Señuelo anti-spam: oculto para personas, irresistible para bots. */}
-  <input
-    type="text"
-    name="website"
-    tabindex="-1"
-    autocomplete="off"
-    aria-hidden="true"
-    class="absolute left-[-9999px] h-0 w-0 opacity-0"
-    data-contacto-honeypot
-  />
-
-  <p class="vmv-caption-1 text-vmv-muted-foreground">
-    Te contactaremos por WhatsApp o e-mail en las próximas horas.
-  </p>
-
-  <Button type="submit" variant="primary" size="lg" class="mt-2 w-fit" data-contacto-submit>
-    Enviar
-  </Button>
-
-  <p class="vmv-caption-1 hidden text-vmv-foreground" data-contacto-success role="status">
-    ¡Gracias! Hemos recibido tu mensaje y te contactaremos pronto.
-  </p>
-
-  <p class="vmv-caption-1 hidden text-vmv-foreground" data-contacto-error role="alert"></p>
-</form>
+</div>
 
 <script>
   import { actions } from 'astro:actions'
+  import gsap from 'gsap'
   import { $, $$ } from '@/lib/dom-selector'
 
   let formsController: AbortController | null = null
+
+  const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const setupContactoForms = () => {
     formsController?.abort()
     formsController = new AbortController()
     const { signal } = formsController
 
-    $$<HTMLFormElement>('[data-contacto-form]').forEach((form) => {
-      const success = $<HTMLElement>('[data-contacto-success]', form)
+    $$<HTMLElement>('[data-contacto-wrapper]').forEach((wrapper) => {
+      const form = $<HTMLFormElement>('[data-contacto-form]', wrapper)
+      const success = $<HTMLElement>('[data-contacto-success]', wrapper)
+      if (!form || !success) {
+        return
+      }
+
       const error = $<HTMLElement>('[data-contacto-error]', form)
       const submit = $<HTMLButtonElement>('[data-contacto-submit]', form)
+      const successItems = $$<HTMLElement>('[data-contacto-success-item]', success)
+      const check = $<SVGPathElement>('[data-contacto-check]', success)
 
       const value = (name: string) =>
         $<HTMLInputElement | HTMLTextAreaElement>(
@@ -139,6 +189,74 @@ const radioGroups = [
       const radio = (field: string) =>
         $<HTMLInputElement>(`input[data-field="${field}"]:checked`, form)?.value ?? ''
 
+      /**
+       * El alto del wrapper se fija durante el cruce para que la página no dé
+       * un salto mientras el formulario sale y el agradecimiento entra.
+       */
+      const showSuccess = () => {
+        const startHeight = wrapper.offsetHeight
+
+        // Se limpia aquí para no dejar los datos del visitante en un formulario
+        // que sigue en el DOM, solo oculto.
+        form.reset()
+        form.classList.add('hidden')
+        success.classList.remove('hidden')
+        success.classList.add('flex')
+
+        if (prefersReducedMotion()) {
+          return
+        }
+
+        const endHeight = wrapper.offsetHeight
+        const length = check?.getTotalLength() ?? 0
+
+        gsap
+          .timeline()
+          .fromTo(
+            wrapper,
+            { height: startHeight },
+            { height: endHeight, duration: 0.5, ease: 'power2.inOut', clearProps: 'height' },
+            0,
+          )
+          .fromTo(
+            successItems,
+            { autoAlpha: 0, y: 24 },
+            { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.08 },
+            0.1,
+          )
+          .fromTo(
+            check,
+            { strokeDasharray: length, strokeDashoffset: length },
+            {
+              strokeDashoffset: 0,
+              duration: 0.55,
+              ease: 'power2.out',
+              clearProps: 'stroke-dasharray,stroke-dashoffset',
+            },
+            0.35,
+          )
+      }
+
+      const resetForm = () => {
+        success.classList.add('hidden')
+        success.classList.remove('flex')
+        form.classList.remove('hidden')
+
+        if (prefersReducedMotion()) {
+          return
+        }
+
+        gsap.fromTo(
+          form,
+          { autoAlpha: 0, y: 16 },
+          { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+        )
+      }
+
+      $<HTMLButtonElement>('[data-contacto-reset]', success)?.addEventListener('click', resetForm, {
+        signal,
+      })
+
       form.addEventListener(
         'submit',
         async (event) => {
@@ -147,7 +265,6 @@ const radioGroups = [
             return
           }
 
-          success?.classList.add('hidden')
           error?.classList.add('hidden')
           if (submit) {
             submit.disabled = true
@@ -176,8 +293,7 @@ const radioGroups = [
             return
           }
 
-          success?.classList.remove('hidden')
-          form.reset()
+          showSuccess()
         },
         { signal },
       )
