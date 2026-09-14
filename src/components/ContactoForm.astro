@@ -61,6 +61,7 @@ const radioGroups = [
               <input
                 type="radio"
                 name={`${idPrefix}-${group.name}`}
+                data-field={group.name}
                 value={option}
                 required
                 class="sr-only"
@@ -73,18 +74,34 @@ const radioGroups = [
     ))
   }
 
+  {/* Señuelo anti-spam: oculto para personas, irresistible para bots. */}
+  <input
+    type="text"
+    name="website"
+    tabindex="-1"
+    autocomplete="off"
+    aria-hidden="true"
+    class="absolute left-[-9999px] h-0 w-0 opacity-0"
+    data-contacto-honeypot
+  />
+
   <p class="vmv-caption-1 text-vmv-muted-foreground">
     Te contactaremos por WhatsApp o e-mail en las próximas horas.
   </p>
 
-  <Button type="submit" variant="primary" size="lg" class="mt-2 w-fit">Enviar</Button>
+  <Button type="submit" variant="primary" size="lg" class="mt-2 w-fit" data-contacto-submit>
+    Enviar
+  </Button>
 
   <p class="vmv-caption-1 hidden text-vmv-foreground" data-contacto-success role="status">
     ¡Gracias! Hemos recibido tu mensaje y te contactaremos pronto.
   </p>
+
+  <p class="vmv-caption-1 hidden text-vmv-foreground" data-contacto-error role="alert"></p>
 </form>
 
 <script>
+  import { actions } from 'astro:actions'
   import { $, $$ } from '@/lib/dom-selector'
 
   let formsController: AbortController | null = null
@@ -96,14 +113,51 @@ const radioGroups = [
 
     $$<HTMLFormElement>('[data-contacto-form]').forEach((form) => {
       const success = $<HTMLElement>('[data-contacto-success]', form)
+      const error = $<HTMLElement>('[data-contacto-error]', form)
+      const submit = $<HTMLButtonElement>('[data-contacto-submit]', form)
+
+      const value = (name: string) =>
+        $<HTMLInputElement>(`input[name="${name}"]`, form)?.value.trim() ?? ''
+
+      const radio = (field: string) =>
+        $<HTMLInputElement>(`input[data-field="${field}"]:checked`, form)?.value ?? ''
 
       form.addEventListener(
         'submit',
-        (event) => {
+        async (event) => {
           event.preventDefault()
           if (!form.reportValidity()) {
             return
           }
+
+          success?.classList.add('hidden')
+          error?.classList.add('hidden')
+          if (submit) {
+            submit.disabled = true
+          }
+
+          const { error: actionError } = await actions.contacto.enviar({
+            nombres: value('nombres'),
+            apellidos: value('apellidos'),
+            email: value('email'),
+            telefono: value('telefono'),
+            considerandoConstruir: radio('considerando-construir'),
+            tieneTerreno: radio('tiene-terreno'),
+            website: $<HTMLInputElement>('[data-contacto-honeypot]', form)?.value ?? '',
+          })
+
+          if (submit) {
+            submit.disabled = false
+          }
+
+          if (actionError) {
+            if (error) {
+              error.textContent = actionError.message
+              error.classList.remove('hidden')
+            }
+            return
+          }
+
           success?.classList.remove('hidden')
           form.reset()
         },
