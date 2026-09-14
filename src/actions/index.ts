@@ -156,6 +156,7 @@ export const server = {
         apellidos: z.string().trim().min(1).max(80),
         email: z.string().trim().email().max(160),
         telefono: z.string().trim().min(6).max(40),
+        mensaje: z.string().trim().min(1).max(2000),
         considerandoConstruir: z.string().trim().max(10).default(''),
         tieneTerreno: z.string().trim().max(10).default(''),
         /** Señuelo anti-spam: los bots lo rellenan, las personas no lo ven. */
@@ -172,10 +173,17 @@ export const server = {
           ['¿Tiene terreno?', data.tieneTerreno || '—'],
         ]
 
-        const text = rows.map(([label, value]) => `${label}: ${value}`).join('\n')
-        const html = `<h2>Nuevo contacto desde la web</h2><table cellpadding="6">${rows
-          .map(([label, value]) => `<tr><td><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(value)}</td></tr>`)
-          .join('')}</table>`
+        // El mensaje va fuera de la tabla: es multilínea y se debe conservar
+        // el salto de línea tal como lo escribió el contacto.
+        const text = `${rows.map(([label, value]) => `${label}: ${value}`).join('\n')}\n\nMensaje:\n${data.mensaje}`
+        const html =
+          `<h2>Nuevo contacto desde la web</h2><table cellpadding="6">${rows
+            .map(
+              ([label, value]) =>
+                `<tr><td><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(value)}</td></tr>`,
+            )
+            .join('')}</table>` +
+          `<h3>Mensaje</h3><p style="white-space:pre-wrap">${escapeHtml(data.mensaje)}</p>`
 
         try {
           await sendEmail({
