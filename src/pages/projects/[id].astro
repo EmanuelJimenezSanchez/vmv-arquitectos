@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
 import ProyectoGaleriaModal from '@/components/ProyectoGaleriaModal.astro'
 import { getProyectos } from '@/lib/content'
+import { ORGANIZATION_ID, WEBSITE_ID, absoluteUrl, breadcrumbSchema } from '@/lib/seo'
 
 const id = Astro.params.id ?? ''
 const projects = await getProyectos()
@@ -17,12 +18,24 @@ Astro.response.headers.set(
   'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
 )
 
-const canonical = project
-  ? `https://www.vmv-arquitectos.com/projects/${project.id}`
-  : 'https://www.vmv-arquitectos.com/projects'
+const canonical = project ? `/projects/${project.id}` : '/projects'
 const title = project
   ? `${project.title} | Proyecto | VMV Arquitectos`
   : 'Proyecto no encontrado | VMV Arquitectos'
+
+/**
+ * La meta description se arma con los datos de la ficha cuando el panel no dejó
+ * resumen: vale más una frase con ubicación y año que heredar la genérica.
+ */
+const fallbackDescription = project
+  ? `${project.title}: proyecto de ${project.tipologia || 'arquitectura'} de VMV Arquitectos${
+      project.ubicacion ? ` en ${project.ubicacion}` : ''
+    }${project.anio ? ` (${project.anio})` : ''}.`
+  : 'El proyecto que buscas no está disponible.'
+
+const description = project
+  ? project.resumen || project.tagline || fallbackDescription
+  : fallbackDescription
 
 const currentIndex = project ? projects.findIndex((item) => item.id === project.id) : -1
 const indexLabel = currentIndex >= 0 ? String(currentIndex + 1).padStart(2, '0') : ''
@@ -73,15 +86,60 @@ const heroDatos = project
       { label: 'Área', value: project.area },
     ].filter((dato) => Boolean(dato.value))
   : []
+/**
+ * Cada proyecto se declara como obra creativa con su galería: es lo que permite
+ * que las fotos aparezcan en Google Imágenes asociadas al proyecto correcto.
+ */
+const schema = project
+  ? [
+      {
+        '@type': ['CreativeWork', 'Article'],
+        '@id': absoluteUrl(canonical) + '#proyecto',
+        url: absoluteUrl(canonical),
+        name: project.title,
+        headline: project.title,
+        description,
+        inLanguage: 'es-MX',
+        isPartOf: { '@id': WEBSITE_ID },
+        author: { '@id': ORGANIZATION_ID },
+        creator: { '@id': ORGANIZATION_ID },
+        publisher: { '@id': ORGANIZATION_ID },
+        ...(project.cover ? { image: [project.cover] } : {}),
+        ...(project.anio ? { dateCreated: String(project.anio) } : {}),
+        ...(project.tipologia ? { genre: project.tipologia } : {}),
+        ...(project.ubicacion
+          ? { contentLocation: { '@type': 'Place', name: project.ubicacion } }
+          : {}),
+        ...(project.fotos.length
+          ? {
+              associatedMedia: project.fotos.map((foto) => ({
+                '@type': 'ImageObject',
+                contentUrl: foto.src,
+                caption: foto.alt,
+                ...(foto.width ? { width: foto.width } : {}),
+                ...(foto.height ? { height: foto.height } : {}),
+              })),
+            }
+          : {}),
+      },
+      breadcrumbSchema([
+        { name: 'Inicio', url: '/' },
+        { name: 'Proyectos', url: '/projects' },
+        { name: project.title, url: canonical },
+      ]),
+    ]
+  : []
 ---
 
 <Layout
   title={title}
-  description={project?.resumen || project?.tagline || 'Proyecto no encontrado.'}
+  description={description}
   canonical={canonical}
   ogImage={project?.cover}
+  ogImageAlt={project?.coverAlt}
   ogType="article"
   robots={project ? undefined : 'noindex, follow'}
+  schema={schema}
 >
   {
     project ? (
