@@ -2,11 +2,12 @@
 import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
 import { getProyectos } from '@/lib/content'
+import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID, absoluteUrl, breadcrumbSchema } from '@/lib/seo'
 
-const title = 'Proyectos | VMV Arquitectos'
+const title = 'Proyectos de arquitectura e interiorismo | VMV Arquitectos'
 const description =
-  'Portafolio de VMV Arquitectos: arquitectura, interiorismo y construcción en proyectos residenciales y comerciales.'
-const canonical = 'https://www.vmv-arquitectos.com/projects'
+  'Portafolio de VMV Arquitectos: obra construida de arquitectura, interiorismo y construcción en proyectos residenciales y comerciales en Guadalajara y todo México.'
+const canonical = '/projects'
 
 const projects = await getProyectos()
 
@@ -21,13 +22,51 @@ const rangeLabel = years.length ? `${Math.min(...years)} — ${Math.max(...years
 const fichaChips = (project: (typeof projects)[number]) =>
   [project.tipologia, project.area, project.niveles && `${project.niveles} niveles`].filter(Boolean)
 
+/**
+ * El listado se declara como colección con su ItemList: da a Google la relación
+ * entre esta página y cada ficha de proyecto sin depender del rastreo de enlaces.
+ */
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    '@id': SITE_URL + '/projects#webpage',
+    url: SITE_URL + '/projects',
+    name: title,
+    description,
+    inLanguage: 'es-MX',
+    isPartOf: { '@id': WEBSITE_ID },
+    about: { '@id': ORGANIZATION_ID },
+  },
+  breadcrumbSchema([
+    { name: 'Inicio', url: '/' },
+    { name: 'Proyectos', url: '/projects' },
+  ]),
+  {
+    '@type': 'ItemList',
+    '@id': SITE_URL + '/projects#listado',
+    numberOfItems: projects.length,
+    itemListElement: projects.map((project, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: project.title,
+      url: absoluteUrl('/projects/' + project.id),
+    })),
+  },
+]
+
 Astro.response.headers.set(
   'Cache-Control',
   'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
 )
 ---
 
-<Layout title={title} description={description} canonical={canonical}>
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogImage={heroImage}
+  schema={schema}
+>
   <!-- ─── HERO ────────────────────────────────────────── -->
   <section
     class="relative flex h-[86svh] min-h-[30rem] items-center justify-center overflow-hidden bg-[#0f0e0c]"
