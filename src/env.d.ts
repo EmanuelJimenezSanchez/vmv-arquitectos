@@ -14,6 +14,12 @@ declare global {
     readonly PUBLIC_SUPABASE_URL: string
     readonly PUBLIC_SUPABASE_ANON_KEY: string
     readonly SUPABASE_SERVICE_ROLE_KEY: string
+    readonly EMAIL_PROVIDER?: 'mailtrap' | 'resend'
+    readonly EMAIL_FROM?: string
+    readonly EMAIL_TO?: string
+    readonly MAILTRAP_TOKEN?: string
+    readonly MAILTRAP_INBOX_ID?: string
+    readonly RESEND_API_KEY?: string
   }
 
   interface ImportMeta {
