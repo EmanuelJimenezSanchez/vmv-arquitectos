@@ -2,7 +2,7 @@
 import { getGaleria } from '@/lib/content'
 import Button from '@/components/ui/Button.astro'
 
-const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`;
+const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`
 
 const galeria = await getGaleria()
 ---
@@ -96,7 +96,8 @@ const galeria = await getGaleria()
         última llave.
       </p> -->
       <div data-nosotros="galeria-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
-        <Button href="/#contacto" variant="white" size="xxl" data-contacto-trigger>Conócenos</Button>
+        <Button href="/#contacto" variant="white" size="xxl" data-contacto-trigger>Conócenos</Button
+        >
       </div>
       <!-- <div data-nosotros="restart-cta" class="pointer-events-auto mt-[clamp(0.9rem,2.2vw,1.4rem)]">
         <button
@@ -160,6 +161,19 @@ const galeria = await getGaleria()
   let revealSplit: SplitText | null = null
   let scrollLocked = false
 
+  /**
+   * Un salto por ancla hacia una sección posterior atraviesa el punto que
+   * dispara la intro, y el candado de `lockScroll` lo dejaba clavado aquí.
+   * `initNosotros` publica en esta variable cómo saltarse la intro; se
+   * resuelve desde dentro porque solo ahí se conocen los límites del pin.
+   */
+  let onAnchorScroll: ((y: number) => void) | null = null
+
+  window.addEventListener('vmv:anchor-scroll', (event) => {
+    const { y } = (event as CustomEvent<{ y: number }>).detail
+    onAnchorScroll?.(y)
+  })
+
   // Bloquea el scroll (wheel/touch) mientras la intro del hero se
   // reproduce sola: antes se intentaba "corregir" el scroll ya ocurrido
   // devolviéndolo al inicio del pin en cada tick, pero eso saltaba la
@@ -178,6 +192,7 @@ const galeria = await getGaleria()
     activeTriggers.length = 0
     revealSplit?.revert()
     revealSplit = null
+    onAnchorScroll = null
     unlockScroll()
   }
 
@@ -462,6 +477,14 @@ const galeria = await getGaleria()
         },
       })
       activeTriggers.push(galeriaScrollTrigger)
+
+      // Saltar *más allá* del inicio del pin significa que el destino está
+      // después del hero, así que la intro se da por vista en lugar de
+      // secuestrar el viaje. Un salto al propio `#nosotros` aterriza
+      // justo en `start`, no lo cruza, y ahí la intro sí debe reproducirse.
+      onAnchorScroll = (y) => {
+        if (y > (galeriaScrollTrigger?.start ?? Infinity)) completeIntro()
+      }
 
       heroTl.eventCallback('onComplete', completeIntro)
     }
