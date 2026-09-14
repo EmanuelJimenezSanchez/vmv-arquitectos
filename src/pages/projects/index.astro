@@ -102,11 +102,17 @@ Astro.response.headers.set(
                 class="grid items-center gap-[clamp(1.5rem,3.5vw,3rem)] py-[clamp(2rem,4vw,3.25rem)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-vmv-ring md:grid-cols-[minmax(0,24rem)_1fr]"
                 aria-label={`Ver proyecto ${project.title}`}
               >
+                {/*
+                  El nombre va en la `figure` y no en la imagen: así el velo y
+                  el recorte viajan dentro de la misma capa que la portada
+                  durante la transición a la vista del proyecto.
+                */}
                 <figure
                   class:list={[
                     'relative aspect-[4/3] w-full overflow-hidden rounded-sm',
                     index % 2 === 1 && 'md:order-2',
                   ]}
+                  transition:name={`proyecto-cover-${project.id}`}
                 >
                   <div class="absolute inset-0 transition-transform duration-900 ease-vmv group-hover:scale-[1.05]">
                     <img
@@ -115,7 +121,6 @@ Astro.response.headers.set(
                       class="h-full w-full object-cover grayscale transition-[filter] duration-700 ease-vmv group-hover:grayscale-0"
                       loading="lazy"
                       decoding="async"
-                      transition:name={`proyecto-cover-${project.id}`}
                     />
                     <div
                       class="absolute inset-0 bg-vmv-sand-11/35 mix-blend-multiply transition-opacity duration-700 group-hover:opacity-0"
@@ -147,10 +152,12 @@ Astro.response.headers.set(
                   </h3>
 
                   <p class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
-                    {[project.ubicacion, project.anio].filter(Boolean).join(" · ")}
+                    {[project.ubicacion, project.anio].filter(Boolean).join(' · ')}
                   </p>
 
-                  <p class="vmv-body-2 max-w-[52ch] text-vmv-muted-foreground">{project.resumen || project.tagline}</p>
+                  <p class="vmv-body-2 max-w-[52ch] text-vmv-muted-foreground">
+                    {project.resumen || project.tagline}
+                  </p>
 
                   <ul class="flex flex-wrap items-center gap-x-3 gap-y-2">
                     {fichaChips(project).map((chip) => (
