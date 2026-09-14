@@ -70,15 +70,18 @@ const paymentMethods = [
   data-footer
   aria-label="Pie de página"
 >
-  <div class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] pt-[clamp(4rem,9vw,7rem)] pb-[clamp(2rem,4vw,3rem)]">
+  <div
+    class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] pt-[clamp(4rem,9vw,7rem)] pb-[clamp(2rem,4vw,3rem)]"
+  >
     <div class="flex flex-col gap-[clamp(3rem,6vw,4.5rem)]" data-footer-top>
-      <div class="flex flex-col justify-between gap-10 border-b border-vmv-sand-1/12 pb-[clamp(2.5rem,5vw,3.5rem)] md:flex-row md:items-end">
+      <div
+        class="flex flex-col justify-between gap-10 border-b border-vmv-sand-1/12 pb-[clamp(2.5rem,5vw,3.5rem)] md:flex-row md:items-end"
+      >
         <div class="flex flex-col gap-6">
           <span
-            class="block h-14 w-auto aspect-1920/725 bg-vmv-sand-1 mask-(--logo-mask) mask-center mask-no-repeat mask-contain md:h-16"
+            class="block aspect-1920/725 h-14 w-auto bg-vmv-sand-1 mask-(--logo-mask) mask-contain mask-center mask-no-repeat md:h-16"
             style={`--logo-mask:url(${logoVmv.src})`}
-            aria-hidden="true"
-          ></span>
+            aria-hidden="true"></span>
           <p class="vmv-body-2 max-w-[34ch] text-vmv-sand-1/60">
             Diseñamos y construimos espacios funcionales y estéticos, cuidando cada detalle del
             proyecto hasta la entrega final.
@@ -89,6 +92,7 @@ const paymentMethods = [
           href="#site-header"
           class="footer-top-link group inline-flex w-fit items-center gap-3 text-vmv-sand-1/70 transition-colors duration-450 hover:text-vmv-sand-1"
           data-footer-top-link
+          data-anchor-manual
         >
           <span class="vmv-overline-1">Volver arriba</span>
           <span
@@ -189,13 +193,7 @@ const paymentMethods = [
           {
             paymentMethods.map((method) => (
               <li class="text-vmv-sand-1/55">
-                <svg
-                  width="34"
-                  height="34"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  role="img"
-                >
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" role="img">
                   <title>{method.label}</title>
                   <path d={method.path} />
                 </svg>
