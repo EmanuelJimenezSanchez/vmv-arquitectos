@@ -20,6 +20,7 @@ declare global {
     readonly MAILTRAP_TOKEN?: string
     readonly MAILTRAP_INBOX_ID?: string
     readonly RESEND_API_KEY?: string
+    readonly PUBLIC_META_PIXEL_ID?: string
   }
 
   interface ImportMeta {
@@ -37,5 +38,7 @@ declare global {
   interface Window {
     lenis?: Lenis
     maplibregl?: typeof maplibre
+    /** Pixel de Meta; solo existe si `PUBLIC_META_PIXEL_ID` está definido. */
+    fbq?: (...args: unknown[]) => void
   }
 }
