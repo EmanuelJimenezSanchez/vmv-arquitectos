@@ -3,6 +3,7 @@ import { actions } from 'astro:actions'
 import {
   AspectHint,
   Banner,
+  Bilingual,
   Button,
   Field,
   FileDrop,
@@ -16,7 +17,9 @@ export interface GaleriaRecord {
   id: string
   slug: string
   title: string
+  title_en?: string
   description: string
+  description_en?: string
   image_desktop: string | null
   image_mobile: string | null
   orden: number
@@ -27,7 +30,9 @@ interface Draft {
   id?: string
   slug: string
   title: string
+  titleEn: string
   description: string
+  descriptionEn: string
   imageDesktop: string | null
   imageMobile: string | null
   publicado: boolean
@@ -36,7 +41,9 @@ interface Draft {
 const emptyDraft = (): Draft => ({
   slug: '',
   title: '',
+  titleEn: '',
   description: '',
+  descriptionEn: '',
   imageDesktop: null,
   imageMobile: null,
   publicado: true,
@@ -46,7 +53,9 @@ const toDraft = (entrada: GaleriaRecord): Draft => ({
   id: entrada.id,
   slug: entrada.slug,
   title: entrada.title,
+  titleEn: entrada.title_en ?? '',
   description: entrada.description,
+  descriptionEn: entrada.description_en ?? '',
   imageDesktop: entrada.image_desktop,
   imageMobile: entrada.image_mobile,
   publicado: entrada.publicado,
@@ -102,7 +111,9 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
       id: draft.id,
       slug: draft.slug || slugify(draft.title),
       title: draft.title,
+      titleEn: draft.titleEn,
       description: draft.description,
+      descriptionEn: draft.descriptionEn,
       imageDesktop: draft.imageDesktop,
       imageMobile: draft.imageMobile,
       publicado: draft.publicado,
@@ -238,16 +249,13 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
           </header>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Título">
-              <input
-                className={inputClass}
-                value={draft.title}
-                onChange={(event) => {
-                  const title = event.target.value
-                  patch(draft.id ? { title } : { title, slug: slugify(title) })
-                }}
-              />
-            </Field>
+            <Bilingual
+              label="Título"
+              value={draft.title}
+              valueEn={draft.titleEn}
+              onChange={(title) => patch(draft.id ? { title } : { title, slug: slugify(title) })}
+              onChangeEn={(titleEn) => patch({ titleEn })}
+            />
             <Field
               label="Slug"
               hint={slugTaken ? 'Ya existe una entrada con este slug.' : undefined}
@@ -260,14 +268,14 @@ export default function GaleriaManager({ initial }: { initial: GaleriaRecord[] }
             </Field>
           </div>
 
-          <Field label="Descripción">
-            <textarea
-              rows={3}
-              className={inputClass}
-              value={draft.description}
-              onChange={(event) => patch({ description: event.target.value })}
-            />
-          </Field>
+          <Bilingual
+            label="Descripción"
+            rows={3}
+            value={draft.description}
+            valueEn={draft.descriptionEn}
+            onChange={(description) => patch({ description })}
+            onChangeEn={(descriptionEn) => patch({ descriptionEn })}
+          />
 
           <div className="grid gap-5 md:grid-cols-2">
             <ImageSlot

@@ -1,19 +1,19 @@
 ---
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
+
 const {
   class: className = '',
   tag: TagName = 'h1',
-  title = 'Arquitectura, diseño y construcción',
-  phrases = [
-    'Más de 14 años de experiencia',
-    'Más de 500 proyectos',
-    'Con base en Guadalajara · Proyectos en todo México',
-  ],
-  description = 'Cuando decides construir, lo importante es sentirte acompañado.',
+  title = t.hero.title,
+  phrases = t.hero.phrases,
+  description = t.hero.description,
 } = Astro.props as {
   class?: string
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div'
   title?: string
-  phrases?: string[]
+  phrases?: readonly string[]
   description?: string
 }
 

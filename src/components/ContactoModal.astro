@@ -1,5 +1,8 @@
 ---
 import ContactoForm from '@/components/ContactoForm.astro'
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
 ---
 
 <dialog
@@ -13,30 +16,26 @@ import ContactoForm from '@/components/ContactoForm.astro'
   >
     <button
       type="button"
-      class="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-300 hover:bg-vmv-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vmv-ring"
-      aria-label="Cerrar formulario de contacto"
+      class="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-300 hover:bg-vmv-muted focus-visible:ring-2 focus-visible:ring-vmv-ring focus-visible:outline-none"
+      aria-label={t.contact.modalClose}
       data-contacto-modal-close
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path
-          d="M4 4l8 8M12 4l-8 8"
-          stroke="currentColor"
-          stroke-width="1.3"
-          stroke-linecap="round"></path>
+        <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+        ></path>
       </svg>
     </button>
 
     <header class="mb-8 flex flex-col gap-4 pr-12">
       <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
         <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-        Contacto
+        {t.contact.overline}
       </p>
       <h2 id="contacto-modal-title" class="vmv-title-2 text-vmv-foreground">
-        Conversemos tu proyecto
+        {t.contact.title}
       </h2>
       <p class="vmv-body-2 max-w-[46ch] text-vmv-muted-foreground">
-        Cuéntanos un poco sobre lo que tienes en mente. Nos pondremos en contacto contigo por
-        WhatsApp o e-mail para conversar los siguientes pasos.
+        {t.contact.body}
       </p>
     </header>
 

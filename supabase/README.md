@@ -8,8 +8,8 @@ imágenes y los planos, en el bucket de Cloudflare R2. El panel está en
 
 1. Crea el proyecto en [supabase.com](https://supabase.com).
 2. En **SQL Editor**, ejecuta las migraciones en orden:
-   `migrations/0001_contenido.sql`, `migrations/0002_proyectos.sql` y
-   `migrations/0003_medidas_imagenes.sql`.
+   `migrations/0001_contenido.sql`, `migrations/0002_proyectos.sql`,
+   `migrations/0003_medidas_imagenes.sql` y `migrations/0004_i18n.sql`.
 3. En **Settings → API** copia `Project URL`, `anon public` y `service_role`
    hacia tu `.env` (ver `.env.example`).
 
@@ -64,6 +64,25 @@ script le actualiza la contraseña.
 Copia al proyecto de Vercel todas las variables del `.env` **excepto**
 `SUPABASE_SERVICE_ROLE_KEY`, que solo se usa en los scripts locales de este
 directorio.
+
+## Contenido en inglés
+
+La migración `0004_i18n.sql` agrega una columna `_en` por cada campo de texto
+(`title_en`, `descripcion_en`, `alt_en`…). En el panel, cada campo traducible
+muestra dos recuadros: **ES** arriba y **EN** abajo, este último con borde
+punteado.
+
+El inglés es opcional campo por campo. Si un recuadro EN queda vacío, la versión
+en `/en` muestra el texto en español de ese campo y el resto de la ficha sigue
+en inglés. Así el portafolio se puede traducir poco a poco sin dejar huecos.
+
+No se traducen el `slug` (la URL es la misma en ambos idiomas, de modo que el
+selector de idioma lleva a la misma ficha), la firma, el año ni los nombres
+propios de los créditos.
+
+El código tolera que la migración todavía no se haya ejecutado: las consultas
+piden `*`, así que una base sin las columnas `_en` sirve todo el sitio en
+español. El orden entre desplegar y migrar no importa.
 
 ## Cómo se refleja un cambio en el sitio
 

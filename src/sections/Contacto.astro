@@ -1,26 +1,28 @@
 ---
 import ContactoForm from '@/components/ContactoForm.astro'
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
 ---
 
 <section
   id="contacto"
   class="relative flex min-h-svh items-center bg-vmv-background"
   data-contacto
-  aria-label="Formulario de contacto"
+  aria-label={t.contact.sectionAria}
 >
-  <div
-    class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] py-[clamp(4rem,9vw,7rem)]"
-  >
-    <div class="grid gap-12 min-[900px]:grid-cols-[minmax(min-content,0.85fr)_minmax(0,1.15fr)] min-[900px]:gap-[clamp(2rem,5vw,5rem)]">
+  <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] py-[clamp(4rem,9vw,7rem)]">
+    <div
+      class="grid gap-12 min-[900px]:grid-cols-[minmax(min-content,0.85fr)_minmax(0,1.15fr)] min-[900px]:gap-[clamp(2rem,5vw,5rem)]"
+    >
       <header class="flex flex-col gap-6" data-contacto-intro>
         <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
           <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-          Contacto
+          {t.contact.overline}
         </p>
-        <h2 class="vmv-title-1 max-w-[14ch] text-vmv-foreground">Conversemos tu proyecto</h2>
+        <h2 class="vmv-title-1 max-w-[14ch] text-vmv-foreground">{t.contact.title}</h2>
         <p class="vmv-body-2 max-w-[42ch] text-vmv-muted-foreground">
-          Cuéntanos un poco sobre lo que tienes en mente. Nos pondremos en contacto contigo por
-          WhatsApp o e-mail para conversar los siguientes pasos.
+          {t.contact.body}
         </p>
       </header>
 

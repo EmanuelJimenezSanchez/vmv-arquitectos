@@ -3,6 +3,7 @@ import { actions } from 'astro:actions'
 import {
   AspectHint,
   Banner,
+  Bilingual,
   Button,
   Field,
   FileDrop,
@@ -16,31 +17,43 @@ interface Foto {
   id?: string
   src: string
   alt: string
+  /** Vacío = el sitio usa el alt en español. */
+  altEn: string
 }
 
 export interface ServicioRecord {
   id: string
   slug: string
   title: string
+  title_en?: string
   description: string
+  description_en?: string
   details: string
+  details_en?: string
   footer: string
+  footer_en?: string
   image_url: string | null
   image_alt: string
+  image_alt_en?: string
   orden: number
   publicado: boolean
-  servicio_fotos: Foto[]
+  servicio_fotos: { id?: string; src: string; alt: string; alt_en?: string }[]
 }
 
 interface Draft {
   id?: string
   slug: string
   title: string
+  titleEn: string
   description: string
+  descriptionEn: string
   details: string
+  detailsEn: string
   footer: string
+  footerEn: string
   imageUrl: string | null
   imageAlt: string
+  imageAltEn: string
   publicado: boolean
   gallery: Foto[]
 }
@@ -48,11 +61,16 @@ interface Draft {
 const emptyDraft = (): Draft => ({
   slug: '',
   title: '',
+  titleEn: '',
   description: '',
+  descriptionEn: '',
   details: '',
+  detailsEn: '',
   footer: '',
+  footerEn: '',
   imageUrl: null,
   imageAlt: '',
+  imageAltEn: '',
   publicado: true,
   gallery: [],
 })
@@ -61,13 +79,22 @@ const toDraft = (servicio: ServicioRecord): Draft => ({
   id: servicio.id,
   slug: servicio.slug,
   title: servicio.title,
+  titleEn: servicio.title_en ?? '',
   description: servicio.description,
+  descriptionEn: servicio.description_en ?? '',
   details: servicio.details,
+  detailsEn: servicio.details_en ?? '',
   footer: servicio.footer,
+  footerEn: servicio.footer_en ?? '',
   imageUrl: servicio.image_url,
   imageAlt: servicio.image_alt,
+  imageAltEn: servicio.image_alt_en ?? '',
   publicado: servicio.publicado,
-  gallery: servicio.servicio_fotos.map((foto) => ({ src: foto.src, alt: foto.alt })),
+  gallery: servicio.servicio_fotos.map((foto) => ({
+    src: foto.src,
+    alt: foto.alt,
+    altEn: foto.alt_en ?? '',
+  })),
 })
 
 export default function ServiciosManager({ initial }: { initial: ServicioRecord[] }) {
@@ -120,13 +147,18 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
       id: draft.id,
       slug: draft.slug || slugify(draft.title),
       title: draft.title,
+      titleEn: draft.titleEn,
       description: draft.description,
+      descriptionEn: draft.descriptionEn,
       details: draft.details,
+      detailsEn: draft.detailsEn,
       footer: draft.footer,
+      footerEn: draft.footerEn,
       imageUrl: draft.imageUrl,
       imageAlt: draft.imageAlt,
+      imageAltEn: draft.imageAltEn,
       publicado: draft.publicado,
-      gallery: draft.gallery.map(({ src, alt }) => ({ src, alt })),
+      gallery: draft.gallery.map(({ src, alt, altEn }) => ({ src, alt, altEn })),
     })
 
     setSaving(false)
@@ -188,7 +220,7 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
     const uploaded: Foto[] = []
     for (const file of files) {
       const result = await upload(file, 'services')
-      if (result) uploaded.push({ src: result.url, alt: '' })
+      if (result) uploaded.push({ src: result.url, alt: '', altEn: '' })
     }
     if (uploaded.length > 0) {
       setDraft((current) => ({ ...current!, gallery: [...current!.gallery, ...uploaded] }))
@@ -241,16 +273,13 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
           </header>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Título">
-              <input
-                className={inputClass}
-                value={draft.title}
-                onChange={(event) => {
-                  const title = event.target.value
-                  patch(draft.id ? { title } : { title, slug: slugify(title) })
-                }}
-              />
-            </Field>
+            <Bilingual
+              label="Título"
+              value={draft.title}
+              valueEn={draft.titleEn}
+              onChange={(title) => patch(draft.id ? { title } : { title, slug: slugify(title) })}
+              onChangeEn={(titleEn) => patch({ titleEn })}
+            />
             <Field
               label="Slug"
               hint={
@@ -263,36 +292,36 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
                 onChange={(event) => patch({ slug: slugify(event.target.value) })}
               />
             </Field>
-            <Field label="Etiqueta (footer)">
-              <input
-                className={inputClass}
-                value={draft.footer}
-                onChange={(event) => patch({ footer: event.target.value })}
-              />
-            </Field>
-            <Field label="Texto alternativo de la portada">
-              <input
-                className={inputClass}
-                value={draft.imageAlt}
-                onChange={(event) => patch({ imageAlt: event.target.value })}
-              />
-            </Field>
-            <Field label="Descripción">
-              <textarea
-                rows={3}
-                className={inputClass}
-                value={draft.description}
-                onChange={(event) => patch({ description: event.target.value })}
-              />
-            </Field>
-            <Field label="Detalle">
-              <textarea
-                rows={3}
-                className={inputClass}
-                value={draft.details}
-                onChange={(event) => patch({ details: event.target.value })}
-              />
-            </Field>
+            <Bilingual
+              label="Etiqueta (footer)"
+              value={draft.footer}
+              valueEn={draft.footerEn}
+              onChange={(footer) => patch({ footer })}
+              onChangeEn={(footerEn) => patch({ footerEn })}
+            />
+            <Bilingual
+              label="Texto alternativo de la portada"
+              value={draft.imageAlt}
+              valueEn={draft.imageAltEn}
+              onChange={(imageAlt) => patch({ imageAlt })}
+              onChangeEn={(imageAltEn) => patch({ imageAltEn })}
+            />
+            <Bilingual
+              label="Descripción"
+              rows={3}
+              value={draft.description}
+              valueEn={draft.descriptionEn}
+              onChange={(description) => patch({ description })}
+              onChangeEn={(descriptionEn) => patch({ descriptionEn })}
+            />
+            <Bilingual
+              label="Detalle"
+              rows={3}
+              value={draft.details}
+              valueEn={draft.detailsEn}
+              onChange={(details) => patch({ details })}
+              onChangeEn={(detailsEn) => patch({ detailsEn })}
+            />
           </div>
 
           <div className="flex flex-col gap-3">
@@ -375,6 +404,16 @@ export default function ServiciosManager({ initial }: { initial: ServicioRecord[
                         onChange={(event) => {
                           const gallery = [...draft.gallery]
                           gallery[index] = { ...foto, alt: event.target.value }
+                          patch({ gallery })
+                        }}
+                      />
+                      <input
+                        className={`${inputClass} border-dashed`}
+                        placeholder="Alt en inglés (opcional)"
+                        value={foto.altEn}
+                        onChange={(event) => {
+                          const gallery = [...draft.gallery]
+                          gallery[index] = { ...foto, altEn: event.target.value }
                           patch({ gallery })
                         }}
                       />

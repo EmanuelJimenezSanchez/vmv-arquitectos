@@ -1,5 +1,8 @@
 ---
 import type { ProyectoDocumento, ProyectoFoto } from '@/lib/content'
+import { format, getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
 
 interface Props {
   /** El detalle del proyecto ya cargó el contenido; se pasa tal cual. */
@@ -15,7 +18,7 @@ const grupos = {
   fotos: fotos.map((foto, index) => ({
     src: foto.src,
     alt: foto.alt,
-    titulo: `Fotografía ${String(index + 1).padStart(2, '0')}`,
+    titulo: format(t.project.photoLabel, { index: String(index + 1).padStart(2, '0') }),
     descripcion: foto.alt,
     archivo: '',
     contain: false,
@@ -41,7 +44,10 @@ const grupos = {
       class="flex shrink-0 items-start justify-between gap-6 px-[clamp(1rem,4vw,2.5rem)] pt-[clamp(1rem,3vw,1.75rem)]"
     >
       <div class="flex min-w-0 flex-col gap-1">
-        <p class="vmv-caption-1 tracking-[0.22em] text-white/50 uppercase" data-proyecto-visor-kicker>
+        <p
+          class="vmv-caption-1 tracking-[0.22em] text-white/50 uppercase"
+          data-proyecto-visor-kicker
+        >
         </p>
         <h2 class="vmv-title-3 truncate text-white" data-proyecto-visor-title></h2>
       </div>
@@ -68,7 +74,7 @@ const grupos = {
         <button
           type="button"
           class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/25 text-white transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#0f0e0c] focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
-          aria-label="Cerrar galería"
+          aria-label={t.project.galleryClose}
           data-proyecto-visor-close
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -95,7 +101,7 @@ const grupos = {
       <button
         type="button"
         class="absolute top-1/2 left-[clamp(0.5rem,2vw,1.5rem)] flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-[#0f0e0c]/55 text-white backdrop-blur-sm transition-colors duration-300 hover:bg-white hover:text-[#0f0e0c] disabled:pointer-events-none disabled:opacity-25"
-        aria-label="Anterior"
+        aria-label={t.project.galleryPrev}
         data-proyecto-visor-prev
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -110,7 +116,7 @@ const grupos = {
       <button
         type="button"
         class="absolute top-1/2 right-[clamp(0.5rem,2vw,1.5rem)] flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/25 bg-[#0f0e0c]/55 text-white backdrop-blur-sm transition-colors duration-300 hover:bg-white hover:text-[#0f0e0c] disabled:pointer-events-none disabled:opacity-25"
-        aria-label="Siguiente"
+        aria-label={t.project.galleryNext}
         data-proyecto-visor-next
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -137,10 +143,10 @@ const grupos = {
       </div>
 
       <div
-        class="flex gap-2 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
+        class="flex scrollbar-none gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden"
         data-proyecto-visor-thumbs
         role="tablist"
-        aria-label="Miniaturas"
+        aria-label={t.project.galleryThumbs}
       >
       </div>
     </footer>
@@ -233,8 +239,7 @@ const grupos = {
       window.lenis?.start()
     }
 
-    const prefersReducedMotion = () =>
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     // La tira de miniaturas se desborda cuando hay muchas imágenes; se centra
     // la activa para que las siguientes vayan apareciendo al navegar.

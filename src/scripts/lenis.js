@@ -80,6 +80,13 @@ export function initLenis() {
         return
       }
 
+      // Los CTA de contacto abren el modal; el `href` a `#contacto` es solo el
+      // respaldo sin JS. Interceptarlos aquí en captura los dejaba sin llegar
+      // al listener del modal en la portada, donde el ancla sí existe.
+      if (link.hasAttribute('data-contacto-trigger')) {
+        return
+      }
+
       const url = new URL(link.href, window.location.href)
       if (url.origin !== window.location.origin || url.pathname !== window.location.pathname) {
         return

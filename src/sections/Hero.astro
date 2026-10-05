@@ -1,9 +1,12 @@
 ---
 import HeroSlider from '@/components/HeroSlider.astro'
 import HeroVideo from '@/components/HeroVideo.astro'
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
 ---
 
-<section id="inicio" aria-label="Hero principal">
+<section id="inicio" aria-label={t.hero.sectionAria}>
   <HeroVideo />
   <!-- <HeroSlider /> -->
 </section>

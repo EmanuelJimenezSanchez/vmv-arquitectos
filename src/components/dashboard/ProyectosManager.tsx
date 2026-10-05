@@ -3,6 +3,7 @@ import { actions } from 'astro:actions'
 import {
   AspectHint,
   Banner,
+  Bilingual,
   Button,
   Field,
   FileDrop,
@@ -16,6 +17,8 @@ interface Foto {
   id?: string
   src: string
   alt: string
+  /** Vacío = el sitio usa el alt en español. */
+  altEn: string
   ancha: boolean
   width: number | null
   height: number | null
@@ -24,7 +27,9 @@ interface Foto {
 interface Documento {
   id?: string
   titulo: string
+  tituloEn: string
   descripcion: string
+  descripcionEn: string
   preview_url: string | null
   preview_width: number | null
   preview_height: number | null
@@ -34,6 +39,8 @@ interface Documento {
 interface Credito {
   id?: string
   rol: string
+  rolEn: string
+  /** Nombre propio: no se traduce. */
   nombre: string
 }
 
@@ -41,39 +48,60 @@ export interface ProyectoRecord {
   id: string
   slug: string
   title: string
+  title_en?: string
   tagline: string
+  tagline_en?: string
   resumen: string
+  resumen_en?: string
   descripcion: string
+  descripcion_en?: string
   cover_url: string | null
   cover_alt: string
+  cover_alt_en?: string
   firma: string
   tipologia: string
+  tipologia_en?: string
   anio: number | null
   area: string
+  area_en?: string
   ubicacion: string
+  ubicacion_en?: string
   niveles: string
+  niveles_en?: string
   orden: number
   publicado: boolean
-  proyecto_fotos: Foto[]
-  proyecto_documentos: Documento[]
-  proyecto_creditos: Credito[]
+  proyecto_fotos: (Omit<Foto, 'altEn'> & { alt_en?: string })[]
+  proyecto_documentos: (Omit<Documento, 'tituloEn' | 'descripcionEn'> & {
+    titulo_en?: string
+    descripcion_en?: string
+  })[]
+  proyecto_creditos: (Omit<Credito, 'rolEn'> & { rol_en?: string })[]
 }
 
 interface Draft {
   id?: string
   slug: string
   title: string
+  titleEn: string
   tagline: string
+  taglineEn: string
   resumen: string
+  resumenEn: string
   descripcion: string
+  descripcionEn: string
   coverUrl: string | null
   coverAlt: string
+  coverAltEn: string
   firma: string
   tipologia: string
+  tipologiaEn: string
   anio: string
   area: string
+  areaEn: string
   ubicacion: string
+  ubicacionEn: string
   niveles: string
+  nivelesEn: string
   publicado: boolean
   fotos: Foto[]
   documentos: Documento[]
@@ -83,17 +111,26 @@ interface Draft {
 const emptyDraft = (): Draft => ({
   slug: '',
   title: '',
+  titleEn: '',
   tagline: '',
+  taglineEn: '',
   resumen: '',
+  resumenEn: '',
   descripcion: '',
+  descripcionEn: '',
   coverUrl: null,
   coverAlt: '',
+  coverAltEn: '',
   firma: 'VMV Arquitectos',
   tipologia: '',
+  tipologiaEn: '',
   anio: '',
   area: '',
+  areaEn: '',
   ubicacion: '',
+  ubicacionEn: '',
   niveles: '',
+  nivelesEn: '',
   publicado: true,
   fotos: [],
   documentos: [],
@@ -104,28 +141,40 @@ const toDraft = (proyecto: ProyectoRecord): Draft => ({
   id: proyecto.id,
   slug: proyecto.slug,
   title: proyecto.title,
+  titleEn: proyecto.title_en ?? '',
   tagline: proyecto.tagline,
+  taglineEn: proyecto.tagline_en ?? '',
   resumen: proyecto.resumen,
+  resumenEn: proyecto.resumen_en ?? '',
   descripcion: proyecto.descripcion,
+  descripcionEn: proyecto.descripcion_en ?? '',
   coverUrl: proyecto.cover_url,
   coverAlt: proyecto.cover_alt,
+  coverAltEn: proyecto.cover_alt_en ?? '',
   firma: proyecto.firma,
   tipologia: proyecto.tipologia,
+  tipologiaEn: proyecto.tipologia_en ?? '',
   anio: proyecto.anio ? String(proyecto.anio) : '',
   area: proyecto.area,
+  areaEn: proyecto.area_en ?? '',
   ubicacion: proyecto.ubicacion,
+  ubicacionEn: proyecto.ubicacion_en ?? '',
   niveles: proyecto.niveles,
+  nivelesEn: proyecto.niveles_en ?? '',
   publicado: proyecto.publicado,
   fotos: proyecto.proyecto_fotos.map((foto) => ({
     src: foto.src,
     alt: foto.alt,
+    altEn: foto.alt_en ?? '',
     ancha: foto.ancha,
     width: foto.width,
     height: foto.height,
   })),
   documentos: proyecto.proyecto_documentos.map((doc) => ({
     titulo: doc.titulo,
+    tituloEn: doc.titulo_en ?? '',
     descripcion: doc.descripcion,
+    descripcionEn: doc.descripcion_en ?? '',
     preview_url: doc.preview_url,
     preview_width: doc.preview_width,
     preview_height: doc.preview_height,
@@ -133,6 +182,7 @@ const toDraft = (proyecto: ProyectoRecord): Draft => ({
   })),
   creditos: proyecto.proyecto_creditos.map((credito) => ({
     rol: credito.rol,
+    rolEn: credito.rol_en ?? '',
     nombre: credito.nombre,
   })),
 })
@@ -196,28 +246,40 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
       id: draft.id,
       slug: draft.slug || slugify(draft.title),
       title: draft.title,
+      titleEn: draft.titleEn,
       tagline: draft.tagline,
+      taglineEn: draft.taglineEn,
       resumen: draft.resumen,
+      resumenEn: draft.resumenEn,
       descripcion: draft.descripcion,
+      descripcionEn: draft.descripcionEn,
       coverUrl: draft.coverUrl,
       coverAlt: draft.coverAlt,
+      coverAltEn: draft.coverAltEn,
       firma: draft.firma,
       tipologia: draft.tipologia,
+      tipologiaEn: draft.tipologiaEn,
       anio: draft.anio ? Number(draft.anio) : null,
       area: draft.area,
+      areaEn: draft.areaEn,
       ubicacion: draft.ubicacion,
+      ubicacionEn: draft.ubicacionEn,
       niveles: draft.niveles,
+      nivelesEn: draft.nivelesEn,
       publicado: draft.publicado,
-      fotos: draft.fotos.map(({ src, alt, ancha, width, height }) => ({
+      fotos: draft.fotos.map(({ src, alt, altEn, ancha, width, height }) => ({
         src,
         alt,
+        altEn,
         ancha,
         width,
         height,
       })),
       documentos: draft.documentos.map((doc) => ({
         titulo: doc.titulo,
+        tituloEn: doc.tituloEn,
         descripcion: doc.descripcion,
+        descripcionEn: doc.descripcionEn,
         previewUrl: doc.preview_url,
         previewWidth: doc.preview_width,
         previewHeight: doc.preview_height,
@@ -225,7 +287,11 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
       })),
       creditos: draft.creditos
         .filter((credito) => credito.rol.trim() && credito.nombre.trim())
-        .map(({ rol, nombre }) => ({ rol: rol.trim(), nombre: nombre.trim() })),
+        .map(({ rol, rolEn, nombre }) => ({
+          rol: rol.trim(),
+          rolEn: rolEn.trim(),
+          nombre: nombre.trim(),
+        })),
     })
 
     setSaving(false)
@@ -289,6 +355,7 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
         uploaded.push({
           src: result.url,
           alt: '',
+          altEn: '',
           ancha: false,
           width: result.width,
           height: result.height,
@@ -356,16 +423,13 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
           </header>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Título">
-              <input
-                className={inputClass}
-                value={draft.title}
-                onChange={(event) => {
-                  const title = event.target.value
-                  patch(draft.id ? { title } : { title, slug: slugify(title) })
-                }}
-              />
-            </Field>
+            <Bilingual
+              label="Título"
+              value={draft.title}
+              valueEn={draft.titleEn}
+              onChange={(title) => patch(draft.id ? { title } : { title, slug: slugify(title) })}
+              onChangeEn={(titleEn) => patch({ titleEn })}
+            />
             <Field
               label="Slug"
               hint={
@@ -378,42 +442,42 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                 onChange={(event) => patch({ slug: slugify(event.target.value) })}
               />
             </Field>
-            <Field label="Frase del hero" hint="Línea corta bajo el título en la portada.">
-              <input
-                className={inputClass}
-                value={draft.tagline}
-                onChange={(event) => patch({ tagline: event.target.value })}
-              />
-            </Field>
-            <Field label="Texto alternativo de la portada">
-              <input
-                className={inputClass}
-                value={draft.coverAlt}
-                onChange={(event) => patch({ coverAlt: event.target.value })}
-              />
-            </Field>
+            <Bilingual
+              label="Frase del hero"
+              hint="Línea corta bajo el título en la portada."
+              value={draft.tagline}
+              valueEn={draft.taglineEn}
+              onChange={(tagline) => patch({ tagline })}
+              onChangeEn={(taglineEn) => patch({ taglineEn })}
+            />
+            <Bilingual
+              label="Texto alternativo de la portada"
+              value={draft.coverAlt}
+              valueEn={draft.coverAltEn}
+              onChange={(coverAlt) => patch({ coverAlt })}
+              onChangeEn={(coverAltEn) => patch({ coverAltEn })}
+            />
           </div>
 
-          <Field label="Entradilla" hint="El párrafo destacado que abre la descripción.">
-            <textarea
-              rows={3}
-              className={inputClass}
-              value={draft.resumen}
-              onChange={(event) => patch({ resumen: event.target.value })}
-            />
-          </Field>
+          <Bilingual
+            label="Entradilla"
+            hint="El párrafo destacado que abre la descripción."
+            rows={3}
+            value={draft.resumen}
+            valueEn={draft.resumenEn}
+            onChange={(resumen) => patch({ resumen })}
+            onChangeEn={(resumenEn) => patch({ resumenEn })}
+          />
 
-          <Field
+          <Bilingual
             label="Descripción"
             hint="Separa los párrafos con una línea en blanco: así se publican."
-          >
-            <textarea
-              rows={14}
-              className={inputClass}
-              value={draft.descripcion}
-              onChange={(event) => patch({ descripcion: event.target.value })}
-            />
-          </Field>
+            rows={14}
+            value={draft.descripcion}
+            valueEn={draft.descripcionEn}
+            onChange={(descripcion) => patch({ descripcion })}
+            onChangeEn={(descripcionEn) => patch({ descripcionEn })}
+          />
 
           <div className="flex flex-col gap-3">
             <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
@@ -468,13 +532,14 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                 onChange={(event) => patch({ firma: event.target.value })}
               />
             </Field>
-            <Field label="Tipología" hint="Casa residencial, oficinas…">
-              <input
-                className={inputClass}
-                value={draft.tipologia}
-                onChange={(event) => patch({ tipologia: event.target.value })}
-              />
-            </Field>
+            <Bilingual
+              label="Tipología"
+              hint="Casa residencial, oficinas…"
+              value={draft.tipologia}
+              valueEn={draft.tipologiaEn}
+              onChange={(tipologia) => patch({ tipologia })}
+              onChangeEn={(tipologiaEn) => patch({ tipologiaEn })}
+            />
             <Field label="Año de construcción">
               <input
                 className={inputClass}
@@ -483,27 +548,28 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                 onChange={(event) => patch({ anio: event.target.value.replace(/[^0-9]/g, '') })}
               />
             </Field>
-            <Field label="Área útil" hint="Con unidad, por ejemplo «350 m²».">
-              <input
-                className={inputClass}
-                value={draft.area}
-                onChange={(event) => patch({ area: event.target.value })}
-              />
-            </Field>
-            <Field label="Localización">
-              <input
-                className={inputClass}
-                value={draft.ubicacion}
-                onChange={(event) => patch({ ubicacion: event.target.value })}
-              />
-            </Field>
-            <Field label="Niveles">
-              <input
-                className={inputClass}
-                value={draft.niveles}
-                onChange={(event) => patch({ niveles: event.target.value })}
-              />
-            </Field>
+            <Bilingual
+              label="Área útil"
+              hint="Con unidad, por ejemplo «350 m²»."
+              value={draft.area}
+              valueEn={draft.areaEn}
+              onChange={(area) => patch({ area })}
+              onChangeEn={(areaEn) => patch({ areaEn })}
+            />
+            <Bilingual
+              label="Localización"
+              value={draft.ubicacion}
+              valueEn={draft.ubicacionEn}
+              onChange={(ubicacion) => patch({ ubicacion })}
+              onChangeEn={(ubicacionEn) => patch({ ubicacionEn })}
+            />
+            <Bilingual
+              label="Niveles"
+              value={draft.niveles}
+              valueEn={draft.nivelesEn}
+              onChange={(niveles) => patch({ niveles })}
+              onChangeEn={(nivelesEn) => patch({ nivelesEn })}
+            />
           </div>
         </section>
 
@@ -562,6 +628,16 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                       onChange={(event) => {
                         const fotos = [...draft.fotos]
                         fotos[index] = { ...foto, alt: event.target.value }
+                        patch({ fotos })
+                      }}
+                    />
+                    <input
+                      className={`${inputClass} border-dashed`}
+                      placeholder="Alt en inglés (opcional)"
+                      value={foto.altEn}
+                      onChange={(event) => {
+                        const fotos = [...draft.fotos]
+                        fotos[index] = { ...foto, altEn: event.target.value }
                         patch({ fotos })
                       }}
                     />
@@ -646,7 +722,9 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                     ...draft.documentos,
                     {
                       titulo: '',
+                      tituloEn: '',
                       descripcion: '',
+                      descripcionEn: '',
                       preview_url: null,
                       preview_width: null,
                       preview_height: null,
@@ -674,23 +752,20 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
               {draft.documentos.map((doc, index) => (
                 <li key={index} className="flex flex-col gap-4 border border-vmv-border p-3">
                   <div className="grid gap-4 md:grid-cols-2">
-                    <Field label="Título">
-                      <input
-                        className={inputClass}
-                        placeholder="Planta baja"
-                        value={doc.titulo}
-                        onChange={(event) => patchDocumento(index, { titulo: event.target.value })}
-                      />
-                    </Field>
-                    <Field label="Descripción">
-                      <input
-                        className={inputClass}
-                        value={doc.descripcion}
-                        onChange={(event) =>
-                          patchDocumento(index, { descripcion: event.target.value })
-                        }
-                      />
-                    </Field>
+                    <Bilingual
+                      label="Título"
+                      value={doc.titulo}
+                      valueEn={doc.tituloEn}
+                      onChange={(titulo) => patchDocumento(index, { titulo })}
+                      onChangeEn={(tituloEn) => patchDocumento(index, { tituloEn })}
+                    />
+                    <Bilingual
+                      label="Descripción"
+                      value={doc.descripcion}
+                      valueEn={doc.descripcionEn}
+                      onChange={(descripcion) => patchDocumento(index, { descripcion })}
+                      onChangeEn={(descripcionEn) => patchDocumento(index, { descripcionEn })}
+                    />
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4">
@@ -810,6 +885,7 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                       // Repetir el rol anterior ahorra teclear al capturar
                       // varios nombres del mismo equipo.
                       rol: draft.creditos.at(-1)?.rol ?? 'Diseño arquitectónico',
+                      rolEn: draft.creditos.at(-1)?.rolEn ?? '',
                       nombre: '',
                     },
                   ],
@@ -831,14 +907,13 @@ export default function ProyectosManager({ initial }: { initial: ProyectoRecord[
                   key={index}
                   className="grid gap-3 border border-vmv-border p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
                 >
-                  <Field label="Rol">
-                    <input
-                      className={inputClass}
-                      placeholder="Diseño arquitectónico"
-                      value={credito.rol}
-                      onChange={(event) => patchCredito(index, { rol: event.target.value })}
-                    />
-                  </Field>
+                  <Bilingual
+                    label="Rol"
+                    value={credito.rol}
+                    valueEn={credito.rolEn}
+                    onChange={(rol) => patchCredito(index, { rol })}
+                    onChangeEn={(rolEn) => patchCredito(index, { rolEn })}
+                  />
                   <Field label="Nombre">
                     <input
                       className={inputClass}

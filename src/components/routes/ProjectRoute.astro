@@ -3,10 +3,20 @@ import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
 import ProyectoGaleriaModal from '@/components/ProyectoGaleriaModal.astro'
 import { getProyectos } from '@/lib/content'
-import { ORGANIZATION_ID, WEBSITE_ID, absoluteUrl, breadcrumbSchema } from '@/lib/seo'
+import { HREFLANG, format, getLocale, localizeHref, useTranslations } from '@/lib/i18n'
+import { ORGANIZATION_ID, breadcrumbSchema, localizedUrl, websiteId } from '@/lib/seo'
 
-const id = Astro.params.id ?? ''
-const projects = await getProyectos()
+interface Props {
+  /** Slug del proyecto; lo pasa la página porque los params son suyos. */
+  id: string
+}
+
+/** Ficha de proyecto, compartida por `/projects/[id]` y `/en/projects/[id]`. */
+const { id } = Astro.props
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
+const projects = await getProyectos(locale)
 const project = projects.find((item) => item.id === id)
 
 if (!project) {
@@ -20,18 +30,23 @@ Astro.response.headers.set(
 
 const canonical = project ? `/projects/${project.id}` : '/projects'
 const title = project
-  ? `${project.title} | Proyecto | VMV Arquitectos`
-  : 'Proyecto no encontrado | VMV Arquitectos'
+  ? format(t.seo.projectTitle, { title: project.title })
+  : t.seo.projectNotFoundTitle
 
 /**
  * La meta description se arma con los datos de la ficha cuando el panel no dejó
  * resumen: vale más una frase con ubicación y año que heredar la genérica.
  */
 const fallbackDescription = project
-  ? `${project.title}: proyecto de ${project.tipologia || 'arquitectura'} de VMV Arquitectos${
-      project.ubicacion ? ` en ${project.ubicacion}` : ''
-    }${project.anio ? ` (${project.anio})` : ''}.`
-  : 'El proyecto que buscas no está disponible.'
+  ? format(t.seo.projectFallbackDescription, {
+      title: project.title,
+      type: project.tipologia || t.seo.projectFallbackType,
+      location: project.ubicacion
+        ? format(t.seo.projectFallbackLocation, { location: project.ubicacion })
+        : '',
+      year: project.anio ? format(t.seo.projectFallbackYear, { year: project.anio }) : '',
+    })
+  : t.seo.projectNotFoundDescription
 
 const description = project
   ? project.resumen || project.tagline || fallbackDescription
@@ -51,12 +66,12 @@ const [leadParagraph, ...restParagraphs] = project?.parrafos ?? []
 /** Filas de la ficha técnica; se omiten las que el panel dejó vacías. */
 const fichaTecnica = project
   ? [
-      { label: 'Firma', value: project.firma },
-      { label: 'Tipología', value: project.tipologia },
-      { label: 'Año de construcción', value: project.anio ? String(project.anio) : '' },
-      { label: 'Área útil', value: project.area },
-      { label: 'Localización', value: project.ubicacion },
-      { label: 'Niveles', value: project.niveles },
+      { label: t.project.sheet.firma, value: project.firma },
+      { label: t.project.sheet.tipologia, value: project.tipologia },
+      { label: t.project.sheet.anio, value: project.anio ? String(project.anio) : '' },
+      { label: t.project.sheet.area, value: project.area },
+      { label: t.project.sheet.ubicacion, value: project.ubicacion },
+      { label: t.project.sheet.niveles, value: project.niveles },
     ].filter((fila) => Boolean(fila.value))
   : []
 
@@ -81,9 +96,9 @@ const fotosRestantes = Math.max((project?.fotos.length ?? 0) - MOSAICO_VISIBLE, 
 
 const heroDatos = project
   ? [
-      { label: 'Ubicación', value: project.ubicacion },
-      { label: 'Año', value: project.anio ? String(project.anio) : '' },
-      { label: 'Área', value: project.area },
+      { label: t.project.heroData.ubicacion, value: project.ubicacion },
+      { label: t.project.heroData.anio, value: project.anio ? String(project.anio) : '' },
+      { label: t.project.heroData.area, value: project.area },
     ].filter((dato) => Boolean(dato.value))
   : []
 /**
@@ -94,13 +109,13 @@ const schema = project
   ? [
       {
         '@type': ['CreativeWork', 'Article'],
-        '@id': absoluteUrl(canonical) + '#proyecto',
-        url: absoluteUrl(canonical),
+        '@id': `${localizedUrl(canonical, locale)}#proyecto`,
+        url: localizedUrl(canonical, locale),
         name: project.title,
         headline: project.title,
         description,
-        inLanguage: 'es-MX',
-        isPartOf: { '@id': WEBSITE_ID },
+        inLanguage: HREFLANG[locale],
+        isPartOf: { '@id': websiteId(locale) },
         author: { '@id': ORGANIZATION_ID },
         creator: { '@id': ORGANIZATION_ID },
         publisher: { '@id': ORGANIZATION_ID },
@@ -122,11 +137,14 @@ const schema = project
             }
           : {}),
       },
-      breadcrumbSchema([
-        { name: 'Inicio', url: '/' },
-        { name: 'Proyectos', url: '/projects' },
-        { name: project.title, url: canonical },
-      ]),
+      breadcrumbSchema(
+        [
+          { name: t.nav.home, url: '/' },
+          { name: t.projects.title, url: '/projects' },
+          { name: project.title, url: canonical },
+        ],
+        locale,
+      ),
     ]
   : []
 ---
@@ -176,7 +194,7 @@ const schema = project
             <div class="mx-auto flex w-full max-w-[1200px] flex-col gap-5" data-proyecto-hero-copy>
               <p class="vmv-overline-1 flex items-center gap-3 text-white/70">
                 <span class="h-px w-9 bg-white/45" aria-hidden="true" />
-                Proyecto {indexLabel} / {totalLabel}
+                {format(t.project.counter, { index: indexLabel, total: totalLabel })}
               </p>
 
               <h1 id="proyecto-title" class="vmv-display-1 max-w-[16ch] text-balance text-white">
@@ -208,9 +226,9 @@ const schema = project
         {/* ─── DESCRIPCIÓN + FICHA TÉCNICA ─────────────── */}
         <section class="relative bg-vmv-background py-[clamp(3.5rem,8vw,7rem)]" data-proyecto>
           <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
-            <nav aria-label="Migas de pan" class="mb-[clamp(2rem,4vw,3rem)]">
+            <nav aria-label={t.project.breadcrumbAria} class="mb-[clamp(2rem,4vw,3rem)]">
               <a
-                href="/projects"
+                href={localizeHref('/projects', locale)}
                 class="group vmv-caption-1 inline-flex items-center gap-3 tracking-[0.22em] text-vmv-muted-foreground uppercase transition-colors duration-500 ease-vmv hover:text-vmv-foreground"
               >
                 <span
@@ -227,7 +245,7 @@ const schema = project
                     />
                   </svg>
                 </span>
-                Todos los proyectos
+                {t.project.allProjects}
               </a>
             </nav>
 
@@ -235,7 +253,7 @@ const schema = project
               <div class="flex flex-col gap-[clamp(1.5rem,3vw,2.25rem)]" data-proyecto-body>
                 <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
                   <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
-                  El proyecto
+                  {t.project.bodyHeading}
                 </p>
 
                 {project.resumen && (
@@ -261,7 +279,7 @@ const schema = project
               >
                 <div class="flex flex-col gap-6 border-t border-vmv-border pt-6">
                   <h2 class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
-                    Ficha técnica
+                    {t.project.sheetHeading}
                   </h2>
 
                   <dl class="flex flex-col">
@@ -278,7 +296,7 @@ const schema = project
                   {project.creditos.length > 0 && (
                     <div class="flex flex-col gap-5">
                       <h3 class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase">
-                        Colaboradores
+                        {t.project.collaborators}
                       </h3>
                       {project.creditos.map((grupo) => (
                         <div class="flex flex-col gap-2">
@@ -302,7 +320,7 @@ const schema = project
                   )}
 
                   <Button
-                    href="/#contacto"
+                    href={localizeHref('/#contacto', locale)}
                     variant="outline"
                     size="xl"
                     class="w-full"
@@ -331,13 +349,13 @@ const schema = project
                 <div class="flex flex-col gap-4">
                   <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
                     <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
-                    Galería
+                    {t.project.galleryOverline}
                   </p>
                   <h2
                     id="proyecto-galeria-title"
                     class="vmv-title-2 max-w-[20ch] text-vmv-foreground"
                   >
-                    El proyecto por dentro
+                    {t.project.galleryHeading}
                   </h2>
                 </div>
 
@@ -415,7 +433,7 @@ const schema = project
                           >
                             +{ocultas}
                             <span class="vmv-caption-1 tracking-[0.22em] text-white/70 uppercase">
-                              Ver todas
+                              {t.project.viewAll}
                             </span>
                           </span>
                         )}
@@ -443,13 +461,13 @@ const schema = project
                 <div class="flex flex-col gap-4">
                   <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
                     <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
-                    Documentos técnicos
+                    {t.project.plansOverline}
                   </p>
                   <h2
                     id="proyecto-planos-title"
                     class="vmv-title-2 max-w-[22ch] text-vmv-foreground"
                   >
-                    Planos del proyecto
+                    {t.project.plansHeading}
                   </h2>
                 </div>
 
@@ -472,11 +490,14 @@ const schema = project
                       data-visor-trigger
                       data-visor-grupo="planos"
                       data-visor-indice={index}
-                      aria-label={`Ampliar el plano ${documento.titulo}`}
+                      aria-label={format(t.project.zoomPlan, { title: documento.titulo })}
                     >
                       <img
                         src={documento.preview}
-                        alt={`Plano ${documento.titulo} del proyecto ${project.title}`}
+                        alt={format(t.project.planAlt, {
+                          title: documento.titulo,
+                          project: project.title,
+                        })}
                         width={documento.previewWidth ?? undefined}
                         height={documento.previewHeight ?? undefined}
                         class="aspect-16/10 w-full object-contain p-[clamp(0.5rem,1.5vw,1rem)] transition-transform duration-900 ease-vmv group-hover:scale-[1.03]"
@@ -537,7 +558,7 @@ const schema = project
             aria-labelledby="proyecto-siguiente-title"
           >
             <a
-              href={`/projects/${nextProject.id}`}
+              href={localizeHref(`/projects/${nextProject.id}`, locale)}
               class="group relative flex min-h-[clamp(22rem,52svh,34rem)] flex-col items-center justify-center gap-4 px-[clamp(1.25rem,5vw,3rem)] py-[clamp(3.5rem,8vw,6rem)] text-center focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-vmv-ring"
               aria-label={`Ver el siguiente proyecto: ${nextProject.title}`}
             >
@@ -555,7 +576,7 @@ const schema = project
                 <div class="absolute inset-0 bg-[#0f0e0c]/45" aria-hidden="true" />
               </div>
 
-              <p class="vmv-overline-1 relative z-2 text-white/65">Explora el siguiente proyecto</p>
+              <p class="vmv-overline-1 relative z-2 text-white/65">{t.project.nextOverline}</p>
               <h2
                 id="proyecto-siguiente-title"
                 class="vmv-display-1 relative z-2 max-w-[16ch] text-balance text-white transition-transform duration-700 ease-vmv group-hover:-translate-y-1"
@@ -590,23 +611,23 @@ const schema = project
           <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-center">
             <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
               <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
-              Hablemos
+              {t.project.closingOverline}
               <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
             </p>
             <h2 class="vmv-title-1 max-w-[20ch] text-balance text-vmv-foreground">
-              Tu proyecto puede ser el siguiente
+              {t.project.closingTitle}
             </h2>
             <p class="vmv-body-2 max-w-[46ch] text-vmv-muted-foreground">
               Del concepto a la obra terminada, cuidamos el diseño, los tiempos y cada acabado.
             </p>
             <Button
-              href="/#contacto"
+              href={localizeHref('/#contacto', locale)}
               variant="outline"
               size="xl"
               class="mt-2"
               data-contacto-trigger
             >
-              Cuéntanos tu idea
+              {t.project.cta}
             </Button>
           </div>
         </section>
@@ -623,13 +644,13 @@ const schema = project
       <section class="relative flex min-h-[80svh] items-center justify-center bg-[#0f0e0c] py-[clamp(4rem,10vw,8rem)]">
         <div class="mx-auto flex w-full max-w-[46rem] flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-center">
           <div class="h-11 w-px bg-white/50" aria-hidden="true" />
-          <p class="vmv-overline-1 text-white/60">Error 404</p>
-          <h1 class="vmv-title-1 max-w-[18ch] text-balance text-white">Proyecto no encontrado</h1>
-          <p class="vmv-body-2 max-w-[46ch] text-white/72">
-            El identificador solicitado no existe o aún no está publicado.
-          </p>
-          <Button href="/projects" variant="white" size="xl" class="mt-2">
-            Ver todos los proyectos
+          <p class="vmv-overline-1 text-white/60">{t.notFound.overline}</p>
+          <h1 class="vmv-title-1 max-w-[18ch] text-balance text-white">
+            {t.project.notFoundTitle}
+          </h1>
+          <p class="vmv-body-2 max-w-[46ch] text-white/72">{t.project.notFoundBody}</p>
+          <Button href={localizeHref('/projects', locale)} variant="white" size="xl" class="mt-2">
+            {t.project.notFoundCta}
           </Button>
         </div>
       </section>

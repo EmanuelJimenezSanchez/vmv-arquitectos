@@ -1,5 +1,9 @@
 ---
 import Button from '@/components/ui/Button.astro'
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
 
 interface Props {
   /** Prefijo de los `id` para poder montar el formulario más de una vez por página. */
@@ -15,19 +19,34 @@ const optionClass =
   'vmv-body-3 has-checked:border-vmv-foreground has-checked:bg-vmv-foreground has-checked:text-vmv-primary-foreground inline-flex cursor-pointer items-center gap-2 rounded-full border border-vmv-border px-5 py-2 text-vmv-foreground transition-colors duration-300'
 
 const textFields = [
-  { name: 'nombres', label: 'Nombre(s)', type: 'text', autocomplete: 'given-name' },
-  { name: 'apellidos', label: 'Apellido(s)', type: 'text', autocomplete: 'family-name' },
-  { name: 'email', label: 'E-mail', type: 'email', autocomplete: 'email' },
-  { name: 'telefono', label: 'Teléfono', type: 'tel', autocomplete: 'tel' },
+  { name: 'nombres', label: t.form.firstName, type: 'text', autocomplete: 'given-name' },
+  { name: 'apellidos', label: t.form.lastName, type: 'text', autocomplete: 'family-name' },
+  { name: 'email', label: t.form.email, type: 'email', autocomplete: 'email' },
+  { name: 'telefono', label: t.form.phone, type: 'tel', autocomplete: 'tel' },
 ]
 
 const radioGroups = [
-  { name: 'considerando-construir', legend: '¿Estás considerando construir?' },
-  { name: 'tiene-terreno', legend: '¿Ya cuentas con un terreno?' },
+  { name: 'considerando-construir', legend: t.form.consideringBuilding },
+  { name: 'tiene-terreno', legend: t.form.hasLand },
+]
+
+/**
+ * El valor viaja al correo tal cual, así que se manda siempre en español: el
+ * equipo de VMV lee los avisos en un solo idioma sin importar en cuál escribió
+ * el visitante.
+ */
+const radioOptions = [
+  { value: 'Sí', label: t.form.yes },
+  { value: 'No', label: t.form.no },
 ]
 ---
 
-<div class:list={['relative', className]} data-contacto-wrapper>
+<div
+  class:list={['relative', className]}
+  data-contacto-wrapper
+  data-locale={locale}
+  data-error-text={t.form.sendError}
+>
   <form class="flex flex-col gap-6" data-contacto-form novalidate>
     <div class="grid gap-6 sm:grid-cols-2">
       {
@@ -57,17 +76,17 @@ const radioGroups = [
         <fieldset class="flex flex-col gap-3">
           <legend class="vmv-caption-1 text-vmv-muted-foreground">{group.legend}</legend>
           <div class="flex flex-wrap gap-3">
-            {['Sí', 'No'].map((option) => (
+            {radioOptions.map((option) => (
               <label class={optionClass}>
                 <input
                   type="radio"
                   name={`${idPrefix}-${group.name}`}
                   data-field={group.name}
-                  value={option}
+                  value={option.value}
                   required
                   class="sr-only"
                 />
-                {option}
+                {option.label}
               </label>
             ))}
           </div>
@@ -77,7 +96,7 @@ const radioGroups = [
 
     <div class="flex flex-col gap-2">
       <label for={`${idPrefix}-mensaje`} class="vmv-caption-1 text-vmv-muted-foreground">
-        Mensaje
+        {t.form.message}
       </label>
       <textarea
         id={`${idPrefix}-mensaje`}
@@ -85,7 +104,7 @@ const radioGroups = [
         rows="4"
         maxlength="2000"
         required
-        placeholder="Cuéntanos sobre tu proyecto."
+        placeholder={t.form.messagePlaceholder}
         class:list={[fieldClass, 'resize-y']}></textarea>
     </div>
 
@@ -101,11 +120,11 @@ const radioGroups = [
     />
 
     <p class="vmv-caption-1 text-vmv-muted-foreground">
-      Te contactaremos por WhatsApp o e-mail en las próximas horas.
+      {t.form.note}
     </p>
 
     <Button type="submit" variant="primary" size="lg" class="mt-2 w-fit" data-contacto-submit>
-      Enviar
+      {t.form.submit}
     </Button>
 
     <p class="vmv-caption-1 hidden text-vmv-sand-11" data-contacto-error role="alert"></p>
@@ -136,10 +155,10 @@ const radioGroups = [
 
     <div class="flex flex-col gap-4">
       <h3 class="vmv-title-2 max-w-[16ch] text-vmv-foreground" data-contacto-success-item>
-        Gracias por escribirnos
+        {t.form.successTitle}
       </h3>
       <p class="vmv-body-2 max-w-[38ch] text-vmv-muted-foreground" data-contacto-success-item>
-        Hemos recibido tu mensaje. Te contactaremos por WhatsApp o e-mail en las próximas horas.
+        {t.form.successBody}
       </p>
     </div>
 
@@ -149,7 +168,7 @@ const radioGroups = [
       data-contacto-reset
       data-contacto-success-item
     >
-      Enviar otro mensaje
+      {t.form.sendAnother}
     </button>
   </div>
 </div>
@@ -278,6 +297,7 @@ const radioGroups = [
             mensaje: value('mensaje'),
             considerandoConstruir: radio('considerando-construir'),
             tieneTerreno: radio('tiene-terreno'),
+            idioma: wrapper.dataset.locale === 'en' ? 'en' : 'es',
             website: $<HTMLInputElement>('[data-contacto-honeypot]', form)?.value ?? '',
           })
 
@@ -287,7 +307,9 @@ const radioGroups = [
 
           if (actionError) {
             if (error) {
-              error.textContent = actionError.message
+              // El mensaje del servidor está en español; en la página se muestra
+              // el del diccionario para no mezclar idiomas frente al visitante.
+              error.textContent = wrapper.dataset.errorText ?? actionError.message
               error.classList.remove('hidden')
             }
             return

@@ -2,8 +2,12 @@
 import ServiciosGaleriaModal from '@/components/ServiciosGaleriaModal.astro'
 import Button from '@/components/ui/Button.astro'
 import { getServicios } from '@/lib/content'
+import { format, getLocale, localizeHref, useTranslations } from '@/lib/i18n'
 
-const servicios = await getServicios()
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
+const servicios = await getServicios(locale)
 const totalLabel = String(servicios.length).padStart(2, '0')
 ---
 
@@ -11,10 +15,10 @@ const totalLabel = String(servicios.length).padStart(2, '0')
   id="servicios"
   class="relative bg-vmv-background"
   data-servicios
-  aria-label="Servicios de la constructora"
+  aria-label={t.services.sectionAria}
 >
   <div
-    class="relative min-[900px]:motion-safe:h-screen min-[900px]:motion-safe:snap-x min-[900px]:motion-safe:snap-proximity min-[900px]:motion-safe:scroll-px-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:overflow-x-auto min-[900px]:motion-safe:overflow-y-hidden min-[900px]:motion-safe:overscroll-x-contain min-[900px]:motion-safe:scrollbar-none min-[900px]:motion-safe:[&::-webkit-scrollbar]:hidden"
+    class="relative min-[900px]:motion-safe:h-screen min-[900px]:motion-safe:snap-x min-[900px]:motion-safe:snap-proximity min-[900px]:motion-safe:scroll-px-[clamp(2rem,6vw,6rem)] min-[900px]:motion-safe:scrollbar-none min-[900px]:motion-safe:overflow-x-auto min-[900px]:motion-safe:overflow-y-hidden min-[900px]:motion-safe:overscroll-x-contain min-[900px]:motion-safe:[&::-webkit-scrollbar]:hidden"
     data-servicios-stage
   >
     <div
@@ -38,21 +42,27 @@ const totalLabel = String(servicios.length).padStart(2, '0')
       data-servicios-track
     >
       <header
-        class="flex flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-left min-[900px]:motion-safe:snap-start min-[900px]:motion-safe:w-[clamp(24rem,36vw,32rem)] min-[900px]:motion-safe:shrink-0 min-[900px]:motion-safe:px-0 min-[900px]:motion-safe:pr-[clamp(2rem,5vw,5rem)]"
+        class="flex flex-col items-center gap-6 px-[clamp(1.25rem,5vw,3rem)] text-left min-[900px]:motion-safe:w-[clamp(24rem,36vw,32rem)] min-[900px]:motion-safe:shrink-0 min-[900px]:motion-safe:snap-start min-[900px]:motion-safe:px-0 min-[900px]:motion-safe:pr-[clamp(2rem,5vw,5rem)]"
         data-servicios-intro
       >
         <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
           <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-          Lo que hacemos
+          {t.services.overline}
         </p>
         <h2 class="vmv-title-1 max-w-[18ch] text-center text-vmv-foreground">
-          Acompañamos cada etapa de tu proyecto
+          {t.services.title}
         </h2>
         <p class="vmv-body-2 max-w-[42ch] text-center text-vmv-muted-foreground">
-          Del concepto a la obra terminada, cuidamos el diseño, los tiempos y cada acabado.
+          {t.services.body}
         </p>
-        <Button href="/#contacto" variant="outline" size="xl" class="mt-2" data-contacto-trigger>
-          Cuéntanos tu idea
+        <Button
+          href={localizeHref('/#contacto', locale)}
+          variant="outline"
+          size="xl"
+          class="mt-2"
+          data-contacto-trigger
+        >
+          {t.services.cta}
         </Button>
       </header>
 
@@ -111,12 +121,14 @@ const totalLabel = String(servicios.length).padStart(2, '0')
                   class="group/trigger absolute inset-0 z-2 cursor-pointer rounded-sm focus-visible:ring-2 focus-visible:ring-vmv-sand-1 focus-visible:outline-none"
                   data-servicios-galeria-trigger
                 >
-                  <span class="sr-only">Ver galería de {servicio.title}</span>
+                  <span class="sr-only">
+                    {format(t.services.viewGalleryOf, { title: servicio.title })}
+                  </span>
                   <span
                     class="vmv-caption-1 absolute top-[clamp(0.75rem,1.4vw,1.1rem)] right-[clamp(0.75rem,1.4vw,1.1rem)] translate-y-[-0.35rem] rounded-full border border-vmv-sand-1/30 bg-vmv-gray-12/45 px-3 py-1.5 tracking-[0.18em] text-vmv-sand-1 uppercase opacity-0 backdrop-blur-sm transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible/trigger:translate-y-0 group-focus-visible/trigger:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:opacity-100"
                     aria-hidden="true"
                   >
-                    Ver imágenes
+                    {t.services.viewImages}
                   </span>
                 </button>
               </figure>
@@ -147,51 +159,51 @@ const totalLabel = String(servicios.length).padStart(2, '0')
   <footer
     class="pointer-events-none absolute inset-x-0 top-[calc(50dvh+clamp(9rem,26dvh,14.5rem)+clamp(0.5rem,2dvh,1.5rem)+1.5rem)] z-2 hidden justify-center min-[900px]:motion-safe:flex"
   >
-      <!-- <span
+    <!-- <span
         class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground uppercase"
         aria-hidden="true"
       >
         VMV — Servicios
       </span> -->
-      <!-- <span
+    <!-- <span
         class="vmv-caption-1 tracking-[0.22em] text-vmv-muted-foreground tabular-nums"
         aria-hidden="true"
       >
         <span data-servicios-counter>01</span> / {totalLabel}
       </span> -->
-      <div class="pointer-events-auto flex items-center gap-2">
-        <button
-          type="button"
-          class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
-          data-servicios-prev
-          aria-label="Servicio anterior"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path
-              d="M10 3.5L5 8l5 4.5"
-              stroke="currentColor"
-              stroke-width="1.4"
-              stroke-linecap="round"
-              stroke-linejoin="round"></path>
-          </svg>
-        </button>
-        <button
-          type="button"
-          class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
-          data-servicios-next
-          aria-label="Siguiente servicio"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path
-              d="M6 3.5l5 4.5-5 4.5"
-              stroke="currentColor"
-              stroke-width="1.4"
-              stroke-linecap="round"
-              stroke-linejoin="round"></path>
-          </svg>
-        </button>
-      </div>
-      <!-- <div class="h-px w-full bg-vmv-foreground/12">
+    <div class="pointer-events-auto flex items-center gap-2">
+      <button
+        type="button"
+        class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
+        data-servicios-prev
+        aria-label={t.services.prev}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M10 3.5L5 8l5 4.5"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-vmv-border text-vmv-foreground transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-vmv-gray-6 hover:bg-vmv-muted disabled:pointer-events-none disabled:opacity-30"
+        data-servicios-next
+        aria-label={t.services.next}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M6 3.5l5 4.5-5 4.5"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+    </div>
+    <!-- <div class="h-px w-full bg-vmv-foreground/12">
         <div
           class="h-full origin-left transform-[scaleX(0)] bg-vmv-foreground"
           data-servicios-progress

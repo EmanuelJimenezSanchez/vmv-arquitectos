@@ -1,0 +1,226 @@
+---
+import {
+  HTML_LANG,
+  LOCALES,
+  LOCALE_NAMES,
+  LOCALE_SHORT,
+  getLocale,
+  localizePath,
+  useTranslations,
+} from '@/lib/i18n'
+
+interface Props {
+  class?: string
+  /** Hacia dónde se despliega la lista: abajo en el header, arriba al pie del menú móvil. */
+  placement?: 'down' | 'up'
+}
+
+const { class: className = '', placement = 'down' } = Astro.props
+
+const current = getLocale(Astro.url)
+const t = useTranslations(current)
+
+/**
+ * Cada idioma apunta a la misma página traducida, no a la portada: el slug de
+ * los proyectos es común a ambos idiomas, así que cambiar de idioma desde una
+ * ficha deja al visitante en esa misma ficha.
+ *
+ * Las opciones son enlaces reales (no un <select>) para que los buscadores
+ * sigan descubriendo las versiones traducidas desde cualquier página.
+ */
+const options = LOCALES.map((locale) => ({
+  locale,
+  href: localizePath(Astro.url.pathname, locale),
+  short: LOCALE_SHORT[locale],
+  name: LOCALE_NAMES[locale],
+  isCurrent: locale === current,
+}))
+
+const menuId = `language-menu-${placement}`
+---
+
+<div class:list={['language-switcher relative', className]} data-language-switcher>
+  <button
+    type="button"
+    class="vmv-caption-1 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 pr-3 pl-3.5 tracking-[0.12em] text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-450 ease-vmv hover:border-vmv-sand-1/60 hover:text-vmv-sand-1"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls={menuId}
+    aria-label={`${t.language.switchAria}: ${LOCALE_NAMES[current]}`}
+    data-language-trigger
+  >
+    <svg
+      class="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="M3 12h18M12 3c2.5 2.6 3.75 5.6 3.75 9S14.5 18.4 12 21c-2.5-2.6-3.75-5.6-3.75-9S9.5 5.6 12 3Z"
+      ></path>
+    </svg>
+    <span>{LOCALE_SHORT[current]}</span>
+    <svg
+      class="language-chevron h-3 w-3 transition-transform duration-450 ease-vmv"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      aria-hidden="true"
+    >
+      <path d={placement === 'up' ? 'M3 7.5 6 4.5l3 3' : 'M3 4.5 6 7.5l3-3'}></path>
+    </svg>
+  </button>
+
+  <ul
+    id={menuId}
+    class:list={[
+      'language-menu invisible absolute right-0 z-70 min-w-40 rounded-2xl border border-vmv-sand-1/25 bg-vmv-gray-12/95 p-1.5 opacity-0 shadow-[0_18px_40px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md transition-[opacity,transform,visibility] duration-300 ease-vmv',
+      placement === 'up'
+        ? 'bottom-full mb-2 origin-bottom-right translate-y-1'
+        : 'top-full mt-2 origin-top-right -translate-y-1',
+    ]}
+    data-language-menu
+  >
+    {
+      options.map((option) => (
+        <li>
+          <a
+            href={option.href}
+            hreflang={HTML_LANG[option.locale]}
+            lang={HTML_LANG[option.locale]}
+            aria-current={option.isCurrent ? 'true' : undefined}
+            data-language-option
+            class:list={[
+              'vmv-body-2 flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-[color,background-color] duration-300',
+              option.isCurrent
+                ? 'bg-vmv-sand-1/12 text-vmv-sand-1'
+                : 'text-vmv-sand-1/70 hover:bg-vmv-sand-1/8 hover:text-vmv-sand-1 focus-visible:bg-vmv-sand-1/8 focus-visible:text-vmv-sand-1',
+            ]}
+          >
+            <span>{option.name}</span>
+            <span class="vmv-caption-1 tracking-[0.12em] opacity-60" aria-hidden="true">
+              {option.short}
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .language-switcher.is-open .language-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .language-switcher.is-open .language-chevron {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  import { $, $$ } from '@/lib/dom-selector'
+
+  let cleanupLanguageSwitcher: (() => void) | null = null
+
+  const setupLanguageSwitcher = () => {
+    cleanupLanguageSwitcher?.()
+    cleanupLanguageSwitcher = null
+
+    const switchers = $$<HTMLElement>('[data-language-switcher]')
+    if (switchers.length === 0) {
+      return
+    }
+
+    const controller = new AbortController()
+    const { signal } = controller
+    cleanupLanguageSwitcher = () => controller.abort()
+
+    const setOpen = (switcher: HTMLElement, open: boolean) => {
+      switcher.classList.toggle('is-open', open)
+      $('[data-language-trigger]', switcher)?.setAttribute('aria-expanded', String(open))
+    }
+
+    const closeAll = (except?: HTMLElement) => {
+      switchers.forEach((switcher) => {
+        if (switcher !== except) {
+          setOpen(switcher, false)
+        }
+      })
+    }
+
+    switchers.forEach((switcher) => {
+      const trigger = $<HTMLButtonElement>('[data-language-trigger]', switcher)
+      const links = $$<HTMLAnchorElement>('[data-language-option]', switcher)
+      if (!trigger) {
+        return
+      }
+
+      trigger.addEventListener(
+        'click',
+        () => {
+          const open = !switcher.classList.contains('is-open')
+          closeAll(switcher)
+          setOpen(switcher, open)
+          if (open) {
+            ;(links.find((link) => link.getAttribute('aria-current') === 'true') ?? links[0])?.focus()
+          }
+        },
+        { signal },
+      )
+
+      switcher.addEventListener(
+        'keydown',
+        (event) => {
+          if (!switcher.classList.contains('is-open')) {
+            return
+          }
+
+          if (event.key === 'Escape') {
+            event.preventDefault()
+            setOpen(switcher, false)
+            trigger.focus()
+            return
+          }
+
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault()
+            const index = links.indexOf(document.activeElement as HTMLAnchorElement)
+            const step = event.key === 'ArrowDown' ? 1 : -1
+            links[(index + step + links.length) % links.length]?.focus()
+          }
+        },
+        { signal },
+      )
+
+      switcher.addEventListener(
+        'focusout',
+        (event) => {
+          const next = event.relatedTarget as Node | null
+          if (next && !switcher.contains(next)) {
+            setOpen(switcher, false)
+          }
+        },
+        { signal },
+      )
+    })
+
+    document.addEventListener(
+      'click',
+      (event) => {
+        const target = event.target as Node
+        if (!switchers.some((switcher) => switcher.contains(target))) {
+          closeAll()
+        }
+      },
+      { signal },
+    )
+  }
+
+  document.addEventListener('astro:page-load', setupLanguageSwitcher)
+</script>

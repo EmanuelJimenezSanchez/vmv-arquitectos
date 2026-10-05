@@ -9,14 +9,13 @@ import Footer from '@/sections/Footer.astro'
 import Button from '@/components/ui/Button.astro'
 import ContactoModal from '@/components/ContactoModal.astro'
 import SiteLoader from '@/components/SiteLoader.astro'
+import { HTML_LANG, LOCALES, OG_LOCALE, getLocale, localizeHref, useTranslations } from '@/lib/i18n'
 import {
-  DEFAULT_DESCRIPTION,
-  DEFAULT_OG_ALT,
   DEFAULT_OG_IMAGE,
-  DEFAULT_TITLE,
-  SITE_LOCALE,
   SITE_NAME,
   absoluteUrl,
+  alternateUrls,
+  localizedUrl,
   organizationSchema,
   websiteSchema,
 } from '@/lib/seo'
@@ -24,6 +23,7 @@ import {
 interface Props {
   title?: string
   description?: string
+  /** Ruta neutra (sin prefijo de idioma); el layout le aplica el del request. */
   canonical?: string
   robots?: string
   ogImage?: string
@@ -38,13 +38,16 @@ interface Props {
   showLoader?: boolean
 }
 
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
 const {
-  title = DEFAULT_TITLE,
-  description = DEFAULT_DESCRIPTION,
+  title = t.seo.homeTitle,
+  description = t.seo.homeDescription,
   canonical,
   robots,
   ogImage = DEFAULT_OG_IMAGE,
-  ogImageAlt = DEFAULT_OG_ALT,
+  ogImageAlt = t.seo.ogAlt,
   ogUrl,
   ogType = 'website',
   schema = [],
@@ -54,22 +57,27 @@ const {
 
 // La canónica se normaliza siempre sin barra final, que es la forma a la que
 // redirige `vercel.json`; si no, apuntaría a una URL que responde 301.
-const canonicalURL = canonical ? absoluteUrl(canonical) : absoluteUrl(Astro.url.pathname)
+const canonicalURL = canonical ? localizedUrl(canonical, locale) : absoluteUrl(Astro.url.pathname)
 const finalOgUrl = ogUrl ? absoluteUrl(ogUrl) : canonicalURL
 const finalOgImage = ogImage || DEFAULT_OG_IMAGE
 const finalRobots =
   robots ?? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
 
+// Las dos versiones de la página, para que Google las trate como traducciones
+// entre sí en vez de como contenido duplicado.
+const alternates = alternateUrls(canonical ?? Astro.url.pathname)
+const otherLocales = LOCALES.filter((item) => item !== locale)
+
 // Un solo bloque JSON-LD con todos los nodos: así las referencias cruzadas por
 // `@id` se resuelven sin depender de que Google una scripts sueltos.
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@graph': [organizationSchema(), websiteSchema(), ...schema],
+  '@graph': [organizationSchema(locale), websiteSchema(locale), ...schema],
 }
 ---
 
 <!doctype html>
-<html lang="es-MX">
+<html lang={HTML_LANG[locale]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -82,6 +90,12 @@ const jsonLd = {
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fcfaf6" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1d1b18" />
 
+    {
+      alternates.map((alternate) => (
+        <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+      ))
+    }
+
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -89,7 +103,12 @@ const jsonLd = {
 
     <!-- Open Graph -->
     <meta property="og:site_name" content={SITE_NAME} />
-    <meta property="og:locale" content={SITE_LOCALE} />
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    {
+      otherLocales.map((other) => (
+        <meta property="og:locale:alternate" content={OG_LOCALE[other]} />
+      ))
+    }
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -174,13 +193,13 @@ const jsonLd = {
       showHeader && (
         <div class="fixed right-4 bottom-4 z-60 flex flex-col items-end gap-3 md:right-8 md:bottom-8">
           <Button
-            href="/#contacto"
+            href={localizeHref('/#contacto', locale)}
             variant="gray"
             size="lg"
             class="shadow-lg"
             data-contacto-trigger
           >
-            Escríbenos
+            {t.nav.writeToUs}
           </Button>
         </div>
       )

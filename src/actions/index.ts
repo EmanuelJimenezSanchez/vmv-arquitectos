@@ -42,9 +42,13 @@ const deleteOrphanImages = async (urls: (string | null | undefined)[]) => {
   )
 }
 
+/** Vacío significa «sin traducir»: el sitio cae al español en ese campo. */
+const traduccion = (max: number) => z.string().max(max).default('')
+
 const fotoSchema = z.object({
   src: z.string().url(),
   alt: z.string().max(300).default(''),
+  altEn: traduccion(300),
 })
 
 const servicioSchema = z.object({
@@ -55,11 +59,16 @@ const servicioSchema = z.object({
     .max(80)
     .regex(/^[a-z0-9-]+$/, 'Solo minúsculas, números y guiones.'),
   title: z.string().min(1).max(160),
+  titleEn: traduccion(160),
   description: z.string().max(600).default(''),
+  descriptionEn: traduccion(600),
   details: z.string().max(600).default(''),
+  detailsEn: traduccion(600),
   footer: z.string().max(80).default(''),
+  footerEn: traduccion(80),
   imageUrl: z.string().url().nullable().default(null),
   imageAlt: z.string().max(300).default(''),
+  imageAltEn: traduccion(300),
   publicado: z.boolean().default(true),
   gallery: z.array(fotoSchema).max(60).default([]),
 })
@@ -70,7 +79,7 @@ const servicioSchema = z.object({
  * del literal, y partirlo con `+` lo degrada a `string` y rompe la inferencia.
  */
 export const PROYECTO_ADMIN_SELECT =
-  '*, proyecto_fotos(id, src, alt, ancha, width, height, orden), proyecto_documentos(id, titulo, descripcion, preview_url, archivo_url, preview_width, preview_height, orden), proyecto_creditos(id, rol, nombre, orden)'
+  '*, proyecto_fotos(*), proyecto_documentos(*), proyecto_creditos(*)'
 
 /** Medidas que el panel calcula al comprimir; null en lo subido antes. */
 const dimension = z.number().int().positive().max(100000).nullable().default(null)
@@ -78,6 +87,7 @@ const dimension = z.number().int().positive().max(100000).nullable().default(nul
 const proyectoFotoSchema = z.object({
   src: z.string().url(),
   alt: z.string().max(300).default(''),
+  altEn: traduccion(300),
   ancha: z.boolean().default(false),
   width: dimension,
   height: dimension,
@@ -85,7 +95,9 @@ const proyectoFotoSchema = z.object({
 
 const proyectoDocumentoSchema = z.object({
   titulo: z.string().min(1).max(160),
+  tituloEn: traduccion(160),
   descripcion: z.string().max(600).default(''),
+  descripcionEn: traduccion(600),
   previewUrl: z.string().url().nullable().default(null),
   previewWidth: dimension,
   previewHeight: dimension,
@@ -94,6 +106,7 @@ const proyectoDocumentoSchema = z.object({
 
 const proyectoCreditoSchema = z.object({
   rol: z.string().min(1).max(120),
+  rolEn: traduccion(120),
   nombre: z.string().min(1).max(160),
 })
 
@@ -105,17 +118,26 @@ const proyectoSchema = z.object({
     .max(80)
     .regex(/^[a-z0-9-]+$/, 'Solo minúsculas, números y guiones.'),
   title: z.string().min(1).max(160),
+  titleEn: traduccion(160),
   tagline: z.string().max(300).default(''),
+  taglineEn: traduccion(300),
   resumen: z.string().max(1200).default(''),
+  resumenEn: traduccion(1200),
   descripcion: z.string().max(20000).default(''),
+  descripcionEn: traduccion(20000),
   coverUrl: z.string().url().nullable().default(null),
   coverAlt: z.string().max(300).default(''),
+  coverAltEn: traduccion(300),
   firma: z.string().max(160).default('VMV Arquitectos'),
   tipologia: z.string().max(160).default(''),
+  tipologiaEn: traduccion(160),
   anio: z.number().int().min(1900).max(2200).nullable().default(null),
   area: z.string().max(80).default(''),
+  areaEn: traduccion(80),
   ubicacion: z.string().max(200).default(''),
+  ubicacionEn: traduccion(200),
   niveles: z.string().max(80).default(''),
+  nivelesEn: traduccion(80),
   publicado: z.boolean().default(true),
   fotos: z.array(proyectoFotoSchema).max(80).default([]),
   documentos: z.array(proyectoDocumentoSchema).max(30).default([]),
@@ -130,7 +152,9 @@ const galeriaSchema = z.object({
     .max(80)
     .regex(/^[a-z0-9-]+$/, 'Solo minúsculas, números y guiones.'),
   title: z.string().min(1).max(160),
+  titleEn: traduccion(160),
   description: z.string().max(600).default(''),
+  descriptionEn: traduccion(600),
   imageDesktop: z.string().url().nullable().default(null),
   imageMobile: z.string().url().nullable().default(null),
   publicado: z.boolean().default(true),
@@ -152,6 +176,8 @@ export const server = {
         mensaje: z.string().trim().min(1).max(2000),
         considerandoConstruir: z.string().trim().max(10).default(''),
         tieneTerreno: z.string().trim().max(10).default(''),
+        /** Idioma de la página desde la que se envió; solo informa al aviso. */
+        idioma: z.enum(['es', 'en']).default('es'),
         /** Señuelo anti-spam: los bots lo rellenan, las personas no lo ven. */
         website: z.string().max(0).optional(),
       }),
@@ -227,7 +253,7 @@ export const server = {
         const supabase = requireAdmin(context.locals)
         const { data, error } = await supabase
           .from('servicios')
-          .select('*, servicio_fotos(id, src, alt, orden)')
+          .select('*, servicio_fotos(*)')
           .order('orden', { ascending: true })
           .order('orden', { ascending: true, referencedTable: 'servicio_fotos' })
 
@@ -246,11 +272,16 @@ export const server = {
         const payload = {
           slug: input.slug,
           title: input.title,
+          title_en: input.titleEn,
           description: input.description,
+          description_en: input.descriptionEn,
           details: input.details,
+          details_en: input.detailsEn,
           footer: input.footer,
+          footer_en: input.footerEn,
           image_url: input.imageUrl,
           image_alt: input.imageAlt,
+          image_alt_en: input.imageAltEn,
           publicado: input.publicado,
         }
 
@@ -303,6 +334,7 @@ export const server = {
               servicio_id: servicioId!,
               src: foto.src,
               alt: foto.alt,
+              alt_en: foto.altEn,
               orden: index,
             })),
           )
@@ -393,17 +425,26 @@ export const server = {
         const payload = {
           slug: input.slug,
           title: input.title,
+          title_en: input.titleEn,
           tagline: input.tagline,
+          tagline_en: input.taglineEn,
           resumen: input.resumen,
+          resumen_en: input.resumenEn,
           descripcion: input.descripcion,
+          descripcion_en: input.descripcionEn,
           cover_url: input.coverUrl,
           cover_alt: input.coverAlt,
+          cover_alt_en: input.coverAltEn,
           firma: input.firma,
           tipologia: input.tipologia,
+          tipologia_en: input.tipologiaEn,
           anio: input.anio,
           area: input.area,
+          area_en: input.areaEn,
           ubicacion: input.ubicacion,
+          ubicacion_en: input.ubicacionEn,
           niveles: input.niveles,
+          niveles_en: input.nivelesEn,
           publicado: input.publicado,
         }
 
@@ -471,6 +512,7 @@ export const server = {
               proyecto_id: proyectoId!,
               src: foto.src,
               alt: foto.alt,
+              alt_en: foto.altEn,
               ancha: foto.ancha,
               width: foto.width,
               height: foto.height,
@@ -487,7 +529,9 @@ export const server = {
             input.documentos.map((doc, index) => ({
               proyecto_id: proyectoId!,
               titulo: doc.titulo,
+              titulo_en: doc.tituloEn,
               descripcion: doc.descripcion,
+              descripcion_en: doc.descripcionEn,
               preview_url: doc.previewUrl,
               preview_width: doc.previewWidth,
               preview_height: doc.previewHeight,
@@ -505,6 +549,7 @@ export const server = {
             input.creditos.map((credito, index) => ({
               proyecto_id: proyectoId!,
               rol: credito.rol,
+              rol_en: credito.rolEn,
               nombre: credito.nombre,
               orden: index,
             })),
@@ -610,7 +655,9 @@ export const server = {
         const payload = {
           slug: input.slug,
           title: input.title,
+          title_en: input.titleEn,
           description: input.description,
+          description_en: input.descriptionEn,
           image_desktop: input.imageDesktop,
           image_mobile: input.imageMobile,
           publicado: input.publicado,

@@ -1,12 +1,16 @@
 ---
 import { getServicios, type Servicio } from '@/lib/content'
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
 
 interface Props {
   /** La sección ya cargó los servicios; se pasan para no consultar dos veces. */
   servicios?: Servicio[]
 }
 
-const { servicios = await getServicios() } = Astro.props
+const { servicios = await getServicios(locale) } = Astro.props
 
 const galerias = servicios.map((servicio) => ({
   id: servicio.id,
@@ -28,7 +32,7 @@ const galerias = servicios.map((servicio) => ({
     <button
       type="button"
       class="absolute top-4 right-4 z-10 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-vmv-border bg-vmv-background text-vmv-foreground transition-colors duration-300 hover:bg-vmv-muted focus-visible:ring-2 focus-visible:ring-vmv-ring focus-visible:outline-none"
-      aria-label="Cerrar galería del servicio"
+      aria-label={t.services.galleryClose}
       data-servicios-galeria-close
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -40,7 +44,7 @@ const galerias = servicios.map((servicio) => ({
     <header class="flex flex-col gap-3 pr-12">
       <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
         <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-        <span data-servicios-galeria-footer>Servicios</span>
+        <span data-servicios-galeria-footer>{t.services.galleryFooter}</span>
       </p>
       <h2 id="servicios-galeria-title" class="vmv-title-2 text-vmv-foreground">
         <span data-servicios-galeria-title></span>
@@ -68,7 +72,7 @@ const galerias = servicios.map((servicio) => ({
       <button
         type="button"
         class="absolute top-1/2 left-3 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-vmv-sand-1/25 bg-vmv-gray-12/45 text-vmv-sand-1 backdrop-blur-sm transition-colors duration-300 hover:bg-vmv-gray-12/70 disabled:pointer-events-none disabled:opacity-30"
-        aria-label="Foto anterior"
+        aria-label={t.services.galleryPrev}
         data-servicios-galeria-prev
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -83,7 +87,7 @@ const galerias = servicios.map((servicio) => ({
       <button
         type="button"
         class="absolute top-1/2 right-3 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-vmv-sand-1/25 bg-vmv-gray-12/45 text-vmv-sand-1 backdrop-blur-sm transition-colors duration-300 hover:bg-vmv-gray-12/70 disabled:pointer-events-none disabled:opacity-30"
-        aria-label="Foto siguiente"
+        aria-label={t.services.galleryNext}
         data-servicios-galeria-next
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -104,10 +108,10 @@ const galerias = servicios.map((servicio) => ({
     </figure>
 
     <div
-      class="flex gap-3 overflow-x-auto scrollbar-none pb-1 [&::-webkit-scrollbar]:hidden"
+      class="flex scrollbar-none gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
       data-servicios-galeria-thumbs
       role="tablist"
-      aria-label="Fotos del servicio"
+      aria-label={t.services.galleryPhotos}
     >
     </div>
   </div>
@@ -195,8 +199,7 @@ const galerias = servicios.map((servicio) => ({
       window.lenis?.start()
     }
 
-    const prefersReducedMotion = () =>
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     // La tira de miniaturas se desborda cuando hay muchas fotos; se centra la
     // activa para que las siguientes vayan apareciendo al navegar.

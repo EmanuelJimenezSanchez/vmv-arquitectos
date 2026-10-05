@@ -1,3 +1,13 @@
+import {
+  DEFAULT_LOCALE,
+  HREFLANG,
+  LOCALES,
+  localizePath,
+  stripLocale,
+  useTranslations,
+  type Locale,
+} from '@/lib/i18n'
+
 /**
  * Fuente única de verdad para los metadatos del sitio público.
  *
@@ -10,16 +20,7 @@ export const SITE_URL = 'https://www.vmv-arquitectos.com'
 
 export const SITE_NAME = 'VMV Arquitectos'
 
-export const SITE_LOCALE = 'es_MX'
-
-export const DEFAULT_TITLE = 'VMV Arquitectos | Diseño y construcción de espacios para habitar'
-
-export const DEFAULT_DESCRIPTION =
-  'Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse. Con base en Guadalajara y proyectos en todo México.'
-
 export const DEFAULT_OG_IMAGE = 'https://cdn.vmv-arquitectos.com/og.jpg'
-
-export const DEFAULT_OG_ALT = 'VMV Arquitectos — Diseño y construcción de espacios para habitar'
 
 export const CONTACT_EMAIL = 'ventas@vmvarquitectos.com'
 
@@ -50,69 +51,91 @@ export const absoluteUrl = (pathname: string): string => {
   return `${SITE_URL}${clean}`
 }
 
+/** URL absoluta de una ruta neutra en un idioma concreto. */
+export const localizedUrl = (pathname: string, locale: Locale): string =>
+  absoluteUrl(localizePath(pathname, locale))
+
+/**
+ * Las dos versiones de una misma página más `x-default`. Google solo trata
+ * `/` y `/en` como traducciones si ambas se declaran y se apuntan entre sí.
+ */
+export const alternateUrls = (pathname: string) => {
+  const neutral = stripLocale(pathname)
+  return [
+    ...LOCALES.map((locale) => ({
+      hreflang: HREFLANG[locale],
+      href: localizedUrl(neutral, locale),
+    })),
+    { hreflang: 'x-default', href: localizedUrl(neutral, DEFAULT_LOCALE) },
+  ]
+}
+
 /** Identificadores estables del grafo, para que los nodos se referencien entre sí. */
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`
-export const WEBSITE_ID = `${SITE_URL}/#website`
+
+/** El sitio se declara una vez por idioma, cada uno con su propio `@id`. */
+export const websiteId = (locale: Locale) => `${localizedUrl('/', locale)}#website`
 
 /**
  * La firma como prestador de servicios profesionales: es el nodo que Google usa
  * para el panel de conocimiento y al que cuelgan el resto de las páginas.
  */
-export const organizationSchema = () => ({
-  '@type': ['Organization', 'ProfessionalService'],
-  '@id': ORGANIZATION_ID,
-  name: SITE_NAME,
-  alternateName: 'VMV',
-  url: `${SITE_URL}/`,
-  description: DEFAULT_DESCRIPTION,
-  image: DEFAULT_OG_IMAGE,
-  logo: {
-    '@type': 'ImageObject',
-    url: `${SITE_URL}/favicon.svg`,
-  },
-  email: CONTACT_EMAIL,
-  telephone: CONTACT_PHONE,
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'Guadalajara',
-    addressRegion: 'Jalisco',
-    addressCountry: 'MX',
-  },
-  areaServed: {
-    '@type': 'Country',
-    name: 'México',
-  },
-  knowsAbout: [
-    'Arquitectura residencial',
-    'Arquitectura comercial',
-    'Interiorismo',
-    'Construcción',
-    'Remodelación',
-  ],
-  sameAs: SOCIAL_PROFILES,
-})
+export const organizationSchema = (locale: Locale) => {
+  const t = useTranslations(locale)
+  return {
+    '@type': ['Organization', 'ProfessionalService'],
+    '@id': ORGANIZATION_ID,
+    name: SITE_NAME,
+    alternateName: 'VMV',
+    url: `${SITE_URL}/`,
+    description: t.seo.organizationDescription,
+    image: DEFAULT_OG_IMAGE,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${SITE_URL}/icon-512.png`,
+    },
+    email: CONTACT_EMAIL,
+    telephone: CONTACT_PHONE,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Guadalajara',
+      addressRegion: 'Jalisco',
+      addressCountry: 'MX',
+    },
+    areaServed: {
+      '@type': 'Country',
+      name: t.seo.country,
+    },
+    knowsAbout: [...t.seo.knowsAbout],
+    sameAs: SOCIAL_PROFILES,
+  }
+}
 
-export const websiteSchema = () => ({
-  '@type': 'WebSite',
-  '@id': WEBSITE_ID,
-  url: `${SITE_URL}/`,
-  name: SITE_NAME,
-  description: DEFAULT_DESCRIPTION,
-  inLanguage: 'es-MX',
-  publisher: { '@id': ORGANIZATION_ID },
-})
+export const websiteSchema = (locale: Locale) => {
+  const t = useTranslations(locale)
+  return {
+    '@type': 'WebSite',
+    '@id': websiteId(locale),
+    url: localizedUrl('/', locale),
+    name: SITE_NAME,
+    description: t.seo.homeDescription,
+    inLanguage: HREFLANG[locale],
+    publisher: { '@id': ORGANIZATION_ID },
+  }
+}
 
 export interface BreadcrumbItem {
   name: string
+  /** Ruta neutra, sin prefijo de idioma. */
   url: string
 }
 
-export const breadcrumbSchema = (items: BreadcrumbItem[]) => ({
+export const breadcrumbSchema = (items: BreadcrumbItem[], locale: Locale) => ({
   '@type': 'BreadcrumbList',
   itemListElement: items.map((item, index) => ({
     '@type': 'ListItem',
     position: index + 1,
     name: item.name,
-    item: absoluteUrl(item.url),
+    item: localizedUrl(item.url, locale),
   })),
 })

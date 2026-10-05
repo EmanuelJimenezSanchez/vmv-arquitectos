@@ -1,29 +1,41 @@
 ---
 import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
+import { getLocale, localizeHref, useTranslations } from '@/lib/i18n'
 
-const title = 'Página no encontrada | VMV Arquitectos'
-const description = 'La página que buscas no existe o cambió de dirección.'
+// El 404 responde a cualquier ruta que no exista, así que el idioma se deduce
+// de lo que pidió el visitante: `/en/loquesea` contesta en inglés.
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
 ---
 
-<Layout title={title} description={description} robots="noindex, follow" showLoader={false}>
+<Layout
+  title={t.seo.notFoundTitle}
+  description={t.seo.notFoundDescription}
+  robots="noindex, follow"
+  showLoader={false}
+>
   <section class="flex min-h-svh items-center bg-vmv-background">
     <div
       class="mx-auto flex w-full max-w-[1200px] flex-col items-start gap-6 px-[clamp(1.25rem,5vw,3rem)] py-[clamp(4rem,9vw,7rem)]"
     >
       <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
         <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-        Error 404
+        {t.notFound.overline}
       </p>
       <h1 class="vmv-title-1 max-w-[18ch] text-balance text-vmv-foreground">
-        Esta página no existe
+        {t.notFound.title}
       </h1>
       <p class="vmv-body-2 max-w-[46ch] text-vmv-muted-foreground">
-        Puede que el enlace haya cambiado. Vuelve al inicio o revisa el portafolio de proyectos.
+        {t.notFound.body}
       </p>
       <div class="mt-2 flex flex-wrap items-center gap-4">
-        <Button href="/" variant="gray" size="lg">Ir al inicio</Button>
-        <Button href="/projects" variant="outline" size="lg">Ver proyectos</Button>
+        <Button href={localizeHref('/', locale)} variant="gray" size="lg">
+          {t.notFound.home}
+        </Button>
+        <Button href={localizeHref('/projects', locale)} variant="outline" size="lg">
+          {t.notFound.projects}
+        </Button>
       </div>
     </div>
   </section>

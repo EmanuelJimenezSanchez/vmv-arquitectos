@@ -112,6 +112,65 @@ export const Banner = ({ tone, children }: { tone: 'error' | 'ok'; children: Rea
   </p>
 )
 
+/**
+ * Campo con su traducción al inglés debajo.
+ *
+ * Las dos versiones van juntas en vez de en pestañas separadas porque así se
+ * traduce mirando el original. El recuadro en inglés se puede dejar vacío: el
+ * sitio cae al español por campo, y el placeholder lo recuerda mostrando el
+ * texto que se usaría.
+ */
+export const Bilingual = ({
+  label,
+  hint,
+  value,
+  valueEn,
+  onChange,
+  onChangeEn,
+  rows,
+}: {
+  label: string
+  hint?: string
+  value: string
+  valueEn: string
+  onChange: (value: string) => void
+  onChangeEn: (value: string) => void
+  /** Si se indica, ambos campos se dibujan como área de texto. */
+  rows?: number
+}) => {
+  const shared = {
+    className: inputClass,
+    value,
+    onChange: (event: { target: { value: string } }) => onChange(event.target.value),
+  }
+  const sharedEn = {
+    className: `${inputClass} border-dashed`,
+    value: valueEn,
+    placeholder: value ? `(español) ${value}`.slice(0, 120) : 'Sin traducir',
+    onChange: (event: { target: { value: string } }) => onChangeEn(event.target.value),
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
+        {label}
+      </span>
+
+      <label className="flex items-start gap-2">
+        <span className="vmv-caption-1 mt-2.5 w-6 shrink-0 text-vmv-sand-9">ES</span>
+        {rows ? <textarea rows={rows} {...shared} /> : <input {...shared} />}
+      </label>
+
+      <label className="flex items-start gap-2">
+        <span className="vmv-caption-1 mt-2.5 w-6 shrink-0 text-vmv-muted-foreground">EN</span>
+        {rows ? <textarea rows={rows} {...sharedEn} /> : <input {...sharedEn} />}
+      </label>
+
+      {hint && <span className="vmv-caption-1 text-vmv-muted-foreground">{hint}</span>}
+    </div>
+  )
+}
+
 /** Convierte un título en un slug estable para usar como identificador. */
 export const slugify = (value: string) =>
   value

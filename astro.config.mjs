@@ -25,5 +25,18 @@ export default defineConfig({
   // petición desde `src/pages/sitemap.xml.ts`.
   integrations: [react({ include: ['**/dashboard/**'] })],
 
+  // El español se sirve en la raíz y el inglés bajo /en. Las rutas de cada
+  // idioma existen como archivos en `src/pages`, así que aquí no se pide
+  // redirección automática: esto solo declara los idiomas para que
+  // `Astro.currentLocale` y las utilidades del framework los conozcan.
+  i18n: {
+    locales: ['es', 'en'],
+    defaultLocale: 'es',
+    routing: {
+      prefixDefaultLocale: false,
+      redirectToDefaultLocale: false,
+    },
+  },
+
   site: 'https://www.vmv-arquitectos.com',
 })

@@ -1,13 +1,15 @@
 ---
 import logoVmv from '@/assets/svg/logo-vmv.svg'
+import { getLocale, useTranslations } from '@/lib/i18n'
 
 interface Props {
   /** Frases que aparecen tras la carga; cada una se anima palabra por palabra. */
-  phrases?: string[]
+  phrases?: readonly string[]
 }
 
-const { phrases = ['Espacios pensados para habitar', 'Diseño, detalle y oficio'] } =
-  Astro.props as Props
+const t = useTranslations(getLocale(Astro.url))
+
+const { phrases = t.loader.phrases } = Astro.props as Props
 
 // Marcas radiales del spinner: la longitud alterna para dar el trazo irregular
 // de la referencia. No giran: crecen y se encogen en secuencia alrededor del aro.
@@ -55,7 +57,7 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
   class="vmv-loader"
   role="status"
   aria-live="polite"
-  aria-label="Cargando VMV Arquitectos"
+  aria-label={t.loader.aria}
 >
   <div class="vmv-loader__stage" data-loader-spinner>
     <!-- <div class="vmv-loader__ring">

@@ -1,11 +1,15 @@
 ---
 import { getGaleria } from '@/lib/content'
 import Button from '@/components/ui/Button.astro'
+import { getLocale, useTranslations } from '@/lib/i18n'
 
-const galeria = await getGaleria()
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
+const galeria = await getGaleria(locale)
 ---
 
-<section id="galeria" class="galeria-scroll" data-galeria aria-label="Galeria visual de proyectos">
+<section id="galeria" class="galeria-scroll" data-galeria aria-label={t.gallery.sectionAria}>
   <div class="galeria-stage" data-galeria-stage>
     <div class="galeria-media" data-galeria-media>
       <div class="galeria-frame">

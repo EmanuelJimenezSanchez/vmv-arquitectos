@@ -1,5 +1,14 @@
 ---
-import { proceso } from '@/data/proceso'
+import { procesoImagenes } from '@/data/proceso'
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
+
+const proceso = t.process.steps.map((paso, index) => ({
+  id: procesoImagenes[index].id,
+  image: procesoImagenes[index].image,
+  ...paso,
+}))
 
 const totalLabel = String(proceso.length).padStart(2, '0')
 ---
@@ -8,7 +17,7 @@ const totalLabel = String(proceso.length).padStart(2, '0')
   id="proceso"
   class="relative bg-vmv-background py-[clamp(4.5rem,10vw,8rem)]"
   data-proceso
-  aria-label="Nuestro proceso de trabajo"
+  aria-label={t.process.sectionAria}
 >
   <div class="mx-auto max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
     <header
@@ -17,13 +26,12 @@ const totalLabel = String(proceso.length).padStart(2, '0')
     >
       <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
         <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-        Nuestro proceso
+        {t.process.overline}
         <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
       </p>
-      <h2 class="vmv-title-1 text-vmv-foreground">De la idea a la obra terminada</h2>
+      <h2 class="vmv-title-1 text-vmv-foreground">{t.process.title}</h2>
       <p class="vmv-body-2 text-vmv-muted-foreground">
-        Cinco etapas claras que acompañan tu proyecto desde la primera conversación hasta la
-        última entrega. Pasa el cursor sobre cada paso para conocer los detalles.
+        {t.process.body}
       </p>
     </header>
 
@@ -58,7 +66,7 @@ const totalLabel = String(proceso.length).padStart(2, '0')
                 data-proceso-trigger
                 aria-expanded="false"
               >
-                <span class="vmv-subtitle-1 w-7 shrink-0 tabular-nums text-vmv-sand-9/50 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9 sm:w-9">
+                <span class="vmv-subtitle-1 w-7 shrink-0 text-vmv-sand-9/50 tabular-nums transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:text-vmv-sand-9 group-data-[active=true]:text-vmv-sand-9 sm:w-9">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <h3 class="vmv-title-2 flex-1 text-vmv-foreground">{paso.title}</h3>
@@ -199,7 +207,8 @@ const totalLabel = String(proceso.length).padStart(2, '0')
             },
             onToggle: (self) => {
               if (dot) {
-                dot.dataset.passed = self.progress > 0.5 || self.isActive ? 'true' : dot.dataset.passed
+                dot.dataset.passed =
+                  self.progress > 0.5 || self.isActive ? 'true' : dot.dataset.passed
               }
             },
           })

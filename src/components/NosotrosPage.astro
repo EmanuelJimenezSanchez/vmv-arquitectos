@@ -1,10 +1,14 @@
 ---
 import { getGaleria } from '@/lib/content'
 import Button from '@/components/ui/Button.astro'
+import { getLocale, localizeHref, useTranslations } from '@/lib/i18n'
 
 const BUCKET_URL = `${import.meta.env.R2_BUCKET_URL}/nosotros`
 
-const galeria = await getGaleria()
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
+const galeria = await getGaleria(locale)
 ---
 
 <section id="nosotros" class="relative" aria-labelledby="nosotros-title">
@@ -19,7 +23,7 @@ const galeria = await getGaleria()
     >
       <img
         src={`${BUCKET_URL}/nosotros-1.webp`}
-        alt="Diseño arquitectónico VMV Arquitectos"
+        alt={t.about.imageLeftAlt}
         class="block h-full w-full object-cover object-[40%_center]"
         loading="lazy"
         decoding="async"
@@ -31,7 +35,7 @@ const galeria = await getGaleria()
     >
       <img
         src={`${BUCKET_URL}/nosotros-2.webp`}
-        alt="Construcción de lujo VMV Arquitectos"
+        alt={t.about.imageRightAlt}
         class="block h-full w-full object-cover object-[60%_center]"
         loading="lazy"
         decoding="async"
@@ -43,7 +47,7 @@ const galeria = await getGaleria()
       class="pointer-events-none absolute top-1/2 left-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[1.1rem] whitespace-nowrap"
     >
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
-      <h2 id="nosotros-title" class="vmv-title-1 text-white">NOSOTROS</h2>
+      <h2 id="nosotros-title" class="vmv-title-1 text-white">{t.about.heading}</h2>
       <div class="h-11 w-px bg-vmv-sand-1/50" aria-hidden="true"></div>
       <!-- <div data-nosotros="label-cta" class="pointer-events-auto mt-[0.6rem]">
         <Button href="/#contacto" variant="white" size="lg" data-contacto-trigger>Conócenos</Button>
@@ -96,8 +100,14 @@ const galeria = await getGaleria()
         última llave.
       </p> -->
       <div data-nosotros="galeria-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
-        <Button href="/#contacto" variant="white" size="xxl" data-contacto-trigger>Conócenos</Button
+        <Button
+          href={localizeHref('/#contacto', locale)}
+          variant="white"
+          size="xxl"
+          data-contacto-trigger
         >
+          {t.about.cta}
+        </Button>
       </div>
       <!-- <div data-nosotros="restart-cta" class="pointer-events-auto mt-[clamp(0.9rem,2.2vw,1.4rem)]">
         <button
@@ -137,7 +147,7 @@ const galeria = await getGaleria()
       class="pointer-events-none absolute inset-0 z-8 flex flex-col items-center justify-center px-[clamp(2rem,9vw,7rem)]"
     >
       <p data-nosotros="reveal-text" class="vmv-title-2 max-w-3xl text-center text-vmv-gray-12">
-        El lujo está en el detalle. Nosotros lo cuidamos por ti.
+        {t.about.reveal}
       </p>
       <!-- <div data-nosotros="reveal-cta" class="pointer-events-auto mt-[clamp(1.5rem,3vw,2.5rem)]">
         <Button href="/#contacto" variant="white" size="xl" data-contacto-trigger

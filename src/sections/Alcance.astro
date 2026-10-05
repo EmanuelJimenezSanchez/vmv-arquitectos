@@ -1,12 +1,13 @@
 ---
 import { estados } from '@/data/alcance'
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
 ---
 
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
-<script
-  is:inline
-  src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"
-  data-alcance-cdn></script>
+<script is:inline src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js" data-alcance-cdn
+></script>
 
 <section
   id="alcance"
@@ -34,17 +35,16 @@ import { estados } from '@/data/alcance'
       <header class="flex flex-col gap-4 lg:items-end lg:text-right">
         <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9 lg:flex-row-reverse">
           <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-          Dónde construimos
+          {t.coverage.overline}
         </p>
-        <h2 id="alcance-title" class="vmv-title-1 text-vmv-foreground">Alcance</h2>
+        <h2 id="alcance-title" class="vmv-title-1 text-vmv-foreground">{t.coverage.title}</h2>
         <p class="vmv-body-2 max-w-[42ch] text-vmv-muted-foreground">
-          Ejecutamos obra y supervisión en toda la República. Pasa el cursor sobre un estado para
-          ubicarlo en el mapa.
+          {t.coverage.body}
         </p>
       </header>
 
       <ul
-        class="grid grid-cols-2 gap-x-[clamp(1rem,2vw,2rem)] gap-y-1 justify-items-start lg:justify-items-end"
+        class="grid grid-cols-2 justify-items-start gap-x-[clamp(1rem,2vw,2rem)] gap-y-1 lg:justify-items-end"
       >
         {
           estados.map((estado) => (

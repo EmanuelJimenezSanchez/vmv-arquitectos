@@ -1,0 +1,84 @@
+---
+import Proceso2 from '@/sections/Proceso2.astro'
+import Layout from '@/layouts/Layout.astro'
+import Alcance from '@/sections/Alcance.astro'
+import Contacto from '@/sections/Contacto.astro'
+import Galeria from '@/sections/Galeria.astro'
+import Hero from '@/sections/Hero.astro'
+import Nosotros from '@/sections/Nosotros.astro'
+import Proceso from '@/sections/Proceso.astro'
+import Servicios from '@/sections/Servicios.astro'
+import { getServicios } from '@/lib/content'
+import { HREFLANG, getLocale, useTranslations } from '@/lib/i18n'
+import { ORGANIZATION_ID, localizedUrl, websiteId } from '@/lib/seo'
+
+/**
+ * Cuerpo de la portada, compartido por `/` y `/en`. Las páginas de cada idioma
+ * son envoltorios de una línea: el idioma se deduce de `Astro.url`, así que no
+ * hay que pasarlo como prop por todo el árbol.
+ */
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
+const title = t.seo.homeTitle
+const description = t.seo.homeDescription
+const canonical = '/'
+
+const servicios = await getServicios(locale)
+const pageUrl = localizedUrl('/', locale)
+
+// El catálogo de servicios se declara a partir del contenido real del panel,
+// así los datos estructurados no se desincronizan de lo que ve el visitante.
+const schema = [
+  {
+    '@type': 'WebPage',
+    '@id': `${pageUrl}#webpage`,
+    url: pageUrl,
+    name: title,
+    description,
+    inLanguage: HREFLANG[locale],
+    isPartOf: { '@id': websiteId(locale) },
+    about: { '@id': ORGANIZATION_ID },
+  },
+  ...(servicios.length
+    ? [
+        {
+          '@type': 'OfferCatalog',
+          '@id': `${pageUrl}#servicios`,
+          name: t.seo.servicesCatalog,
+          inLanguage: HREFLANG[locale],
+          itemListElement: servicios.map((servicio, index) => ({
+            '@type': 'Offer',
+            position: index + 1,
+            itemOffered: {
+              '@type': 'Service',
+              name: servicio.title,
+              description: servicio.description,
+              serviceType: servicio.title,
+              provider: { '@id': ORGANIZATION_ID },
+              areaServed: { '@type': 'Country', name: t.seo.country },
+            },
+          })),
+        },
+      ]
+    : []),
+]
+
+// El contenido viene de Supabase: se cachea en el edge un minuto y se sirve
+// obsoleto mientras se revalida, para que editar en el panel no cueste latencia.
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
+)
+---
+
+<Layout title={title} description={description} canonical={canonical} schema={schema}>
+  <Hero />
+  <Nosotros />
+  <!-- <Galeria /> -->
+  <Servicios />
+  <Alcance />
+  <!-- <Proceso /> -->
+  <Proceso2 />
+  <Contacto />
+</Layout>

@@ -30,7 +30,17 @@ export interface ContactoEmailData {
   mensaje: string
   considerandoConstruir: string
   tieneTerreno: string
+  /** Idioma en el que el visitante llenó el formulario. */
+  idioma?: string
 }
+
+/** Cómo se nombra cada idioma en el aviso interno. */
+const IDIOMAS: Record<string, string> = {
+  es: 'Español',
+  en: 'Inglés',
+}
+
+const nombreIdioma = (idioma?: string) => (idioma && IDIOMAS[idioma]) || IDIOMAS.es
 
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat('es-MX', {
@@ -79,6 +89,7 @@ export const renderContactoEmail = (data: ContactoEmailData, now = new Date()) =
     ],
     ['¿Considera construir?', escapeHtml(data.considerandoConstruir || '—')],
     ['¿Ya tiene terreno?', escapeHtml(data.tieneTerreno || '—')],
+    ['Idioma del visitante', escapeHtml(nombreIdioma(data.idioma))],
   ]
 
   const text = [
@@ -89,6 +100,7 @@ export const renderContactoEmail = (data: ContactoEmailData, now = new Date()) =
     `Teléfono: ${data.telefono}`,
     `¿Considera construir?: ${data.considerandoConstruir || '—'}`,
     `¿Ya tiene terreno?: ${data.tieneTerreno || '—'}`,
+    `Idioma del visitante: ${nombreIdioma(data.idioma)}`,
     '',
     'Mensaje:',
     data.mensaje,

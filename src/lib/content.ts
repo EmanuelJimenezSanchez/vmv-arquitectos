@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE, type Locale } from '@/lib/i18n'
 import { supabasePublic } from '@/lib/supabase/server'
 import type {
   GaleriaRow,
@@ -42,9 +43,28 @@ export interface Galeria {
 }
 
 /**
+ * Elige la traducción y cae al español cuando falta.
+ *
+ * El fallback es por campo, no por fila: un proyecto con el título traducido
+ * pero la descripción a medias se ve coherente en lugar de mezclar una ficha
+ * vacía con otra llena. Así el inglés se puede publicar poco a poco desde el
+ * panel sin dejar huecos en el sitio.
+ */
+const traducir = (base: string, traduccion: string | null | undefined, locale: Locale): string => {
+  if (locale === DEFAULT_LOCALE) {
+    return base
+  }
+  const limpia = (traduccion ?? '').trim()
+  return limpia || base
+}
+
+/**
  * Cache en memoria del proceso serverless. Vercel reutiliza la instancia entre
  * requests cercanos, así que esto evita consultar Supabase en cada visita sin
  * retrasar los cambios más de `CACHE_TTL_MS`.
+ *
+ * Se cachean las filas crudas, no el resultado ya traducido: los dos idiomas
+ * salen de la misma consulta y traducir es solo elegir una columna.
  */
 const CACHE_TTL_MS = 60_000
 
@@ -75,13 +95,15 @@ export const invalidateContentCache = (key?: string) => {
   cache.clear()
 }
 
-export const getServicios = (): Promise<Servicio[]> =>
+type ServicioJoined = ServicioRow & { servicio_fotos: ServicioFotoRow[] }
+
+const SERVICIO_SELECT = '*, servicio_fotos(*)'
+
+const serviciosRows = (): Promise<ServicioJoined[]> =>
   cached('servicios', async () => {
     const { data, error } = await supabasePublic
       .from('servicios')
-      .select(
-        'id, slug, title, description, details, footer, image_url, image_alt, orden, publicado, updated_at, servicio_fotos(id, servicio_id, src, alt, orden)',
-      )
+      .select(SERVICIO_SELECT)
       .eq('publicado', true)
       .order('orden', { ascending: true })
       .order('orden', { ascending: true, referencedTable: 'servicio_fotos' })
@@ -90,25 +112,31 @@ export const getServicios = (): Promise<Servicio[]> =>
       throw new Error(`No se pudieron cargar los servicios: ${error.message}`)
     }
 
-    const rows = (data ?? []) as (ServicioRow & { servicio_fotos: ServicioFotoRow[] })[]
-
-    return rows.map((row) => ({
-      id: row.slug,
-      title: row.title,
-      description: row.description,
-      details: row.details,
-      footer: row.footer,
-      image: row.image_url ?? '',
-      imageAlt: row.image_alt,
-      gallery: (row.servicio_fotos ?? []).map((foto) => ({ src: foto.src, alt: foto.alt })),
-    }))
+    return (data ?? []) as unknown as ServicioJoined[]
   })
 
-export const getGaleria = (): Promise<Galeria[]> =>
+const toServicio = (row: ServicioJoined, locale: Locale): Servicio => ({
+  id: row.slug,
+  title: traducir(row.title, row.title_en, locale),
+  description: traducir(row.description, row.description_en, locale),
+  details: traducir(row.details, row.details_en, locale),
+  footer: traducir(row.footer, row.footer_en, locale),
+  image: row.image_url ?? '',
+  imageAlt: traducir(row.image_alt, row.image_alt_en, locale),
+  gallery: (row.servicio_fotos ?? []).map((foto) => ({
+    src: foto.src,
+    alt: traducir(foto.alt, foto.alt_en, locale),
+  })),
+})
+
+export const getServicios = async (locale: Locale = DEFAULT_LOCALE): Promise<Servicio[]> =>
+  (await serviciosRows()).map((row) => toServicio(row, locale))
+
+const galeriaRows = (): Promise<GaleriaRow[]> =>
   cached('galeria', async () => {
     const { data, error } = await supabasePublic
       .from('galeria')
-      .select('id, slug, title, description, image_desktop, image_mobile, orden, publicado')
+      .select('*')
       .eq('publicado', true)
       .order('orden', { ascending: true })
 
@@ -116,16 +144,19 @@ export const getGaleria = (): Promise<Galeria[]> =>
       throw new Error(`No se pudo cargar la galería: ${error.message}`)
     }
 
-    return ((data ?? []) as GaleriaRow[]).map((row) => ({
-      id: row.slug,
-      title: row.title,
-      description: row.description,
-      images: {
-        desktop: row.image_desktop ?? '',
-        mobile: row.image_mobile ?? row.image_desktop ?? '',
-      },
-    }))
+    return (data ?? []) as unknown as GaleriaRow[]
   })
+
+export const getGaleria = async (locale: Locale = DEFAULT_LOCALE): Promise<Galeria[]> =>
+  (await galeriaRows()).map((row) => ({
+    id: row.slug,
+    title: traducir(row.title, row.title_en, locale),
+    description: traducir(row.description, row.description_en, locale),
+    images: {
+      desktop: row.image_desktop ?? '',
+      mobile: row.image_mobile ?? row.image_desktop ?? '',
+    },
+  }))
 
 export interface ProyectoFoto {
   src: string
@@ -170,12 +201,7 @@ export interface Proyecto {
   creditos: ProyectoCreditoGrupo[]
 }
 
-const PROYECTO_SELECT =
-  'id, slug, title, tagline, resumen, descripcion, cover_url, cover_alt, firma, tipologia, anio,' +
-  ' area, ubicacion, niveles, orden, publicado, updated_at,' +
-  ' proyecto_fotos(id, proyecto_id, src, alt, ancha, width, height, orden),' +
-  ' proyecto_documentos(id, proyecto_id, titulo, descripcion, preview_url, archivo_url, preview_width, preview_height, orden),' +
-  ' proyecto_creditos(id, proyecto_id, rol, nombre, orden)'
+const PROYECTO_SELECT = '*, proyecto_fotos(*), proyecto_documentos(*), proyecto_creditos(*)'
 
 type ProyectoJoined = ProyectoRow & {
   proyecto_fotos: ProyectoFotoRow[]
@@ -197,55 +223,59 @@ const toParrafos = (descripcion: string): string[] =>
     .filter(Boolean)
 
 /** Agrupa los créditos por rol conservando el orden de captura. */
-const toCreditos = (rows: ProyectoCreditoRow[]): ProyectoCreditoGrupo[] => {
+const toCreditos = (rows: ProyectoCreditoRow[], locale: Locale): ProyectoCreditoGrupo[] => {
   const grupos = new Map<string, string[]>()
   byOrden(rows).forEach((row) => {
-    const nombres = grupos.get(row.rol)
+    const rol = traducir(row.rol, row.rol_en, locale)
+    const nombres = grupos.get(rol)
     if (nombres) {
       nombres.push(row.nombre)
     } else {
-      grupos.set(row.rol, [row.nombre])
+      grupos.set(rol, [row.nombre])
     }
   })
   return [...grupos].map(([rol, nombres]) => ({ rol, nombres }))
 }
 
-const toProyecto = (row: ProyectoJoined): Proyecto => ({
-  id: row.slug,
-  title: row.title,
-  tagline: row.tagline,
-  resumen: row.resumen,
-  parrafos: toParrafos(row.descripcion),
-  cover: row.cover_url ?? '',
-  coverAlt: row.cover_alt || `Proyecto ${row.title} de VMV Arquitectos`,
-  firma: row.firma,
-  tipologia: row.tipologia,
-  anio: row.anio,
-  area: row.area,
-  ubicacion: row.ubicacion,
-  niveles: row.niveles,
-  fotos: byOrden(row.proyecto_fotos).map((foto) => ({
-    src: foto.src,
-    alt: foto.alt,
-    ancha: foto.ancha,
-    width: foto.width,
-    height: foto.height,
-  })),
-  documentos: byOrden(row.proyecto_documentos)
-    // Sin imagen no hay nada que enseñar en la página.
-    .filter((doc) => Boolean(doc.preview_url))
-    .map((doc) => ({
-      titulo: doc.titulo,
-      descripcion: doc.descripcion,
-      preview: doc.preview_url ?? '',
-      previewWidth: doc.preview_width,
-      previewHeight: doc.preview_height,
-      archivo: doc.archivo_url ?? '',
+const toProyecto = (row: ProyectoJoined, locale: Locale): Proyecto => {
+  const title = traducir(row.title, row.title_en, locale)
+  return {
+    id: row.slug,
+    title,
+    tagline: traducir(row.tagline, row.tagline_en, locale),
+    resumen: traducir(row.resumen, row.resumen_en, locale),
+    parrafos: toParrafos(traducir(row.descripcion, row.descripcion_en, locale)),
+    cover: row.cover_url ?? '',
+    coverAlt: traducir(row.cover_alt, row.cover_alt_en, locale) || `${title} — VMV Arquitectos`,
+    firma: row.firma,
+    tipologia: traducir(row.tipologia, row.tipologia_en, locale),
+    anio: row.anio,
+    area: traducir(row.area, row.area_en, locale),
+    ubicacion: traducir(row.ubicacion, row.ubicacion_en, locale),
+    niveles: traducir(row.niveles, row.niveles_en, locale),
+    fotos: byOrden(row.proyecto_fotos).map((foto) => ({
+      src: foto.src,
+      alt: traducir(foto.alt, foto.alt_en, locale),
+      ancha: foto.ancha,
+      width: foto.width,
+      height: foto.height,
     })),
-  creditos: toCreditos(row.proyecto_creditos),
-})
+    documentos: byOrden(row.proyecto_documentos)
+      // Sin imagen no hay nada que enseñar en la página.
+      .filter((doc) => Boolean(doc.preview_url))
+      .map((doc) => ({
+        titulo: traducir(doc.titulo, doc.titulo_en, locale),
+        descripcion: traducir(doc.descripcion, doc.descripcion_en, locale),
+        preview: doc.preview_url ?? '',
+        previewWidth: doc.preview_width,
+        previewHeight: doc.preview_height,
+        archivo: doc.archivo_url ?? '',
+      })),
+    creditos: toCreditos(row.proyecto_creditos, locale),
+  }
+}
 
-export const getProyectos = (): Promise<Proyecto[]> =>
+const proyectosRows = (): Promise<ProyectoJoined[]> =>
   cached('proyectos', async () => {
     const { data, error } = await supabasePublic
       .from('proyectos')
@@ -257,10 +287,16 @@ export const getProyectos = (): Promise<Proyecto[]> =>
       throw new Error(`No se pudieron cargar los proyectos: ${error.message}`)
     }
 
-    return ((data ?? []) as unknown as ProyectoJoined[]).map(toProyecto)
+    return (data ?? []) as unknown as ProyectoJoined[]
   })
 
-export const getProyectoBySlug = async (slug: string): Promise<Proyecto | undefined> => {
-  const proyectos = await getProyectos()
+export const getProyectos = async (locale: Locale = DEFAULT_LOCALE): Promise<Proyecto[]> =>
+  (await proyectosRows()).map((row) => toProyecto(row, locale))
+
+export const getProyectoBySlug = async (
+  slug: string,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<Proyecto | undefined> => {
+  const proyectos = await getProyectos(locale)
   return proyectos.find((proyecto) => proyecto.id === slug)
 }

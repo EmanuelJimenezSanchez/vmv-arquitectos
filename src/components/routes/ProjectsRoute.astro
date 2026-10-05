@@ -2,14 +2,19 @@
 import Layout from '@/layouts/Layout.astro'
 import Button from '@/components/ui/Button.astro'
 import { getProyectos } from '@/lib/content'
-import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID, absoluteUrl, breadcrumbSchema } from '@/lib/seo'
+import { HREFLANG, format, getLocale, localizeHref, useTranslations } from '@/lib/i18n'
+import { ORGANIZATION_ID, breadcrumbSchema, localizedUrl, websiteId } from '@/lib/seo'
 
-const title = 'Proyectos de arquitectura e interiorismo | VMV Arquitectos'
-const description =
-  'Portafolio de VMV Arquitectos: obra construida de arquitectura, interiorismo y construcción en proyectos residenciales y comerciales en Guadalajara y todo México.'
+/** Listado del portafolio, compartido por `/projects` y `/en/projects`. */
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
+const title = t.seo.projectsTitle
+const description = t.seo.projectsDescription
 const canonical = '/projects'
+const pageUrl = localizedUrl(canonical, locale)
 
-const projects = await getProyectos()
+const projects = await getProyectos(locale)
 
 const totalLabel = String(projects.length).padStart(2, '0')
 const heroImage = projects.find((project) => project.cover)?.cover
@@ -20,7 +25,11 @@ const rangeLabel = years.length ? `${Math.min(...years)} — ${Math.max(...years
 
 /** Chips de la ficha: solo los campos que el panel dejó llenos. */
 const fichaChips = (project: (typeof projects)[number]) =>
-  [project.tipologia, project.area, project.niveles && `${project.niveles} niveles`].filter(Boolean)
+  [
+    project.tipologia,
+    project.area,
+    project.niveles && format(t.projects.levels, { count: project.niveles }),
+  ].filter(Boolean)
 
 /**
  * El listado se declara como colección con su ItemList: da a Google la relación
@@ -29,27 +38,30 @@ const fichaChips = (project: (typeof projects)[number]) =>
 const schema = [
   {
     '@type': 'CollectionPage',
-    '@id': SITE_URL + '/projects#webpage',
-    url: SITE_URL + '/projects',
+    '@id': `${pageUrl}#webpage`,
+    url: pageUrl,
     name: title,
     description,
-    inLanguage: 'es-MX',
-    isPartOf: { '@id': WEBSITE_ID },
+    inLanguage: HREFLANG[locale],
+    isPartOf: { '@id': websiteId(locale) },
     about: { '@id': ORGANIZATION_ID },
   },
-  breadcrumbSchema([
-    { name: 'Inicio', url: '/' },
-    { name: 'Proyectos', url: '/projects' },
-  ]),
+  breadcrumbSchema(
+    [
+      { name: t.nav.home, url: '/' },
+      { name: t.projects.title, url: '/projects' },
+    ],
+    locale,
+  ),
   {
     '@type': 'ItemList',
-    '@id': SITE_URL + '/projects#listado',
+    '@id': `${pageUrl}#listado`,
     numberOfItems: projects.length,
     itemListElement: projects.map((project, index) => ({
       '@type': 'ListItem',
       position: index + 1,
       name: project.title,
-      url: absoluteUrl('/projects/' + project.id),
+      url: localizedUrl(`/projects/${project.id}`, locale),
     })),
   },
 ]
@@ -97,13 +109,12 @@ Astro.response.headers.set(
       data-proyectos-hero-copy
     >
       <div class="h-11 w-px bg-white/50" aria-hidden="true"></div>
-      <p class="vmv-overline-1 text-white/70">Portafolio</p>
+      <p class="vmv-overline-1 text-white/70">{t.projects.overline}</p>
       <h1 id="proyectos-title" class="vmv-title-1 max-w-[16ch] text-balance text-white">
-        Proyectos
+        {t.projects.title}
       </h1>
       <p class="vmv-body-2 max-w-[46ch] text-balance text-white/72">
-        Espacios residenciales y comerciales donde diseño, interiorismo y obra se resuelven con un
-        solo equipo.
+        {t.projects.body}
       </p>
       <div class="h-11 w-px bg-white/50" aria-hidden="true"></div>
     </div>
@@ -113,7 +124,7 @@ Astro.response.headers.set(
       aria-hidden="true"
     >
       <span class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase">
-        {totalLabel} proyectos
+        {format(t.projects.countLabel, { count: totalLabel })}
       </span>
       <span class="vmv-caption-1 tracking-[0.22em] text-white/55 uppercase tabular-nums">
         {rangeLabel}
@@ -127,9 +138,9 @@ Astro.response.headers.set(
       <header class="flex flex-col gap-4" data-proyectos-intro>
         <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
           <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
-          Obra construida
+          {t.projects.listOverline}
         </p>
-        <h2 class="vmv-title-2 max-w-[20ch] text-vmv-foreground">Selección de trabajos</h2>
+        <h2 class="vmv-title-2 max-w-[20ch] text-vmv-foreground">{t.projects.listTitle}</h2>
       </header>
 
       <ol class="mt-[clamp(2.5rem,6vw,4.5rem)] flex flex-col">
@@ -137,9 +148,9 @@ Astro.response.headers.set(
           projects.map((project, index) => (
             <li class="group border-t border-vmv-border last:border-b" data-proyectos-item>
               <a
-                href={`/projects/${project.id}`}
+                href={localizeHref(`/projects/${project.id}`, locale)}
                 class="grid items-center gap-[clamp(1.5rem,3.5vw,3rem)] py-[clamp(2rem,4vw,3.25rem)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-vmv-ring md:grid-cols-[minmax(0,24rem)_1fr]"
-                aria-label={`Ver proyecto ${project.title}`}
+                aria-label={format(t.projects.viewProjectAria, { title: project.title })}
               >
                 {/*
                   El nombre va en la `figure` y no en la imagen: así el velo y
@@ -207,7 +218,7 @@ Astro.response.headers.set(
                   </ul>
 
                   <span class="vmv-button-1 mt-1 inline-flex items-center gap-3 text-vmv-foreground">
-                    Ver proyecto
+                    {t.projects.viewProject}
                     <span
                       class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-vmv-border transition-[transform,border-color,background-color,color] duration-500 ease-vmv group-hover:translate-x-1 group-hover:border-vmv-foreground group-hover:bg-vmv-foreground group-hover:text-vmv-background"
                       aria-hidden="true"
@@ -239,15 +250,21 @@ Astro.response.headers.set(
     >
       <p class="vmv-overline-1 flex items-center gap-3 text-white/60">
         <span class="h-px w-9 bg-white/40" aria-hidden="true"></span>
-        Siguiente proyecto
+        {t.projects.ctaOverline}
         <span class="h-px w-9 bg-white/40" aria-hidden="true"></span>
       </p>
-      <h2 class="vmv-title-1 max-w-[18ch] text-balance text-white">¿Empezamos con el tuyo?</h2>
+      <h2 class="vmv-title-1 max-w-[18ch] text-balance text-white">{t.projects.ctaTitle}</h2>
       <p class="vmv-body-2 max-w-[46ch] text-white/72">
-        Cuéntanos qué tienes en mente y te acompañamos desde el primer trazo hasta la entrega.
+        {t.projects.ctaBody}
       </p>
-      <Button href="/#contacto" variant="white" size="xl" class="mt-2" data-contacto-trigger>
-        Cuéntanos tu idea
+      <Button
+        href={localizeHref('/#contacto', locale)}
+        variant="white"
+        size="xl"
+        class="mt-2"
+        data-contacto-trigger
+      >
+        {t.projects.ctaButton}
       </Button>
     </div>
   </section>

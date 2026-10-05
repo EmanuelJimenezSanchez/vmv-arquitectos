@@ -1,17 +1,39 @@
+---
+import { getLocale, useTranslations } from '@/lib/i18n'
+
+const t = useTranslations(getLocale(Astro.url))
+---
+
 <button
   type="button"
   class="theme-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-550 ease-[cubic-bezier(0.22,1,0.36,1)]"
   data-theme-toggle
-  aria-label="Activar modo oscuro"
+  aria-label={t.theme.toDark}
   aria-pressed="false"
-  title="Cambiar tema"
+  title={t.theme.toggleTitle}
+  data-label-dark={t.theme.toDark}
+  data-label-light={t.theme.toLight}
 >
   <span class="theme-icon" aria-hidden="true">
-    <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <svg
+      class="icon icon-sun"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+    >
       <circle cx="12" cy="12" r="4.1"></circle>
-      <path d="M12 2.8v2.3M12 18.9v2.3M5.5 5.5l1.6 1.6M16.9 16.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M5.5 18.5l1.6-1.6M16.9 7.1l1.6-1.6"></path>
+      <path
+        d="M12 2.8v2.3M12 18.9v2.3M5.5 5.5l1.6 1.6M16.9 16.9l1.6 1.6M2.8 12h2.3M18.9 12h2.3M5.5 18.5l1.6-1.6M16.9 7.1l1.6-1.6"
+      ></path>
     </svg>
-    <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <svg
+      class="icon icon-moon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+    >
       <path d="M20.2 13.2a8 8 0 1 1-9.4-9.4 7 7 0 1 0 9.4 9.4z"></path>
     </svg>
   </span>
@@ -56,14 +78,19 @@
 
       toggles.forEach((toggle) => {
         toggle.setAttribute('aria-pressed', String(isDark))
-        toggle.setAttribute('aria-label', isDark ? 'Activar modo claro' : 'Activar modo oscuro')
+        // Las etiquetas vienen del diccionario por `data-*`: el script se
+        // empaqueta una sola vez y no puede saber el idioma de la página.
+        const label = isDark ? toggle.dataset.labelLight : toggle.dataset.labelDark
+        if (label) {
+          toggle.setAttribute('aria-label', label)
+        }
       })
 
       if (persist) {
         try {
           localStorage.setItem(THEME_STORAGE_KEY, theme)
         } catch {
-        //   Ignore storage write errors (private mode, disabled storage).
+          //   Ignore storage write errors (private mode, disabled storage).
         }
       }
     }
