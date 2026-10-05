@@ -46,6 +46,7 @@ const t = useTranslations(getLocale(Astro.url))
 
 <script>
   import { $, $$ } from '@/lib/dom-selector'
+  import { trackMetaCustom } from '@/lib/meta-pixel'
 
   const CLOSE_DURATION = 320
 
@@ -93,6 +94,9 @@ const t = useTranslations(getLocale(Astro.url))
       modal.classList.remove('is-closing')
       modal.showModal()
       lockScroll()
+      // Intención de contacto aunque no termine el formulario: base para
+      // audiencias de remarketing en Meta.
+      trackMetaCustom('AbrirContacto', { page: location.pathname })
       requestAnimationFrame(() => {
         modal.classList.add('is-open')
       })
