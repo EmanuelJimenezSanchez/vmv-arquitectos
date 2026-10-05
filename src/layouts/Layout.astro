@@ -9,6 +9,7 @@ import Footer from '@/sections/Footer.astro'
 import Button from '@/components/ui/Button.astro'
 import ContactoModal from '@/components/ContactoModal.astro'
 import SiteLoader from '@/components/SiteLoader.astro'
+import MetaPixel from '@/components/MetaPixel.astro'
 import { HTML_LANG, LOCALES, OG_LOCALE, getLocale, localizeHref, useTranslations } from '@/lib/i18n'
 import {
   DEFAULT_OG_IMAGE,
@@ -180,6 +181,7 @@ const jsonLd = {
     <slot name="head" />
     <ClientRouter />
     <Analytics />
+    <MetaPixel />
   </head>
   <body>
     {showLoader && <SiteLoader />}
