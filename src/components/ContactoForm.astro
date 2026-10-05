@@ -45,6 +45,7 @@ const radioOptions = [
   class:list={['relative', className]}
   data-contacto-wrapper
   data-locale={locale}
+  data-origin={idPrefix}
   data-error-text={t.form.sendError}
 >
   <form class="flex flex-col gap-6" data-contacto-form novalidate>
@@ -177,6 +178,7 @@ const radioOptions = [
   import { actions } from 'astro:actions'
   import gsap from 'gsap'
   import { $, $$ } from '@/lib/dom-selector'
+  import { trackMeta } from '@/lib/meta-pixel'
 
   let formsController: AbortController | null = null
 
@@ -289,15 +291,19 @@ const radioOptions = [
             submit.disabled = true
           }
 
+          const considerandoConstruir = radio('considerando-construir')
+          const tieneTerreno = radio('tiene-terreno')
+          const idioma = wrapper.dataset.locale === 'en' ? 'en' : 'es'
+
           const { error: actionError } = await actions.contacto.enviar({
             nombres: value('nombres'),
             apellidos: value('apellidos'),
             email: value('email'),
             telefono: value('telefono'),
             mensaje: value('mensaje'),
-            considerandoConstruir: radio('considerando-construir'),
-            tieneTerreno: radio('tiene-terreno'),
-            idioma: wrapper.dataset.locale === 'en' ? 'en' : 'es',
+            considerandoConstruir,
+            tieneTerreno,
+            idioma,
             website: $<HTMLInputElement>('[data-contacto-honeypot]', form)?.value ?? '',
           })
 
@@ -314,6 +320,16 @@ const radioOptions = [
             }
             return
           }
+
+          // Solo respuestas de calificación, nunca datos personales: sirven
+          // para segmentar en Meta sin mandarle nombre, correo ni teléfono.
+          trackMeta('Lead', {
+            content_name: 'Formulario de contacto',
+            form_origin: wrapper.dataset.origin ?? '',
+            considering_building: considerandoConstruir,
+            has_land: tieneTerreno,
+            language: idioma,
+          })
 
           showSuccess()
         },
