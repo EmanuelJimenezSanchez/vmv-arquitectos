@@ -42,7 +42,7 @@ const menuId = `language-menu-${placement}`
 <div class:list={['language-switcher relative', className]} data-language-switcher>
   <button
     type="button"
-    class="vmv-caption-1 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-vmv-sand-1/35 bg-vmv-sand-1/8 pr-3 pl-3.5 tracking-[0.12em] text-vmv-sand-1/92 transition-[color,border-color,background-color] duration-450 ease-vmv hover:border-vmv-sand-1/60 hover:text-vmv-sand-1"
+    class="language-trigger vmv-caption-1 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border pr-3 pl-3.5 tracking-[0.12em] transition-[color,border-color,background-color] duration-550 ease-vmv"
     aria-haspopup="true"
     aria-expanded="false"
     aria-controls={menuId}
@@ -77,7 +77,7 @@ const menuId = `language-menu-${placement}`
   <ul
     id={menuId}
     class:list={[
-      'language-menu invisible absolute right-0 z-70 min-w-40 rounded-2xl border border-vmv-sand-1/25 bg-vmv-gray-12/95 p-1.5 opacity-0 shadow-[0_18px_40px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md transition-[opacity,transform,visibility] duration-300 ease-vmv',
+      'language-menu invisible absolute right-0 z-70 min-w-40 rounded-2xl border p-1.5 opacity-0 shadow-[0_18px_40px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md transition-[opacity,transform,visibility] duration-300 ease-vmv',
       placement === 'up'
         ? 'bottom-full mb-2 origin-bottom-right translate-y-1'
         : 'top-full mt-2 origin-top-right -translate-y-1',
@@ -93,12 +93,7 @@ const menuId = `language-menu-${placement}`
             lang={HTML_LANG[option.locale]}
             aria-current={option.isCurrent ? 'true' : undefined}
             data-language-option
-            class:list={[
-              'vmv-body-2 flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-[color,background-color] duration-300',
-              option.isCurrent
-                ? 'bg-vmv-sand-1/12 text-vmv-sand-1'
-                : 'text-vmv-sand-1/70 hover:bg-vmv-sand-1/8 hover:text-vmv-sand-1 focus-visible:bg-vmv-sand-1/8 focus-visible:text-vmv-sand-1',
-            ]}
+            class="language-option vmv-body-2 flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-[color,background-color] duration-300"
           >
             <span>{option.name}</span>
             <span class="vmv-caption-1 tracking-[0.12em] opacity-60" aria-hidden="true">
@@ -112,6 +107,39 @@ const menuId = `language-menu-${placement}`
 </div>
 
 <style>
+  /* Mismos tokens que ThemeToggle y FontSwitcher para que se lean igual en ambos temas. */
+  .language-trigger,
+  .language-menu {
+    color: color-mix(in srgb, var(--vmv-gray-12) 86%, transparent);
+    border-color: color-mix(in srgb, var(--vmv-gray-9) 30%, transparent);
+    background: color-mix(in srgb, var(--vmv-gray-2) 55%, transparent);
+  }
+
+  .language-menu {
+    background: color-mix(in srgb, var(--vmv-gray-1) 95%, transparent);
+  }
+
+  .language-trigger:hover,
+  .language-switcher.is-open .language-trigger {
+    background: color-mix(in srgb, var(--vmv-gray-1) 95%, transparent);
+  }
+
+  .language-trigger:focus-visible,
+  .language-option:focus-visible {
+    outline: 2px solid var(--vmv-ring);
+    outline-offset: 2px;
+  }
+
+  .language-option {
+    color: color-mix(in srgb, var(--vmv-gray-12) 70%, transparent);
+  }
+
+  .language-option:hover,
+  .language-option[aria-current='true'] {
+    color: var(--vmv-gray-12);
+    background: color-mix(in srgb, var(--vmv-gray-9) 14%, transparent);
+  }
+
   .language-switcher.is-open .language-menu {
     visibility: visible;
     opacity: 1;
