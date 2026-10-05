@@ -167,6 +167,10 @@ const schema = project
           class="relative flex h-[92svh] min-h-[32rem] items-end overflow-hidden bg-[#0f0e0c]"
           aria-labelledby="proyecto-title"
           data-proyecto-hero
+          data-meta-view-content
+          data-content-id={project.id}
+          data-content-name={project.title}
+          data-content-category={project.tipologia}
         >
           {/*
             La portada y su degradado viajan juntos en la transición: si solo
