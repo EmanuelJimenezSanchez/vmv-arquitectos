@@ -213,7 +213,15 @@ const paymentMethods = [
       <p class="vmv-caption-1 text-vmv-sand-1/45">
         {format(t.footer.rights, { year })}
       </p>
-      <p class="vmv-caption-1 text-vmv-sand-1/45">{t.footer.signature}</p>
+      <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-8">
+        <a
+          href={localizeHref('/privacy', locale)}
+          class="vmv-caption-1 text-vmv-sand-1/45 transition-colors duration-450 hover:text-vmv-sand-1"
+        >
+          {t.footer.privacy}
+        </a>
+        <p class="vmv-caption-1 text-vmv-sand-1/45">{t.footer.signature}</p>
+      </div>
     </div>
   </div>
 </footer>

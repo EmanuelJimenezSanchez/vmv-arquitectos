@@ -1,38 +1,35 @@
 ---
 /**
- * Pixel de Meta para el sitio público. Sin `PUBLIC_META_PIXEL_ID` no se
- * renderiza nada: así el entorno local no ensucia las métricas del anuncio.
+ * Pixel de Meta para el sitio público. Sin `PUBLIC_META_PIXEL_ID` el pixel no
+ * se carga: así el entorno local no ensucia las métricas del anuncio.
  */
-const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID
+const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID ?? ''
 ---
 
-{
-  pixelId && (
-    <script is:inline define:vars={{ pixelId }}>
-      // Código base oficial de Meta. Con el ClientRouter este script puede
-      // volver a evaluarse al navegar; el guard evita inicializar dos veces.
-      if (!window.fbq) {
-        !(function (f, b, e, v, n, t, s) {
-          if (f.fbq) return
-          n = f.fbq = function () {
-            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-          }
-          if (!f._fbq) f._fbq = n
-          n.push = n
-          n.loaded = !0
-          n.version = '2.0'
-          n.queue = []
-          t = b.createElement(e)
-          t.async = !0
-          t.src = v
-          s = b.getElementsByTagName(e)[0]
-          s.parentNode.insertBefore(t, s)
-        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js')
-        window.fbq('init', pixelId)
+<script is:inline define:vars={{ pixelId }}>
+  // Código base oficial de Meta. Sin ID no se carga nada; con el ClientRouter
+  // este script puede volver a evaluarse al navegar y el guard evita
+  // inicializar dos veces.
+  if (pixelId && !window.fbq) {
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return
+      n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
       }
-    </script>
-  )
-}
+      if (!f._fbq) f._fbq = n
+      n.push = n
+      n.loaded = !0
+      n.version = '2.0'
+      n.queue = []
+      t = b.createElement(e)
+      t.async = !0
+      t.src = v
+      s = b.getElementsByTagName(e)[0]
+      s.parentNode.insertBefore(t, s)
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js')
+    window.fbq('init', pixelId)
+  }
+</script>
 
 <script>
   import { $ } from '@/lib/dom-selector'

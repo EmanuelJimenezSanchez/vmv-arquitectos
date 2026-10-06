@@ -1,0 +1,88 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { PRIVACY_UPDATED_AT, privacyContent } from '@/data/privacidad'
+import { HTML_LANG, getLocale, useTranslations } from '@/lib/i18n'
+
+/** Aviso de privacidad, compartido por `/privacy` y `/en/privacy`. */
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+const content = privacyContent[locale]
+
+// Mediodía UTC para que ninguna zona horaria lo recorra al día anterior.
+const updatedAt = new Date(`${PRIVACY_UPDATED_AT}T12:00:00Z`)
+const updatedLabel = new Intl.DateTimeFormat(HTML_LANG[locale], {
+  dateStyle: 'long',
+  timeZone: 'UTC',
+}).format(updatedAt)
+---
+
+<Layout
+  title={t.seo.privacyTitle}
+  description={t.seo.privacyDescription}
+  canonical="/privacy"
+  showLoader={false}
+>
+  {/* El header es blanco sobre fondo oscuro hasta hacer scroll: la franja lo sostiene. */}
+  <section class="bg-vmv-gray-12 pt-[clamp(9rem,18vw,12rem)] pb-[clamp(3rem,6vw,4.5rem)]">
+    <div class="mx-auto flex max-w-[1200px] flex-col gap-5 px-[clamp(1.25rem,5vw,3rem)]">
+      <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-1/60">
+        <span class="h-px w-9 bg-vmv-sand-1/40" aria-hidden="true"></span>
+        {content.overline}
+      </p>
+      <h1 class="vmv-title-1 text-balance text-vmv-sand-1">{content.title}</h1>
+      <p class="vmv-caption-1 text-vmv-sand-1/55">
+        {content.updatedLabel}: <time datetime={PRIVACY_UPDATED_AT}>{updatedLabel}</time>
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-vmv-background py-[clamp(3.5rem,8vw,6rem)]">
+    <div
+      class="privacy-prose mx-auto flex max-w-[760px] flex-col gap-[clamp(2.5rem,5vw,3.5rem)] px-[clamp(1.25rem,5vw,3rem)]"
+    >
+      <p class="vmv-body-1 text-vmv-foreground" set:html={content.intro} />
+
+      {
+        content.sections.map((section) => (
+          <section
+            id={section.id}
+            class="flex scroll-mt-28 flex-col gap-4"
+            aria-labelledby={`${section.id}-title`}
+          >
+            <h2 id={`${section.id}-title`} class="vmv-title-3 text-vmv-foreground">
+              {section.heading}
+            </h2>
+            {section.blocks.map((block) =>
+              typeof block === 'string' ? (
+                <p class="vmv-body-2 text-vmv-muted-foreground" set:html={block} />
+              ) : (
+                <ul class="vmv-body-2 flex list-disc flex-col gap-2 pl-5 text-vmv-muted-foreground marker:text-vmv-sand-9">
+                  {block.list.map((item) => (
+                    <li set:html={item} />
+                  ))}
+                </ul>
+              ),
+            )}
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .privacy-prose :global(a) {
+    color: var(--color-vmv-foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .privacy-prose :global(strong) {
+    color: var(--color-vmv-foreground);
+    font-weight: 500;
+  }
+
+  .privacy-prose :global(code) {
+    font-size: 0.9em;
+  }
+</style>

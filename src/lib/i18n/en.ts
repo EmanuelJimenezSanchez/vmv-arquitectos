@@ -138,6 +138,9 @@ export const en: Dictionary = {
       'We have received your message. We will get in touch on WhatsApp or by email within the next few hours.',
     sendAnother: 'Send another message',
     sendError: 'We could not send your message. Write to us at ventas@vmvarquitectos.com.',
+    privacyBefore: 'By sending you accept our ',
+    privacyLink: 'privacy notice',
+    privacyAfter: '.',
   },
 
   footer: {
@@ -154,6 +157,7 @@ export const en: Dictionary = {
     paymentsAria: 'Payment methods',
     rights: '© {year} VMV Arquitectos. All rights reserved.',
     signature: 'Design and construction',
+    privacy: 'Privacy notice',
   },
 
   loader: {
@@ -247,6 +251,9 @@ export const en: Dictionary = {
     projectFallbackYear: ' ({year})',
     notFoundTitle: 'Page not found | VMV Arquitectos',
     notFoundDescription: 'The page you are looking for does not exist or has moved.',
+    privacyTitle: 'Privacy notice | VMV Arquitectos',
+    privacyDescription:
+      'How VMV Arquitectos collects, uses and protects your personal data, which cookies the site uses and how to exercise your ARCO rights.',
     ogAlt: 'VMV Arquitectos — Design and construction of spaces made to be lived in',
     organizationDescription:
       'Architecture, interior design and construction studio. Residential and commercial spaces made to be lived in. Based in Guadalajara, with projects across Mexico.',

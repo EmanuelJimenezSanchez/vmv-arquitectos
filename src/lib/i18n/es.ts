@@ -138,6 +138,9 @@ export const es = {
       'Hemos recibido tu mensaje. Te contactaremos por WhatsApp o e-mail en las próximas horas.',
     sendAnother: 'Enviar otro mensaje',
     sendError: 'No se pudo enviar el mensaje. Escríbenos a ventas@vmvarquitectos.com.',
+    privacyBefore: 'Al enviar aceptas nuestro ',
+    privacyLink: 'aviso de privacidad',
+    privacyAfter: '.',
   },
 
   footer: {
@@ -154,6 +157,7 @@ export const es = {
     paymentsAria: 'Métodos de pago',
     rights: '© {year} VMV Arquitectos. Todos los derechos reservados.',
     signature: 'Diseño y construcción',
+    privacy: 'Aviso de privacidad',
   },
 
   loader: {
@@ -247,6 +251,9 @@ export const es = {
     projectFallbackYear: ' ({year})',
     notFoundTitle: 'Página no encontrada | VMV Arquitectos',
     notFoundDescription: 'La página que buscas no existe o cambió de dirección.',
+    privacyTitle: 'Aviso de privacidad | VMV Arquitectos',
+    privacyDescription:
+      'Cómo VMV Arquitectos recaba, usa y protege tus datos personales, qué cookies usa el sitio y cómo ejercer tus derechos ARCO.',
     ogAlt: 'VMV Arquitectos — Diseño y construcción de espacios para habitar',
     organizationDescription:
       'Despacho de arquitectura, interiorismo y construcción. Espacios residenciales y comerciales pensados para vivirse. Con base en Guadalajara y proyectos en todo México.',

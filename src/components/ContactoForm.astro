@@ -1,6 +1,6 @@
 ---
 import Button from '@/components/ui/Button.astro'
-import { getLocale, useTranslations } from '@/lib/i18n'
+import { getLocale, localizeHref, useTranslations } from '@/lib/i18n'
 
 const locale = getLocale(Astro.url)
 const t = useTranslations(locale)
@@ -122,6 +122,15 @@ const radioOptions = [
 
     <p class="vmv-caption-1 text-vmv-muted-foreground">
       {t.form.note}
+    </p>
+
+    <p class="vmv-caption-1 text-vmv-muted-foreground">
+      {t.form.privacyBefore}<a
+        href={localizeHref('/privacy', locale)}
+        target="_blank"
+        class="underline underline-offset-2 transition-colors duration-300 hover:text-vmv-foreground"
+        >{t.form.privacyLink}</a
+      >{t.form.privacyAfter}
     </p>
 
     <Button type="submit" variant="primary" size="lg" class="mt-2 w-fit" data-contacto-submit>

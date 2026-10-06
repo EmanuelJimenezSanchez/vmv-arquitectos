@@ -40,6 +40,7 @@ export const GET: APIRoute = async () => {
       changefreq: 'monthly',
       priority: '0.8',
     })),
+    { path: '/privacy', changefreq: 'yearly', priority: '0.3' },
   ]
 
   const alternates = (path: string) =>
