@@ -158,6 +158,16 @@ export const en: Dictionary = {
     rights: '© {year} VMV Arquitectos. All rights reserved.',
     signature: 'Design and construction',
     privacy: 'Privacy notice',
+    cookiePreferences: 'Cookie preferences',
+  },
+
+  cookies: {
+    aria: 'Cookie notice',
+    message:
+      'We use cookies to measure visits and show VMV Arquitectos ads. You can reject them without affecting your browsing. Learn more in our',
+    privacyLink: 'privacy notice',
+    accept: 'Accept',
+    reject: 'Reject',
   },
 
   loader: {

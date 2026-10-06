@@ -101,12 +101,13 @@ const es: PrivacyContent = {
           list: [
             '<strong>Pixel de Meta</strong> (Meta Platforms, Inc.): instala cookies como <code>_fbp</code> para registrar las páginas que visitas, los proyectos que consultas, si abres o envías el formulario de contacto y si haces clic en nuestros enlaces de WhatsApp, correo o teléfono. <strong>Al Pixel no se le envían tu nombre, correo, teléfono ni el contenido de tu mensaje</strong>; solo las respuestas de calificación del formulario y el idioma. Se usa para las finalidades secundarias.',
             '<strong>Vercel Web Analytics</strong> (Vercel Inc.): estadísticas agregadas de visitas sin uso de cookies ni identificadores personales.',
-            '<strong>Almacenamiento local del navegador</strong>: guarda tus preferencias de visualización, como el tema claro u oscuro. No contiene datos personales y no sale de tu dispositivo.',
+            '<strong>Almacenamiento local del navegador</strong>: guarda tus preferencias de visualización, como el tema claro u oscuro, y tu elección sobre las cookies. No contiene datos personales y no sale de tu dispositivo.',
           ],
         },
         'Puedes deshabilitar estas tecnologías en cualquier momento:',
         {
           list: [
+            'Con el botón «Rechazar» del aviso de cookies que aparece en tu primera visita, o en cualquier momento desde «Preferencias de cookies» al pie del sitio. Al rechazar, el Pixel de Meta deja de cargarse y se borran sus cookies.',
             'Bloqueando o eliminando cookies desde la configuración de tu navegador, o navegando en modo privado.',
             'Usando extensiones que bloquean rastreadores.',
             'Desde tu cuenta de Meta, en <a href="https://www.facebook.com/adpreferences" target="_blank" rel="noopener noreferrer">Preferencias de anuncios</a> y en «Tu actividad fuera de las tecnologías de Meta».',
@@ -251,12 +252,13 @@ const en: PrivacyContent = {
           list: [
             '<strong>Meta Pixel</strong> (Meta Platforms, Inc.): sets cookies such as <code>_fbp</code> to record the pages you visit, the projects you view, whether you open or submit the contact form and whether you click our WhatsApp, email or phone links. <strong>Your name, email, phone number and message are never sent to the Pixel</strong>; only the form’s qualifying answers and the language. Used for secondary purposes.',
             '<strong>Vercel Web Analytics</strong> (Vercel Inc.): aggregated visit statistics with no cookies or personal identifiers.',
-            '<strong>Browser local storage</strong>: stores your display preferences, such as light or dark theme. It contains no personal data and never leaves your device.',
+            '<strong>Browser local storage</strong>: stores your display preferences, such as light or dark theme, and your cookie choice. It contains no personal data and never leaves your device.',
           ],
         },
         'You can disable these technologies at any time:',
         {
           list: [
+            'With the “Reject” button in the cookie notice shown on your first visit, or at any time from “Cookie preferences” in the site footer. Once rejected, the Meta Pixel stops loading and its cookies are deleted.',
             'By blocking or deleting cookies in your browser settings, or browsing in private mode.',
             'By using tracker-blocking extensions.',
             'From your Meta account, under <a href="https://www.facebook.com/adpreferences" target="_blank" rel="noopener noreferrer">Ad preferences</a> and “Your activity off Meta technologies”.',

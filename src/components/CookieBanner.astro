@@ -1,0 +1,101 @@
+---
+import Button from '@/components/ui/Button.astro'
+import { getLocale, localizeHref, useTranslations } from '@/lib/i18n'
+
+/**
+ * Aviso de cookies de primera visita. Nace oculto y el script lo muestra solo
+ * si no hay elección guardada, así nunca parpadea para quien ya decidió.
+ * En móvil va por encima del botón flotante «Escríbenos».
+ */
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+---
+
+<div
+  class="cookie-banner fixed inset-x-4 bottom-22 z-60 hidden flex-col gap-4 border border-vmv-border bg-vmv-background p-5 shadow-[0_18px_40px_-20px_rgb(0_0_0/0.45)] md:inset-x-auto md:bottom-8 md:left-8 md:max-w-sm"
+  role="region"
+  aria-label={t.cookies.aria}
+  data-cookie-banner
+  transition:persist="cookie-banner"
+>
+  <p class="vmv-body-3 text-vmv-muted-foreground">
+    {t.cookies.message}
+    <a
+      href={localizeHref('/privacy#cookies', locale)}
+      class="text-vmv-foreground underline underline-offset-2">{t.cookies.privacyLink}</a
+    >.
+  </p>
+  <div class="flex flex-wrap gap-3">
+    <Button variant="primary" size="sm" data-cookie-accept>{t.cookies.accept}</Button>
+    <Button variant="outline" size="sm" data-cookie-reject>{t.cookies.reject}</Button>
+  </div>
+</div>
+
+<script>
+  import { $ } from '@/lib/dom-selector'
+  import { denyConsent, getConsent, grantConsent } from '@/lib/cookie-consent'
+
+  const banner = () => $<HTMLElement>('[data-cookie-banner]')
+
+  const show = () => {
+    const element = banner()
+    if (!element) {
+      return
+    }
+    element.classList.remove('hidden')
+    element.classList.add('flex')
+    requestAnimationFrame(() => element.classList.add('is-visible'))
+  }
+
+  const hide = () => {
+    const element = banner()
+    if (!element) {
+      return
+    }
+    element.classList.remove('is-visible', 'flex')
+    element.classList.add('hidden')
+  }
+
+  // Delegado en `document`: el aviso persiste entre navegaciones y el enlace
+  // de preferencias del footer se re-renderiza en cada una.
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element | null
+
+    if (target?.closest('[data-cookie-accept]')) {
+      grantConsent()
+      hide()
+    } else if (target?.closest('[data-cookie-reject]')) {
+      denyConsent()
+      hide()
+    } else if (target?.closest('[data-cookie-preferences]')) {
+      show()
+    }
+  })
+
+  document.addEventListener('astro:page-load', () => {
+    if (!getConsent()) {
+      show()
+    }
+  })
+</script>
+
+<style>
+  .cookie-banner {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cookie-banner.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-banner {
+      transition: none;
+    }
+  }
+</style>

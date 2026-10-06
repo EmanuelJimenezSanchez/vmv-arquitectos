@@ -1,16 +1,19 @@
 ---
 /**
- * Pixel de Meta para el sitio público. Sin `PUBLIC_META_PIXEL_ID` el pixel no
- * se carga: así el entorno local no ensucia las métricas del anuncio.
+ * Pixel de Meta para el sitio público. No se carga sin `PUBLIC_META_PIXEL_ID`
+ * (así el entorno local no ensucia las métricas) ni si el visitante rechazó
+ * las cookies en el aviso.
  */
 const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID ?? ''
 ---
 
 <script is:inline define:vars={{ pixelId }}>
-  // Código base oficial de Meta. Sin ID no se carga nada; con el ClientRouter
-  // este script puede volver a evaluarse al navegar y el guard evita
-  // inicializar dos veces.
-  if (pixelId && !window.fbq) {
+  // Código base oficial de Meta, envuelto para poder cargarlo después si el
+  // visitante acepta tras haber rechazado (ver `lib/cookie-consent.ts`).
+  // Con el ClientRouter este script puede volver a evaluarse al navegar; el
+  // guard de `window.fbq` evita inicializar dos veces.
+  window.vmvLoadMetaPixel = () => {
+    if (!pixelId || window.fbq) return
     !(function (f, b, e, v, n, t, s) {
       if (f.fbq) return
       n = f.fbq = function () {
@@ -28,6 +31,18 @@ const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID ?? ''
       s.parentNode.insertBefore(t, s)
     })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js')
     window.fbq('init', pixelId)
+  }
+
+  // Quien rechazó en una visita anterior no descarga el script de Meta.
+  // Misma clave que `CONSENT_STORAGE_KEY` en `lib/cookie-consent.ts`.
+  let consent = null
+  try {
+    consent = localStorage.getItem('vmv-cookie-consent')
+  } catch {
+    // Sin almacenamiento no hay elección guardada: se aplica el opt-out.
+  }
+  if (consent !== 'denied') {
+    window.vmvLoadMetaPixel()
   }
 </script>
 

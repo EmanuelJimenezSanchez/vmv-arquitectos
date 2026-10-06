@@ -158,6 +158,16 @@ export const es = {
     rights: '© {year} VMV Arquitectos. Todos los derechos reservados.',
     signature: 'Diseño y construcción',
     privacy: 'Aviso de privacidad',
+    cookiePreferences: 'Preferencias de cookies',
+  },
+
+  cookies: {
+    aria: 'Aviso de cookies',
+    message:
+      'Usamos cookies para medir las visitas y mostrar anuncios de VMV Arquitectos. Puedes rechazarlas sin que cambie tu navegación. Más información en nuestro',
+    privacyLink: 'aviso de privacidad',
+    accept: 'Aceptar',
+    reject: 'Rechazar',
   },
 
   loader: {

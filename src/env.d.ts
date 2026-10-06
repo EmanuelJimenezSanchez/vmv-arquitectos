@@ -40,5 +40,7 @@ declare global {
     maplibregl?: typeof maplibre
     /** Pixel de Meta; solo existe si `PUBLIC_META_PIXEL_ID` está definido. */
     fbq?: (...args: unknown[]) => void
+    /** Carga el pixel bajo demanda; lo define el script inline de `MetaPixel.astro`. */
+    vmvLoadMetaPixel?: () => void
   }
 }
