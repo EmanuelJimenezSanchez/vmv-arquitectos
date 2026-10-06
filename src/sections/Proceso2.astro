@@ -46,13 +46,11 @@ const steps = proceso.map((paso, index) => ({
 
 <section
   id="proceso-2"
-  class="relative bg-vmv-background py-[clamp(4.5rem,10vw,8rem)] md:flex md:min-h-[48rem] md:items-center md:py-[clamp(3rem,6vh,5rem)] md:[@media(min-height:52rem)]:h-screen"
+  class="relative bg-vmv-background py-[clamp(4.5rem,10vw,8rem)] md:flex md:min-h-[48rem] md:items-center md:py-[clamp(3rem,6vh,5rem)] md:[@media(min-height:52rem)]:min-h-screen"
   data-proceso2
   aria-label={t.process.sectionAria}
 >
-  <div
-    class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)] md:flex md:h-full md:flex-col"
-  >
+  <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
     <header
       class="mx-auto flex max-w-[42ch] flex-col items-center gap-6 text-center"
       data-proceso2-intro
@@ -70,10 +68,8 @@ const steps = proceso.map((paso, index) => ({
 
     <!-- Recorrido curvo (desktop) -->
     <!-- El padding reserva el espacio que necesitan los textos por fuera de la onda. -->
-    <div
-      class="mt-[clamp(2rem,4vh,3.5rem)] hidden md:block md:flex-1 md:py-[clamp(8.5rem,12vh,10.5rem)]"
-    >
-      <div class="relative h-full min-h-48" data-proceso2-track>
+    <div class="mt-[clamp(1rem,2vh,2rem)] hidden md:block md:py-52">
+      <div class="relative h-[clamp(12rem,26vh,18rem)]" data-proceso2-track>
         <svg
           class="absolute inset-0 h-full w-full overflow-visible"
           viewBox="0 0 100 100"
