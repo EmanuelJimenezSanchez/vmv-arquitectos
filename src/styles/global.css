@@ -109,13 +109,13 @@
 	/* --font-display: 'Cormorant Garamond', serif; */
 	/* --font-body: 'Jost', sans-serif; */
 
-	/* Opción 4: Manrope — un solo sans elegante para todo el sitio */
-	/* --font-display: 'Manrope', sans-serif; */
-	/* --font-body: 'Manrope', sans-serif; */
+	/* Opción 4 (activa, elegida por el cliente): Manrope — un solo sans elegante para todo el sitio */
+	--font-display: 'Manrope', sans-serif;
+	--font-body: 'Manrope', sans-serif;
 
 	/* Opción 5: Sin fuente personalizada — la fuente del sistema (como antes de estas pruebas) */
-	--font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	/* --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; */
+	/* --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; */
 
 	/* Opción 6: Gruppo + Inter — display art-deco geométrico + sans limpio */
 	/* --font-display: 'Gruppo', sans-serif; */
