@@ -8,6 +8,7 @@ interface Props {
 export default function LoginForm({ redirectTo }: Props) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -56,14 +57,49 @@ export default function LoginForm({ redirectTo }: Props) {
         <span className="vmv-caption-1 tracking-[0.18em] text-vmv-muted-foreground uppercase">
           Contraseña
         </span>
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-          autoComplete="current-password"
-          className="vmv-body-3 border border-vmv-border bg-transparent px-4 py-3 text-vmv-foreground outline-none focus-visible:border-vmv-foreground"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+            autoComplete="current-password"
+            className="vmv-body-3 w-full border border-vmv-border bg-transparent py-3 pr-12 pl-4 text-vmv-foreground outline-none focus-visible:border-vmv-foreground"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-pressed={showPassword}
+            className="absolute inset-y-0 right-0 flex cursor-pointer items-center px-4 text-vmv-muted-foreground transition-colors duration-200 hover:text-vmv-foreground focus-visible:text-vmv-foreground focus-visible:outline-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="size-5"
+              aria-hidden="true"
+            >
+              {showPassword ? (
+                <>
+                  <path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68" />
+                  <path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3 7 10 7a9.7 9.7 0 0 0 5.39-1.61" />
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                  <path d="m2 2 20 20" />
+                </>
+              ) : (
+                <>
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
       </label>
 
       {error && <p className="vmv-body-3 text-red-500">{error}</p>}
