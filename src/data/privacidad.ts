@@ -13,8 +13,8 @@ import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from '@/lib/seo'
  */
 
 /** TODO: datos legales del responsable; deben coincidir con su constancia fiscal. */
-const RAZON_SOCIAL = '[RAZÓN SOCIAL O NOMBRE DEL TITULAR]'
-const DOMICILIO = '[CALLE, NÚMERO, COLONIA, C.P., GUADALAJARA, JALISCO, MÉXICO]'
+const RAZON_SOCIAL = 'VMV ARQUITECTOS'
+const DOMICILIO = 'DETROIT 79, RINCON DE AGUA AZUL, 44467, GUADALAJARA, JALISCO, MÉXICO'
 
 export const PRIVACY_UPDATED_AT = '2026-10-05'
 
