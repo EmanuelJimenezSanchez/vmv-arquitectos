@@ -20,6 +20,7 @@ export const en: Dictionary = {
     mainAria: 'Main navigation',
     openMenu: 'Open menu',
     writeToUs: 'Write to us',
+    whatsappAria: 'Message us on WhatsApp',
   },
 
   language: {
@@ -72,7 +73,7 @@ export const en: Dictionary = {
   coverage: {
     overline: 'Where we build',
     title: 'Coverage',
-    body: 'We build and supervise work across Mexico. Hover over a state to find it on the map.',
+    body: 'We build and supervise work across Mexico.',
   },
 
   process: {
@@ -172,7 +173,7 @@ export const en: Dictionary = {
 
   loader: {
     aria: 'Loading VMV Arquitectos',
-    phrases: ['Spaces made to be lived in', 'Design, detail and craft'],
+    phrases: ['Spaces made to be lived in', 'Spaces with intention'],
   },
 
   gallery: {

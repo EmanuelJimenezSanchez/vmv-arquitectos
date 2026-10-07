@@ -20,6 +20,7 @@ export const es = {
     mainAria: 'Navegación principal',
     openMenu: 'Abrir menú',
     writeToUs: 'Escríbenos',
+    whatsappAria: 'Escríbenos por WhatsApp',
   },
 
   language: {
@@ -72,7 +73,7 @@ export const es = {
   coverage: {
     overline: 'Dónde construimos',
     title: 'Alcance',
-    body: 'Ejecutamos obra y supervisión en toda la República. Pasa el cursor sobre un estado para ubicarlo en el mapa.',
+    body: 'Ejecutamos obra y supervisión en toda la República.',
   },
 
   process: {
@@ -172,7 +173,7 @@ export const es = {
 
   loader: {
     aria: 'Cargando VMV Arquitectos',
-    phrases: ['Espacios pensados para habitar', 'Diseño, detalle y oficio'],
+    phrases: ['Espacios pensados para habitar', 'Espacios con intención'],
   },
 
   gallery: {
