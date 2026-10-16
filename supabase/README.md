@@ -27,7 +27,12 @@ imágenes y los planos, en el bucket de Cloudflare R2. El panel está en
    ```json
    [
      {
-       "AllowedOrigins": ["https://www.vmv-arquitectos.com", "http://localhost:4321"],
+       "AllowedOrigins": [
+         "https://vmvarquitectos.com",
+         "https://www.vmvarquitectos.com",
+         "https://nuevo.vmvarquitectos.com",
+         "http://localhost:4321"
+       ],
        "AllowedMethods": ["PUT"],
        "AllowedHeaders": ["content-type"],
        "MaxAgeSeconds": 3600
