@@ -32,7 +32,7 @@ const saveConsent = (value: CookieConsent) => {
 const META_COOKIES = ['_fbp', '_fbc']
 
 const deleteMetaCookies = () => {
-  // El pixel las escribe en el dominio raíz (`.vmv-arquitectos.com`), así que
+  // El pixel las escribe en el dominio raíz (`.vmvarquitectos.com`), así que
   // se borran en el host actual y en cada dominio padre.
   const parts = location.hostname.split('.')
   const domains = parts.map((_, index) => parts.slice(index).join('.'))
