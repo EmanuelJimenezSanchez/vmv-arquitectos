@@ -16,11 +16,14 @@ import {
  * layout, el sitemap y los bloques de datos estructurados.
  */
 
-export const SITE_URL = 'https://www.vmv-arquitectos.com'
+// Sin `www`: es la forma que Google ya tiene indexada del sitio anterior. En
+// Vercel, `www.vmvarquitectos.com` redirige (308) a este dominio.
+export const SITE_URL = 'https://vmvarquitectos.com'
 
 export const SITE_NAME = 'VMV Arquitectos'
 
-export const DEFAULT_OG_IMAGE = 'https://cdn.vmv-arquitectos.com/og.jpg'
+/** 1200×630, servida desde `public/` para no depender de un dominio externo. */
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og.jpg`
 
 export const CONTACT_EMAIL = 'ventas@vmvarquitectos.com'
 

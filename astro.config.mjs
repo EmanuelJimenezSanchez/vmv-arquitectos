@@ -38,5 +38,5 @@ export default defineConfig({
     },
   },
 
-  site: 'https://www.vmv-arquitectos.com',
+  site: 'https://vmvarquitectos.com',
 })
