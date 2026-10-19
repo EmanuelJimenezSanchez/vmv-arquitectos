@@ -34,13 +34,25 @@ export function initLenis() {
   // Evita que GSAP intente compensar caídas de FPS
   gsap.ticker.lagSmoothing(0)
 
+  /**
+   * Anclas del sitio anterior (HTML estático en GoDaddy) que cambiaron de
+   * nombre. El hash no llega al servidor, así que no se puede redirigir desde
+   * `vercel.json`: los enlaces viejos guardados o compartidos se resuelven aquí.
+   */
+  const LEGACY_HASHES = {
+    compromiso: 'alcance',
+    proceso: 'proceso-2',
+    formulario: 'contacto',
+  }
+
   /** Elemento al que apunta el hash actual, si existe en la página. */
   const hashTarget = (hash) => {
     if (!hash || hash === '#') {
       return null
     }
     try {
-      return document.getElementById(decodeURIComponent(hash.slice(1)))
+      const id = decodeURIComponent(hash.slice(1))
+      return document.getElementById(id) ?? document.getElementById(LEGACY_HASHES[id])
     } catch {
       return null
     }
@@ -134,6 +146,11 @@ export function initLenis() {
       // nativo del navegador se calculó sobre las medidas previas.
       const target = hashTarget(window.location.hash)
       if (target) {
+        // Un ancla del sitio anterior se reescribe a la actual en la barra de
+        // direcciones, para que al compartir el enlace ya circule el nuevo.
+        if (`#${target.id}` !== window.location.hash) {
+          history.replaceState(history.state, '', `#${target.id}`)
+        }
         scrollToHash(target, true)
       }
     })
