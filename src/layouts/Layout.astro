@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button.astro'
 import ContactoModal from '@/components/ContactoModal.astro'
 import SiteLoader from '@/components/SiteLoader.astro'
 import MetaPixel from '@/components/MetaPixel.astro'
+import GoogleAnalytics from '@/components/GoogleAnalytics.astro'
 import CookieBanner from '@/components/CookieBanner.astro'
 import { HTML_LANG, LOCALES, OG_LOCALE, getLocale, localizeHref, useTranslations } from '@/lib/i18n'
 import {
@@ -181,6 +182,7 @@ const jsonLd = {
     <ClientRouter />
     <Analytics />
     <MetaPixel />
+    <GoogleAnalytics />
   </head>
   <body>
     {showLoader && <SiteLoader />}
