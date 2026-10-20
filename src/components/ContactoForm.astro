@@ -188,6 +188,7 @@ const radioOptions = [
   import gsap from 'gsap'
   import { $, $$ } from '@/lib/dom-selector'
   import { trackMeta } from '@/lib/meta-pixel'
+  import { trackGA } from '@/lib/google-analytics'
 
   let formsController: AbortController | null = null
 
@@ -334,6 +335,13 @@ const radioOptions = [
           // para segmentar en Meta sin mandarle nombre, correo ni teléfono.
           trackMeta('Lead', {
             content_name: 'Formulario de contacto',
+            form_origin: wrapper.dataset.origin ?? '',
+            considering_building: considerandoConstruir,
+            has_land: tieneTerreno,
+            language: idioma,
+          })
+          // Evento recomendado de GA4; marcarlo como «evento clave» en GA.
+          trackGA('generate_lead', {
             form_origin: wrapper.dataset.origin ?? '',
             considering_building: considerandoConstruir,
             has_land: tieneTerreno,
