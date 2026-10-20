@@ -21,6 +21,7 @@ declare global {
     readonly MAILTRAP_INBOX_ID?: string
     readonly RESEND_API_KEY?: string
     readonly PUBLIC_META_PIXEL_ID?: string
+    readonly PUBLIC_GA_MEASUREMENT_ID?: string
   }
 
   interface ImportMeta {
@@ -42,5 +43,10 @@ declare global {
     fbq?: (...args: unknown[]) => void
     /** Carga el pixel bajo demanda; lo define el script inline de `MetaPixel.astro`. */
     vmvLoadMetaPixel?: () => void
+    /** gtag.js; solo existe si `PUBLIC_GA_MEASUREMENT_ID` está definido. */
+    gtag?: (...args: unknown[]) => void
+    dataLayer?: unknown[]
+    /** Carga GA bajo demanda; lo define el script inline de `GoogleAnalytics.astro`. */
+    vmvLoadGoogleAnalytics?: () => void
   }
 }
