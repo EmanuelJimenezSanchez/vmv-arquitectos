@@ -1,0 +1,83 @@
+---
+/**
+ * Google Analytics 4 para el sitio público. Mismas reglas que el Pixel de
+ * Meta: no se carga sin `PUBLIC_GA_MEASUREMENT_ID` ni si el visitante rechazó
+ * las cookies en el aviso.
+ *
+ * Los `page_view` se mandan a mano en cada `astro:page-load`. En GA hay que
+ * desactivar «Cambios de página según eventos del historial de navegación»
+ * (Flujo de datos > Medición mejorada) o se contarán dos veces.
+ */
+const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? ''
+---
+
+<script is:inline define:vars={{ measurementId }}>
+  // Código base oficial de gtag.js, envuelto para poder cargarlo después si
+  // el visitante acepta tras haber rechazado (ver `lib/cookie-consent.ts`).
+  // El guard de `window.gtag` evita inicializar dos veces con el ClientRouter.
+  window.vmvLoadGoogleAnalytics = () => {
+    if (!measurementId || window.gtag) return
+    window.dataLayer = window.dataLayer || []
+    window.gtag = function () {
+      window.dataLayer.push(arguments)
+    }
+    window.gtag('js', new Date())
+    window.gtag('config', measurementId, { send_page_view: false })
+
+    const script = document.createElement('script')
+    script.async = true
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
+    document.head.appendChild(script)
+  }
+
+  // Misma clave que `CONSENT_STORAGE_KEY` en `lib/cookie-consent.ts`.
+  let consent = null
+  try {
+    consent = localStorage.getItem('vmv-cookie-consent')
+  } catch {
+    // Sin almacenamiento no hay elección guardada: se aplica el opt-out.
+  }
+  if (consent !== 'denied') {
+    window.vmvLoadGoogleAnalytics()
+  }
+</script>
+
+<script>
+  import { $ } from '@/lib/dom-selector'
+  import { trackGA, trackGAPageView } from '@/lib/google-analytics'
+
+  document.addEventListener('astro:page-load', () => {
+    trackGAPageView()
+
+    // Las fichas de proyecto se marcan con `data-meta-view-content`.
+    const content = $<HTMLElement>('[data-meta-view-content]')
+    if (content) {
+      trackGA('view_project', {
+        project_id: content.dataset.contentId ?? '',
+        project_name: content.dataset.contentName ?? '',
+        project_category: content.dataset.contentCategory ?? '',
+      })
+    }
+  })
+
+  // Clics a WhatsApp, correo o teléfono (mismo criterio que `MetaPixel.astro`).
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]')
+    if (!link) {
+      return
+    }
+
+    const href = link.getAttribute('href') ?? ''
+    const method = href.startsWith('mailto:')
+      ? 'email'
+      : href.startsWith('tel:')
+        ? 'phone'
+        : /^https:\/\/(wa\.me|api\.whatsapp\.com)\//.test(href)
+          ? 'whatsapp'
+          : null
+
+    if (method) {
+      trackGA('contact', { contact_method: method })
+    }
+  })
+</script>
