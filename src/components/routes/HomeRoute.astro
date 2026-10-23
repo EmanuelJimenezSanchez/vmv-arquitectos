@@ -8,6 +8,7 @@ import Hero from '@/sections/Hero.astro'
 import Nosotros from '@/sections/Nosotros.astro'
 import Proceso from '@/sections/Proceso.astro'
 import Servicios from '@/sections/Servicios.astro'
+import Testimonios from '@/sections/Testimonios.astro'
 import { getServicios } from '@/lib/content'
 import { HREFLANG, getLocale, useTranslations } from '@/lib/i18n'
 import { ORGANIZATION_ID, localizedUrl, websiteId } from '@/lib/seo'
@@ -81,4 +82,5 @@ Astro.response.headers.set(
   <!-- <Proceso /> -->
   <Proceso2 />
   <Contacto />
+  <Testimonios />
 </Layout>

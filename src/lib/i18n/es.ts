@@ -121,6 +121,16 @@ export const es = {
     modalClose: 'Cerrar formulario de contacto',
   },
 
+  testimonials: {
+    sectionAria: 'Testimonios de clientes',
+    overline: 'Testimonios',
+    title: 'Lo que dicen nuestros clientes',
+    ratingSummary: '{rating} de 5 · {total} reseñas en Google',
+    ratingAria: '{rating} de 5 estrellas',
+    seeAll: 'Ver reseñas en Google',
+    source: 'Reseña de Google',
+  },
+
   form: {
     firstName: 'Nombre(s)',
     lastName: 'Apellido(s)',

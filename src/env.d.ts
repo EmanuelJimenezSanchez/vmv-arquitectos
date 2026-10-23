@@ -22,6 +22,8 @@ declare global {
     readonly RESEND_API_KEY?: string
     readonly PUBLIC_META_PIXEL_ID?: string
     readonly PUBLIC_GA_MEASUREMENT_ID?: string
+    readonly GOOGLE_PLACES_API_KEY?: string
+    readonly GOOGLE_PLACE_ID?: string
   }
 
   interface ImportMeta {

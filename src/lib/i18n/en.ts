@@ -121,6 +121,16 @@ export const en: Dictionary = {
     modalClose: 'Close contact form',
   },
 
+  testimonials: {
+    sectionAria: 'Client testimonials',
+    overline: 'Testimonials',
+    title: 'What our clients say',
+    ratingSummary: '{rating} out of 5 · {total} reviews on Google',
+    ratingAria: '{rating} out of 5 stars',
+    seeAll: 'See reviews on Google',
+    source: 'Google review',
+  },
+
   form: {
     firstName: 'First name(s)',
     lastName: 'Last name(s)',

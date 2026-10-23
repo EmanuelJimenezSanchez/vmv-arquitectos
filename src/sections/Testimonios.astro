@@ -1,0 +1,200 @@
+---
+import { getGoogleReviews } from '@/lib/google-reviews'
+import { format, getLocale, useTranslations } from '@/lib/i18n'
+
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+
+const data = await getGoogleReviews(locale)
+
+const STARS = [1, 2, 3, 4, 5]
+const STAR_PATH =
+  'M12 2.5l2.94 5.96 6.56.95-4.75 4.63 1.12 6.54L12 17.5l-5.87 3.08 1.12-6.54L2.5 9.41l6.56-.95z'
+---
+
+{
+  data && (
+    <section
+      id="testimonios"
+      class="relative border-t border-vmv-border bg-vmv-background py-[clamp(4.5rem,10vw,8rem)]"
+      data-testimonios
+      aria-label={t.testimonials.sectionAria}
+    >
+      <div class="mx-auto w-full max-w-[1200px] px-[clamp(1.25rem,5vw,3rem)]">
+        <header
+          class="flex flex-col justify-between gap-8 md:flex-row md:items-end"
+          data-testimonios-intro
+        >
+          <div class="flex flex-col gap-6">
+            <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+              <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true" />
+              {t.testimonials.overline}
+            </p>
+            <h2 class="vmv-title-1 max-w-[16ch] text-vmv-foreground">{t.testimonials.title}</h2>
+          </div>
+
+          <div class="flex flex-col gap-3 md:items-end">
+            <p class="vmv-body-2 flex items-center gap-3 text-vmv-muted-foreground">
+              <span
+                class="flex gap-0.5 text-vmv-sand-9"
+                role="img"
+                aria-label={format(t.testimonials.ratingAria, { rating: data.rating.toFixed(1) })}
+              >
+                {STARS.map((star) => (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class={star <= Math.round(data.rating) ? '' : 'opacity-25'}
+                    aria-hidden="true"
+                  >
+                    <path d={STAR_PATH} />
+                  </svg>
+                ))}
+              </span>
+              {format(t.testimonials.ratingSummary, {
+                rating: data.rating.toFixed(1),
+                total: data.total,
+              })}
+            </p>
+            {data.url && (
+              <a
+                href={data.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="vmv-overline-1 text-vmv-foreground underline decoration-vmv-border underline-offset-[0.4em] transition-colors duration-450 hover:decoration-vmv-foreground"
+              >
+                {t.testimonials.seeAll}
+              </a>
+            )}
+          </div>
+        </header>
+
+        <ul
+          class="mt-[clamp(2.5rem,6vw,4rem)] columns-1 gap-6 md:columns-2 lg:columns-3"
+          data-testimonios-list
+        >
+          {data.reviews.map((review) => (
+            <li class="mb-6 break-inside-avoid" data-testimonios-item>
+              <figure class="flex flex-col gap-5 border border-vmv-border bg-vmv-card p-[clamp(1.5rem,3vw,2rem)] text-vmv-card-foreground">
+                <span
+                  class="flex gap-0.5 text-vmv-sand-9"
+                  role="img"
+                  aria-label={format(t.testimonials.ratingAria, { rating: review.rating })}
+                >
+                  {STARS.map((star) => (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      class={star <= review.rating ? '' : 'opacity-25'}
+                      aria-hidden="true"
+                    >
+                      <path d={STAR_PATH} />
+                    </svg>
+                  ))}
+                </span>
+
+                <blockquote class="vmv-body-2 line-clamp-[12] whitespace-pre-line text-vmv-foreground">
+                  {review.text}
+                </blockquote>
+
+                <figcaption class="flex items-center gap-3 border-t border-vmv-border pt-4">
+                  <span
+                    class="vmv-caption-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-vmv-muted text-vmv-foreground uppercase"
+                    aria-hidden="true"
+                  >
+                    {review.author.charAt(0)}
+                  </span>
+                  <span class="flex min-w-0 flex-col">
+                    {review.authorUrl ? (
+                      <a
+                        href={review.authorUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="vmv-body-3 truncate text-vmv-foreground transition-colors duration-450 hover:text-vmv-muted-foreground"
+                      >
+                        {review.author}
+                      </a>
+                    ) : (
+                      <span class="vmv-body-3 truncate text-vmv-foreground">{review.author}</span>
+                    )}
+                    <span class="vmv-caption-1 text-vmv-muted-foreground">
+                      {t.testimonials.source}
+                      {review.relativeTime && (
+                        <>
+                          {' · '}
+                          <time datetime={review.publishTime || undefined}>
+                            {review.relativeTime}
+                          </time>
+                        </>
+                      )}
+                    </span>
+                  </span>
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  import gsap from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { $, $$ } from '@/lib/dom-selector'
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  let cleanupTestimonios: (() => void) | null = null
+
+  const setupTestimonios = () => {
+    if (cleanupTestimonios) {
+      cleanupTestimonios()
+      cleanupTestimonios = null
+    }
+
+    const section = $<HTMLElement>('[data-testimonios]')
+    if (!section) {
+      return
+    }
+
+    const intro = $<HTMLElement>('[data-testimonios-intro]', section)
+    const items = $$<HTMLElement>('[data-testimonios-item]', section)
+    const entrance = [intro, ...items].filter(Boolean) as HTMLElement[]
+
+    const mm = gsap.matchMedia()
+
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.from(entrance, {
+        autoAlpha: 0,
+        y: 32,
+        duration: 1,
+        ease: 'power3.out',
+        stagger: 0.08,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+        },
+      })
+    })
+
+    cleanupTestimonios = () => {
+      mm.revert()
+    }
+  }
+
+  document.addEventListener('astro:before-swap', () => {
+    if (cleanupTestimonios) {
+      cleanupTestimonios()
+      cleanupTestimonios = null
+    }
+  })
+
+  document.addEventListener('astro:page-load', setupTestimonios)
+  setupTestimonios()
+</script>
