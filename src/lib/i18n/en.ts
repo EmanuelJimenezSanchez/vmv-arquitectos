@@ -79,8 +79,8 @@ export const en: Dictionary = {
   process: {
     sectionAria: 'How we work',
     overline: 'Our process',
-    title: 'From the idea to the finished build',
-    body: 'Five clear stages that guide your project from the first conversation to the final handover. Hover over each step for the details.',
+    title: 'From the idea to completion',
+    body: 'Five clear stages that guide your project from the first conversation to the final handover.',
     steps: [
       {
         title: 'Understanding your needs',

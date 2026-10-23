@@ -80,7 +80,7 @@ export const es = {
     sectionAria: 'Nuestro proceso de trabajo',
     overline: 'Nuestro proceso',
     title: 'De la idea a la obra terminada',
-    body: 'Cinco etapas claras que acompañan tu proyecto desde la primera conversación hasta la última entrega. Pasa el cursor sobre cada paso para conocer los detalles.',
+    body: 'Cinco etapas claras que acompañan tu proyecto desde la primera conversación hasta la última entrega.',
     steps: [
       {
         title: 'Detección de necesidades',
