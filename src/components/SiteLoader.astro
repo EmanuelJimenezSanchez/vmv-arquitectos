@@ -246,6 +246,7 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
 
 <script>
   import { gsap } from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
   import { $, $$ } from '@/lib/dom-selector'
 
   // El spinner se ve un mínimo aunque los medios ya estén en caché.
@@ -257,8 +258,13 @@ const ticks = Array.from({ length: TICK_COUNT }, (_, index) => ({
   const getLenis = () => (window as unknown as { lenis?: LenisLike }).lenis ?? null
 
   const markDone = () => {
+    const widthLoading = document.documentElement.clientWidth
     document.documentElement.classList.remove('is-loading')
     getLenis()?.start()
+    // `is-loading` oculta la barra de scroll y devolverla no dispara
+    // `resize`: los pins que ScrollTrigger midió durante el loader quedarían
+    // con el ancho sin barra fijado inline (scroll horizontal).
+    if (document.documentElement.clientWidth !== widthLoading) ScrollTrigger.refresh()
   }
 
   const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms))
