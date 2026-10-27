@@ -229,15 +229,8 @@ const galeria = await getGaleria(locale)
   function unlockScroll() {
     scrollLocked = false
     observer.disable()
-    const widthLocked = document.documentElement.clientWidth
     document.documentElement.style.removeProperty('overflow')
     window.lenis?.start()
-    // `overflow: clip` oculta la barra de scroll, y quitarla/devolverla no
-    // dispara `resize`: si ScrollTrigger midió el pin con el candado puesto,
-    // el hero y su pin-spacer quedan con el ancho sin barra fijado inline y
-    // la página gana scroll horizontal. Se vuelve a medir con la barra ya
-    // de regreso.
-    if (document.documentElement.clientWidth !== widthLocked) ScrollTrigger.refresh()
   }
 
   function initNosotros() {
