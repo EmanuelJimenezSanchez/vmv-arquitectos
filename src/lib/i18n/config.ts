@@ -55,19 +55,44 @@ export const getLocale = (url: URL | string): Locale => {
 }
 
 /**
+ * Primer segmento de las rutas que cambian de nombre según el idioma. La forma
+ * neutra es la de la izquierda; cada página vive en `src/pages` con el nombre
+ * traducido (`gracias.astro`, `en/thank-you.astro`). Las rutas que no están
+ * aquí usan el mismo segmento en los dos idiomas.
+ */
+const LOCALIZED_SEGMENTS: Partial<Record<Locale, Record<string, string>>> = {
+  es: { 'thank-you': 'gracias' },
+}
+
+const toNeutralSegment = (segment: string, locale: Locale): string => {
+  const entries = Object.entries(LOCALIZED_SEGMENTS[locale] ?? {})
+  return entries.find(([, localized]) => localized === segment)?.[0] ?? segment
+}
+
+const toLocalizedSegment = (segment: string, locale: Locale): string =>
+  LOCALIZED_SEGMENTS[locale]?.[segment] ?? segment
+
+/**
  * Ruta sin el prefijo de idioma, siempre con barra inicial y sin barra final.
- * Es la forma neutra con la que se compara y se reconstruyen las alternativas.
+ * Es la forma neutra con la que se compara y se reconstruyen las alternativas:
+ * `/gracias` y `/en/thank-you` dan ambas `/thank-you`.
  */
 export const stripLocale = (pathname: string): string => {
   const [, first, ...rest] = pathname.split('/')
-  const segments = first && isLocale(first) ? rest : [first, ...rest].filter(Boolean)
-  const clean = segments.filter(Boolean).join('/')
+  const prefixed = Boolean(first && isLocale(first))
+  const locale = prefixed ? (first as Locale) : DEFAULT_LOCALE
+  const segments = (prefixed ? rest : [first, ...rest]).filter(Boolean)
+  if (segments.length > 0) {
+    segments[0] = toNeutralSegment(segments[0], locale)
+  }
+  const clean = segments.join('/')
   return clean ? `/${clean}` : '/'
 }
 
-/** Aplica el prefijo que le toca a un idioma sobre una ruta neutra. */
+/** Aplica el prefijo y el nombre que le tocan a un idioma sobre una ruta neutra. */
 export const localizePath = (pathname: string, locale: Locale): string => {
-  const base = stripLocale(pathname)
+  const [, first = '', ...rest] = stripLocale(pathname).split('/')
+  const base = first ? `/${[toLocalizedSegment(first, locale), ...rest].join('/')}` : '/'
   if (locale === DEFAULT_LOCALE) {
     return base
   }
