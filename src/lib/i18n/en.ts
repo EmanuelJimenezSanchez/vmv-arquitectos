@@ -144,10 +144,6 @@ export const en: Dictionary = {
     messagePlaceholder: 'Tell us about your project.',
     note: 'We will get in touch on WhatsApp or by email within the next few hours.',
     submit: 'Send',
-    successTitle: 'Thank you for writing',
-    successBody:
-      'We have received your message. We will get in touch on WhatsApp or by email within the next few hours.',
-    sendAnother: 'Send another message',
     sendError: 'We could not send your message. Write to us at ventas@vmvarquitectos.com.',
     privacyBefore: 'By sending you accept our ',
     privacyLink: 'privacy notice',
@@ -248,6 +244,14 @@ export const en: Dictionary = {
     },
   },
 
+  thankYou: {
+    overline: 'Message sent',
+    title: 'Thank you for writing',
+    body: 'We have received your message. We will get in touch on WhatsApp or by email within the next few hours.',
+    home: 'Back to home',
+    projects: 'View projects',
+  },
+
   notFound: {
     overline: 'Error 404',
     title: 'This page does not exist',
@@ -272,6 +276,8 @@ export const en: Dictionary = {
     projectFallbackYear: ' ({year})',
     notFoundTitle: 'Page not found | VMV Arquitectos',
     notFoundDescription: 'The page you are looking for does not exist or has moved.',
+    thankYouTitle: 'Thank you for writing | VMV Arquitectos',
+    thankYouDescription: 'We have received your message. We will get in touch within the next few hours.',
     privacyTitle: 'Privacy notice | VMV Arquitectos',
     privacyDescription:
       'How VMV Arquitectos collects, uses and protects your personal data, which cookies the site uses and how to exercise your ARCO rights.',

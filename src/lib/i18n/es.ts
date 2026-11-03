@@ -144,10 +144,6 @@ export const es = {
     messagePlaceholder: 'Cuéntanos sobre tu proyecto.',
     note: 'Te contactaremos por WhatsApp o e-mail en las próximas horas.',
     submit: 'Enviar',
-    successTitle: 'Gracias por escribirnos',
-    successBody:
-      'Hemos recibido tu mensaje. Te contactaremos por WhatsApp o e-mail en las próximas horas.',
-    sendAnother: 'Enviar otro mensaje',
     sendError: 'No se pudo enviar el mensaje. Escríbenos a ventas@vmvarquitectos.com.',
     privacyBefore: 'Al enviar aceptas nuestro ',
     privacyLink: 'aviso de privacidad',
@@ -248,6 +244,14 @@ export const es = {
     },
   },
 
+  thankYou: {
+    overline: 'Mensaje enviado',
+    title: 'Gracias por escribirnos',
+    body: 'Hemos recibido tu mensaje. Te contactaremos por WhatsApp o e-mail en las próximas horas.',
+    home: 'Volver al inicio',
+    projects: 'Ver proyectos',
+  },
+
   notFound: {
     overline: 'Error 404',
     title: 'Esta página no existe',
@@ -272,6 +276,8 @@ export const es = {
     projectFallbackYear: ' ({year})',
     notFoundTitle: 'Página no encontrada | VMV Arquitectos',
     notFoundDescription: 'La página que buscas no existe o cambió de dirección.',
+    thankYouTitle: 'Gracias por escribirnos | VMV Arquitectos',
+    thankYouDescription: 'Recibimos tu mensaje. Te contactaremos en las próximas horas.',
     privacyTitle: 'Aviso de privacidad | VMV Arquitectos',
     privacyDescription:
       'Cómo VMV Arquitectos recaba, usa y protege tus datos personales, qué cookies usa el sitio y cómo ejercer tus derechos ARCO.',

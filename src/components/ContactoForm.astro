@@ -47,6 +47,7 @@ const radioOptions = [
   data-locale={locale}
   data-origin={idPrefix}
   data-error-text={t.form.sendError}
+  data-thank-you-href={localizeHref('/thank-you', locale)}
 >
   <form class="flex flex-col gap-6" data-contacto-form novalidate>
     <div class="grid gap-6 sm:grid-cols-2">
@@ -139,60 +140,16 @@ const radioOptions = [
 
     <p class="vmv-caption-1 hidden text-vmv-sand-11" data-contacto-error role="alert"></p>
   </form>
-
-  <div
-    class="hidden flex-col items-start gap-6 py-[clamp(1.5rem,4vw,3rem)]"
-    data-contacto-success
-    role="status"
-    aria-live="polite"
-  >
-    <span
-      class="flex h-16 w-16 items-center justify-center rounded-full border border-vmv-sand-9/35"
-      aria-hidden="true"
-      data-contacto-success-item
-    >
-      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-        <path
-          d="M8 15.5 13 20.5 22 10"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="text-vmv-sand-9"
-          data-contacto-check></path>
-      </svg>
-    </span>
-
-    <div class="flex flex-col gap-4">
-      <h3 class="vmv-title-2 max-w-[16ch] text-vmv-foreground" data-contacto-success-item>
-        {t.form.successTitle}
-      </h3>
-      <p class="vmv-body-2 max-w-[38ch] text-vmv-muted-foreground" data-contacto-success-item>
-        {t.form.successBody}
-      </p>
-    </div>
-
-    <button
-      type="button"
-      class="vmv-overline-1 cursor-pointer border-b border-vmv-border pb-1 text-vmv-muted-foreground transition-colors duration-450 ease-vmv hover:border-vmv-foreground hover:text-vmv-foreground"
-      data-contacto-reset
-      data-contacto-success-item
-    >
-      {t.form.sendAnother}
-    </button>
-  </div>
 </div>
 
 <script>
   import { actions } from 'astro:actions'
-  import gsap from 'gsap'
+  import { navigate } from 'astro:transitions/client'
   import { $, $$ } from '@/lib/dom-selector'
   import { trackMeta } from '@/lib/meta-pixel'
   import { trackGA } from '@/lib/google-analytics'
 
   let formsController: AbortController | null = null
-
-  const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const setupContactoForms = () => {
     formsController?.abort()
@@ -201,15 +158,12 @@ const radioOptions = [
 
     $$<HTMLElement>('[data-contacto-wrapper]').forEach((wrapper) => {
       const form = $<HTMLFormElement>('[data-contacto-form]', wrapper)
-      const success = $<HTMLElement>('[data-contacto-success]', wrapper)
-      if (!form || !success) {
+      if (!form) {
         return
       }
 
       const error = $<HTMLElement>('[data-contacto-error]', form)
       const submit = $<HTMLButtonElement>('[data-contacto-submit]', form)
-      const successItems = $$<HTMLElement>('[data-contacto-success-item]', success)
-      const check = $<SVGPathElement>('[data-contacto-check]', success)
 
       const value = (name: string) =>
         $<HTMLInputElement | HTMLTextAreaElement>(
@@ -219,74 +173,6 @@ const radioOptions = [
 
       const radio = (field: string) =>
         $<HTMLInputElement>(`input[data-field="${field}"]:checked`, form)?.value ?? ''
-
-      /**
-       * El alto del wrapper se fija durante el cruce para que la página no dé
-       * un salto mientras el formulario sale y el agradecimiento entra.
-       */
-      const showSuccess = () => {
-        const startHeight = wrapper.offsetHeight
-
-        // Se limpia aquí para no dejar los datos del visitante en un formulario
-        // que sigue en el DOM, solo oculto.
-        form.reset()
-        form.classList.add('hidden')
-        success.classList.remove('hidden')
-        success.classList.add('flex')
-
-        if (prefersReducedMotion()) {
-          return
-        }
-
-        const endHeight = wrapper.offsetHeight
-        const length = check?.getTotalLength() ?? 0
-
-        gsap
-          .timeline()
-          .fromTo(
-            wrapper,
-            { height: startHeight },
-            { height: endHeight, duration: 0.5, ease: 'power2.inOut', clearProps: 'height' },
-            0,
-          )
-          .fromTo(
-            successItems,
-            { autoAlpha: 0, y: 24 },
-            { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.08 },
-            0.1,
-          )
-          .fromTo(
-            check,
-            { strokeDasharray: length, strokeDashoffset: length },
-            {
-              strokeDashoffset: 0,
-              duration: 0.55,
-              ease: 'power2.out',
-              clearProps: 'stroke-dasharray,stroke-dashoffset',
-            },
-            0.35,
-          )
-      }
-
-      const resetForm = () => {
-        success.classList.add('hidden')
-        success.classList.remove('flex')
-        form.classList.remove('hidden')
-
-        if (prefersReducedMotion()) {
-          return
-        }
-
-        gsap.fromTo(
-          form,
-          { autoAlpha: 0, y: 16 },
-          { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-        )
-      }
-
-      $<HTMLButtonElement>('[data-contacto-reset]', success)?.addEventListener('click', resetForm, {
-        signal,
-      })
 
       form.addEventListener(
         'submit',
@@ -317,11 +203,10 @@ const radioOptions = [
             website: $<HTMLInputElement>('[data-contacto-honeypot]', form)?.value ?? '',
           })
 
-          if (submit) {
-            submit.disabled = false
-          }
-
           if (actionError) {
+            if (submit) {
+              submit.disabled = false
+            }
             if (error) {
               // El mensaje del servidor está en español; en la página se muestra
               // el del diccionario para no mezclar idiomas frente al visitante.
@@ -348,7 +233,12 @@ const radioOptions = [
             language: idioma,
           })
 
-          showSuccess()
+          // Los eventos se mandan aquí y no en la página de gracias para que
+          // recargarla o entrar directo no cuente leads de más. El ClientRouter
+          // navega sin descargar la página, así que no cortan su envío. El
+          // botón queda deshabilitado: el formulario desaparece con la página.
+          form.reset()
+          void navigate(wrapper.dataset.thankYouHref ?? '/thank-you')
         },
         { signal },
       )

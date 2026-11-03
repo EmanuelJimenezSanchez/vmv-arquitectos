@@ -1,0 +1,62 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import Button from '@/components/ui/Button.astro'
+import { getLocale, localizeHref, useTranslations } from '@/lib/i18n'
+
+/**
+ * Página de gracias tras enviar el formulario, compartida por `/thank-you` y
+ * `/en/thank-you`. Existe para que las campañas puedan medir la conversión por
+ * URL de destino; los eventos `Lead` / `generate_lead` se mandan desde
+ * `ContactoForm.astro` antes de navegar aquí, así que entrar directo a esta
+ * URL no los dispara. Fuera del índice y del sitemap: solo se llega enviando.
+ */
+const locale = getLocale(Astro.url)
+const t = useTranslations(locale)
+---
+
+<Layout
+  title={t.seo.thankYouTitle}
+  description={t.seo.thankYouDescription}
+  canonical="/thank-you"
+  robots="noindex, nofollow"
+  showLoader={false}
+>
+  <section class="flex min-h-svh items-center bg-vmv-background">
+    <div
+      class="mx-auto flex w-full max-w-[1200px] flex-col items-start gap-6 px-[clamp(1.25rem,5vw,3rem)] py-[clamp(4rem,9vw,7rem)]"
+    >
+      <span
+        class="flex h-16 w-16 items-center justify-center rounded-full border border-vmv-sand-9/35"
+        aria-hidden="true"
+      >
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <path
+            d="M8 15.5 13 20.5 22 10"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-vmv-sand-9"></path>
+        </svg>
+      </span>
+      <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
+        <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
+        {t.thankYou.overline}
+      </p>
+      <h1 class="vmv-title-1 max-w-[18ch] text-balance text-vmv-foreground">
+        {t.thankYou.title}
+      </h1>
+      <p class="vmv-body-2 max-w-[46ch] text-vmv-muted-foreground">
+        {t.thankYou.body}
+      </p>
+      <div class="mt-2 flex flex-wrap items-center gap-4">
+        <Button href={localizeHref('/', locale)} variant="gray" size="lg">
+          {t.thankYou.home}
+        </Button>
+        <Button href={localizeHref('/projects', locale)} variant="outline" size="lg">
+          {t.thankYou.projects}
+        </Button>
+      </div>
+    </div>
+  </section>
+</Layout>
