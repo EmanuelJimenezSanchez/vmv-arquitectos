@@ -27,7 +27,7 @@ const galerias = servicios.map((servicio) => ({
   data-servicios-galeria
 >
   <div
-    class="servicios-galeria-panel relative flex max-h-[calc(100svh-4rem)] flex-col gap-5 overflow-y-auto border border-vmv-border bg-vmv-background px-[clamp(1rem,3vw,2.25rem)] py-[clamp(1.5rem,4vw,2.5rem)]"
+    class="servicios-galeria-panel relative flex max-h-[calc(100svh-4rem)] flex-col gap-5 overflow-hidden border border-vmv-border bg-vmv-background px-[clamp(1rem,3vw,2.25rem)] py-[clamp(1.5rem,4vw,2.5rem)]"
   >
     <button
       type="button"
@@ -41,7 +41,7 @@ const galerias = servicios.map((servicio) => ({
       </svg>
     </button>
 
-    <header class="flex flex-col gap-3 pr-12">
+    <header class="flex shrink-0 flex-col gap-3 pr-12">
       <p class="vmv-overline-1 flex items-center gap-3 text-vmv-sand-9">
         <span class="h-px w-9 bg-vmv-sand-9/60" aria-hidden="true"></span>
         <span data-servicios-galeria-footer>{t.services.galleryFooter}</span>
@@ -56,9 +56,12 @@ const galerias = servicios.map((servicio) => ({
       </p>
     </header>
 
-    <figure class="relative overflow-hidden rounded-sm bg-vmv-muted">
+    <!-- El figure se encoge para caber en el panel; la imagen lo llena con contain para no recortarse. -->
+    <figure
+      class="relative aspect-4/3 min-h-0 overflow-hidden rounded-sm bg-vmv-muted sm:aspect-16/10"
+    >
       <img
-        class="servicios-galeria-image aspect-16/10 w-full object-cover"
+        class="servicios-galeria-image absolute inset-0 h-full w-full object-contain"
         alt=""
         data-servicios-galeria-image
         decoding="async"
@@ -108,7 +111,7 @@ const galerias = servicios.map((servicio) => ({
     </figure>
 
     <div
-      class="flex scrollbar-none gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
+      class="flex shrink-0 scrollbar-none gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
       data-servicios-galeria-thumbs
       role="tablist"
       aria-label={t.services.galleryPhotos}
