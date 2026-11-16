@@ -148,6 +148,7 @@ const radioOptions = [
   import { $, $$ } from '@/lib/dom-selector'
   import { trackMeta } from '@/lib/meta-pixel'
   import { trackGA } from '@/lib/google-analytics'
+  import { trackPinterest } from '@/lib/pinterest-tag'
 
   let formsController: AbortController | null = null
 
@@ -231,6 +232,10 @@ const radioOptions = [
             considering_building: considerandoConstruir,
             has_land: tieneTerreno,
             language: idioma,
+          })
+          // Evento estándar de Pinterest; `lead_type` es el único campo libre.
+          trackPinterest('lead', {
+            lead_type: wrapper.dataset.origin || 'Formulario de contacto',
           })
 
           // Los eventos se mandan aquí y no en la página de gracias para que

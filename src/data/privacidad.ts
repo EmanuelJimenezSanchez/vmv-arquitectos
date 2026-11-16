@@ -16,7 +16,7 @@ import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from '@/lib/seo'
 const RAZON_SOCIAL = 'VMV ARQUITECTOS'
 const DOMICILIO = 'DETROIT 79, RINCON DE AGUA AZUL, 44467, GUADALAJARA, JALISCO, MÉXICO'
 
-export const PRIVACY_UPDATED_AT = '2026-10-19'
+export const PRIVACY_UPDATED_AT = '2026-11-16'
 
 export interface PrivacySection {
   id: string
@@ -86,7 +86,7 @@ const es: PrivacyContent = {
         {
           list: [
             'Medir y analizar el uso del sitio para mejorar su contenido y funcionamiento.',
-            'Medir el desempeño de nuestros anuncios y mostrar publicidad de VMV Arquitectos en plataformas de Meta (Facebook e Instagram) a personas que visitaron el sitio.',
+            'Medir el desempeño de nuestros anuncios y mostrar publicidad de VMV Arquitectos en plataformas de Meta (Facebook e Instagram) y en Pinterest a personas que visitaron el sitio.',
           ],
         },
         `Si no deseas que tus datos se usen para las finalidades secundarias, escríbenos a ${email} con el asunto «Finalidades secundarias», o desactiva las tecnologías de rastreo como se indica en la sección 4. Tu negativa no afectará la atención de tu solicitud.`,
@@ -101,6 +101,7 @@ const es: PrivacyContent = {
           list: [
             '<strong>Pixel de Meta</strong> (Meta Platforms, Inc.): instala cookies como <code>_fbp</code> para registrar las páginas que visitas, los proyectos que consultas, si abres o envías el formulario de contacto y si haces clic en nuestros enlaces de WhatsApp, correo o teléfono. <strong>Al Pixel no se le envían tu nombre, correo, teléfono ni el contenido de tu mensaje</strong>; solo las respuestas de calificación del formulario y el idioma. Se usa para las finalidades secundarias.',
             '<strong>Google Analytics</strong> (Google LLC): instala cookies como <code>_ga</code> para obtener estadísticas de uso del sitio: páginas visitadas, proyectos consultados, si abres o envías el formulario de contacto y si haces clic en nuestros enlaces de WhatsApp, correo o teléfono. <strong>No se le envían tu nombre, correo, teléfono ni el contenido de tu mensaje.</strong> Se usa para medir y mejorar el sitio (finalidades secundarias).',
+            '<strong>Pinterest Tag</strong> (Pinterest, Inc.): instala cookies como <code>_pin_unauth</code> y <code>_epik</code> para registrar las páginas que visitas, los proyectos que consultas, si envías el formulario de contacto y si haces clic en nuestros enlaces de WhatsApp, correo o teléfono. <strong>No se le envían tu nombre, correo, teléfono ni el contenido de tu mensaje.</strong> Se usa para las finalidades secundarias.',
             '<strong>Vercel Web Analytics</strong> (Vercel Inc.): estadísticas agregadas de visitas sin uso de cookies ni identificadores personales.',
             '<strong>Almacenamiento local del navegador</strong>: guarda tus preferencias de visualización, como el tema claro u oscuro, y tu elección sobre las cookies. No contiene datos personales y no sale de tu dispositivo.',
           ],
@@ -108,10 +109,11 @@ const es: PrivacyContent = {
         'Puedes deshabilitar estas tecnologías en cualquier momento:',
         {
           list: [
-            'Con el botón «Rechazar» del aviso de cookies que aparece en tu primera visita, o en cualquier momento desde «Preferencias de cookies» al pie del sitio. Al rechazar, el Pixel de Meta y Google Analytics dejan de cargarse y se borran sus cookies.',
+            'Con el botón «Rechazar» del aviso de cookies que aparece en tu primera visita, o en cualquier momento desde «Preferencias de cookies» al pie del sitio. Al rechazar, el Pixel de Meta, Google Analytics y el Pinterest Tag dejan de cargarse y se borran sus cookies.',
             'Bloqueando o eliminando cookies desde la configuración de tu navegador, o navegando en modo privado.',
             'Usando extensiones que bloquean rastreadores, o el <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">complemento de inhabilitación de Google Analytics</a>.',
             'Desde tu cuenta de Meta, en <a href="https://www.facebook.com/adpreferences" target="_blank" rel="noopener noreferrer">Preferencias de anuncios</a> y en «Tu actividad fuera de las tecnologías de Meta».',
+            'Desde tu cuenta de Pinterest, en <a href="https://www.pinterest.com/settings/privacy" target="_blank" rel="noopener noreferrer">Privacidad y datos</a>, desactivando la personalización de anuncios con información de otros sitios.',
           ],
         },
         'Deshabilitarlas no impide navegar el sitio ni enviarnos el formulario.',
@@ -131,6 +133,7 @@ const es: PrivacyContent = {
         },
         'Los datos de navegación que recaba el Pixel de Meta son tratados también por Meta Platforms, Inc. conforme a su propia <a href="https://www.facebook.com/privacy/policy" target="_blank" rel="noopener noreferrer">política de privacidad</a>, para medir y mostrar anuncios. Puedes oponerte como se explica en las secciones 3 y 4.',
         'Los datos de navegación que recaba Google Analytics son tratados por Google LLC (Estados Unidos) conforme a su <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">política de privacidad</a>, para generar las estadísticas del sitio. Puedes oponerte como se explica en las secciones 3 y 4.',
+        'Los datos de navegación que recaba el Pinterest Tag son tratados también por Pinterest, Inc. (Estados Unidos) conforme a su <a href="https://policy.pinterest.com/es/privacy-policy" target="_blank" rel="noopener noreferrer">política de privacidad</a>, para medir y mostrar anuncios. Puedes oponerte como se explica en las secciones 3 y 4.',
         'No vendemos ni compartimos tus datos con terceros para otros fines, salvo cuando lo exija una ley o una autoridad competente.',
       ],
     },
@@ -239,7 +242,7 @@ const en: PrivacyContent = {
         {
           list: [
             'Measuring and analyzing site usage to improve its content and performance.',
-            'Measuring the performance of our ads and showing VMV Arquitectos ads on Meta platforms (Facebook and Instagram) to people who visited the site.',
+            'Measuring the performance of our ads and showing VMV Arquitectos ads on Meta platforms (Facebook and Instagram) and on Pinterest to people who visited the site.',
           ],
         },
         `If you do not want your data used for secondary purposes, email ${email} with the subject “Secondary purposes”, or disable tracking technologies as described in section 4. Your refusal will not affect how we handle your request.`,
@@ -254,6 +257,7 @@ const en: PrivacyContent = {
           list: [
             '<strong>Meta Pixel</strong> (Meta Platforms, Inc.): sets cookies such as <code>_fbp</code> to record the pages you visit, the projects you view, whether you open or submit the contact form and whether you click our WhatsApp, email or phone links. <strong>Your name, email, phone number and message are never sent to the Pixel</strong>; only the form’s qualifying answers and the language. Used for secondary purposes.',
             '<strong>Google Analytics</strong> (Google LLC): sets cookies such as <code>_ga</code> to produce site usage statistics: pages visited, projects viewed, whether you open or submit the contact form and whether you click our WhatsApp, email or phone links. <strong>Your name, email, phone number and message are never sent to it.</strong> Used to measure and improve the site (secondary purposes).',
+            '<strong>Pinterest Tag</strong> (Pinterest, Inc.): sets cookies such as <code>_pin_unauth</code> and <code>_epik</code> to record the pages you visit, the projects you view, whether you submit the contact form and whether you click our WhatsApp, email or phone links. <strong>Your name, email, phone number and message are never sent to it.</strong> Used for secondary purposes.',
             '<strong>Vercel Web Analytics</strong> (Vercel Inc.): aggregated visit statistics with no cookies or personal identifiers.',
             '<strong>Browser local storage</strong>: stores your display preferences, such as light or dark theme, and your cookie choice. It contains no personal data and never leaves your device.',
           ],
@@ -261,10 +265,11 @@ const en: PrivacyContent = {
         'You can disable these technologies at any time:',
         {
           list: [
-            'With the “Reject” button in the cookie notice shown on your first visit, or at any time from “Cookie preferences” in the site footer. Once rejected, the Meta Pixel and Google Analytics stop loading and their cookies are deleted.',
+            'With the “Reject” button in the cookie notice shown on your first visit, or at any time from “Cookie preferences” in the site footer. Once rejected, the Meta Pixel, Google Analytics and the Pinterest Tag stop loading and their cookies are deleted.',
             'By blocking or deleting cookies in your browser settings, or browsing in private mode.',
             'By using tracker-blocking extensions, or the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Google Analytics opt-out add-on</a>.',
             'From your Meta account, under <a href="https://www.facebook.com/adpreferences" target="_blank" rel="noopener noreferrer">Ad preferences</a> and “Your activity off Meta technologies”.',
+            'From your Pinterest account, under <a href="https://www.pinterest.com/settings/privacy" target="_blank" rel="noopener noreferrer">Privacy and data</a>, by turning off ad personalization using information from other sites.',
           ],
         },
         'Disabling them does not prevent you from browsing the site or submitting the form.',
@@ -284,6 +289,7 @@ const en: PrivacyContent = {
         },
         'Browsing data collected by the Meta Pixel is also processed by Meta Platforms, Inc. under its own <a href="https://www.facebook.com/privacy/policy" target="_blank" rel="noopener noreferrer">privacy policy</a>, to measure and show ads. You can object as explained in sections 3 and 4.',
         'Browsing data collected by Google Analytics is processed by Google LLC (United States) under its <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>, to produce the site statistics. You can object as explained in sections 3 and 4.',
+        'Browsing data collected by the Pinterest Tag is also processed by Pinterest, Inc. (United States) under its <a href="https://policy.pinterest.com/en/privacy-policy" target="_blank" rel="noopener noreferrer">privacy policy</a>, to measure and show ads. You can object as explained in sections 3 and 4.',
         'We do not sell or share your data with third parties for other purposes, except when required by law or a competent authority.',
       ],
     },
