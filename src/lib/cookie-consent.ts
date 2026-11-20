@@ -4,11 +4,12 @@ import { trackGAPageView } from '@/lib/google-analytics'
  * Elección del visitante sobre las cookies de medición y publicidad.
  *
  * El modelo es opt-out (suficiente en México): sin elección guardada el Pixel
- * de Meta y Google Analytics se cargan y el aviso se muestra; «Rechazar» los
- * apaga y la elección persiste.
+ * de Meta, Google Analytics y el Pinterest Tag se cargan y el aviso se
+ * muestra; «Rechazar» los apaga y la elección persiste.
  *
- * La clave se repite en los scripts inline de `MetaPixel.astro` y
- * `GoogleAnalytics.astro`, que corren antes de que exista cualquier módulo:
+ * La clave se repite en los scripts inline de `MetaPixel.astro`,
+ * `GoogleAnalytics.astro` y `PinterestTag.astro`, que corren antes de que
+ * exista cualquier módulo:
  * si cambia aquí, hay que cambiarla allá.
  */
 export const CONSENT_STORAGE_KEY = 'vmv-cookie-consent'
@@ -34,9 +35,15 @@ const saveConsent = (value: CookieConsent) => {
 
 const GA_MEASUREMENT_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? ''
 
-/** Cookies propias que dejan el pixel (`_fbp`, `_fbc`) y GA (`_ga`, `_ga_<ID>`). */
+/** Cookies propias que dejan el pixel (`_fbp`, `_fbc`), GA (`_ga`, `_ga_<ID>`) y Pinterest. */
+const PINTEREST_COOKIES = ['_pin_unauth', '_epik', '_derived_epik', '_pinterest_ct_ua']
+
 const isTrackingCookie = (name: string) =>
-  name === '_fbp' || name === '_fbc' || name === '_ga' || name.startsWith('_ga_')
+  name === '_fbp' ||
+  name === '_fbc' ||
+  name === '_ga' ||
+  name.startsWith('_ga_') ||
+  PINTEREST_COOKIES.includes(name)
 
 const deleteTrackingCookies = () => {
   // Ambos las escriben en el dominio raíz (`.vmvarquitectos.com`), así que
@@ -88,15 +95,30 @@ const grantGoogleAnalytics = () => {
   trackGAPageView()
 }
 
+const grantPinterestTag = () => {
+  if (window.pintrk) {
+    // Ya estaba cargado: `pinterest-tag.ts` vuelve a mandar eventos en cuanto
+    // la elección guardada deja de ser `denied`.
+    return
+  }
+
+  // Igual que con el pixel: se carga ahora y se cuenta la página actual.
+  window.vmvLoadPinterestTag?.()
+  window.pintrk?.('page')
+}
+
 export const grantConsent = () => {
   saveConsent('granted')
   grantMetaPixel()
   grantGoogleAnalytics()
+  grantPinterestTag()
 }
 
 export const denyConsent = () => {
   saveConsent('denied')
   // `revoke` y `ga-disable` detienen los envíos al instante sin recargar.
+  // Pinterest no tiene equivalente: lo frena la elección guardada (ver
+  // `lib/pinterest-tag.ts`).
   window.fbq?.('consent', 'revoke')
   window.gtag?.('consent', 'update', { analytics_storage: 'denied' })
   setGADisabled(true)

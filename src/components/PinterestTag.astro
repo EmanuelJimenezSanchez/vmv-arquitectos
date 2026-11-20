@@ -1,0 +1,86 @@
+---
+/**
+ * Pinterest Tag para el sitio público. Mismas reglas que el Pixel de Meta y
+ * GA: no se carga sin `PUBLIC_PINTEREST_TAG_ID` ni si el visitante rechazó las
+ * cookies en el aviso.
+ */
+const tagId = import.meta.env.PUBLIC_PINTEREST_TAG_ID ?? ''
+---
+
+<script is:inline define:vars={{ tagId }}>
+  // Código base oficial de Pinterest, envuelto para poder cargarlo después si
+  // el visitante acepta tras haber rechazado (ver `lib/cookie-consent.ts`).
+  // El guard de `window.pintrk` evita inicializar dos veces con el ClientRouter.
+  // El `pintrk('page')` del código base se manda en cada `astro:page-load`.
+  window.vmvLoadPinterestTag = () => {
+    if (!tagId || window.pintrk) return
+    window.pintrk = function () {
+      window.pintrk.queue.push(Array.prototype.slice.call(arguments))
+    }
+    window.pintrk.queue = []
+    window.pintrk.version = '3.0'
+
+    const script = document.createElement('script')
+    script.async = true
+    script.src = 'https://s.pinimg.com/ct/core.js'
+    document.head.appendChild(script)
+
+    window.pintrk('load', tagId)
+  }
+
+  // Misma clave que `CONSENT_STORAGE_KEY` en `lib/cookie-consent.ts`.
+  let consent = null
+  try {
+    consent = localStorage.getItem('vmv-cookie-consent')
+  } catch {
+    // Sin almacenamiento no hay elección guardada: se aplica el opt-out.
+  }
+  if (consent !== 'denied') {
+    window.vmvLoadPinterestTag()
+  }
+</script>
+
+<script>
+  import { $ } from '@/lib/dom-selector'
+  import { trackPinterest, trackPinterestPageView } from '@/lib/pinterest-tag'
+
+  document.addEventListener('astro:page-load', () => {
+    trackPinterestPageView()
+
+    // Las fichas de proyecto se marcan con `data-meta-view-content`.
+    const content = $<HTMLElement>('[data-meta-view-content]')
+    if (content) {
+      trackPinterest('pagevisit', {
+        line_items: [
+          {
+            product_id: content.dataset.contentId ?? '',
+            product_name: content.dataset.contentName ?? '',
+            product_category: content.dataset.contentCategory ?? '',
+          },
+        ],
+      })
+    }
+  })
+
+  // Clics a WhatsApp, correo o teléfono (mismo criterio que `MetaPixel.astro`).
+  // Pinterest solo tiene un evento personalizado; el método va en `lead_type`.
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]')
+    if (!link) {
+      return
+    }
+
+    const href = link.getAttribute('href') ?? ''
+    const method = href.startsWith('mailto:')
+      ? 'email'
+      : href.startsWith('tel:')
+        ? 'phone'
+        : /^https:\/\/(wa\.me|api\.whatsapp\.com)\//.test(href)
+          ? 'whatsapp'
+          : null
+
+    if (method) {
+      trackPinterest('custom', { lead_type: `contact_${method}` })
+    }
+  })
+</script>

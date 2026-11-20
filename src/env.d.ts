@@ -22,6 +22,7 @@ declare global {
     readonly RESEND_API_KEY?: string
     readonly PUBLIC_META_PIXEL_ID?: string
     readonly PUBLIC_GA_MEASUREMENT_ID?: string
+    readonly PUBLIC_PINTEREST_TAG_ID?: string
     readonly GOOGLE_PLACES_API_KEY?: string
     readonly GOOGLE_PLACE_ID?: string
   }
@@ -50,5 +51,9 @@ declare global {
     dataLayer?: unknown[]
     /** Carga GA bajo demanda; lo define el script inline de `GoogleAnalytics.astro`. */
     vmvLoadGoogleAnalytics?: () => void
+    /** Pinterest Tag; solo existe si `PUBLIC_PINTEREST_TAG_ID` está definido. */
+    pintrk?: ((...args: unknown[]) => void) & { queue?: unknown[]; version?: string }
+    /** Carga el tag bajo demanda; lo define el script inline de `PinterestTag.astro`. */
+    vmvLoadPinterestTag?: () => void
   }
 }
